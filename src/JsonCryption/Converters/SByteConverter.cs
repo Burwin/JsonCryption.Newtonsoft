@@ -10,7 +10,7 @@ namespace JsonCryption.Converters
         {
         }
 
-        public override sbyte Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => throw new NotImplementedException();
-        public override void Write(Utf8JsonWriter writer, sbyte value, JsonSerializerOptions options) => throw new NotImplementedException();
+        protected override sbyte FromBytes(byte[] bytes) => (sbyte)bytes[0];
+        protected override byte[] ToBytes(sbyte value) => BitConverter.GetBytes(value);
     }
 }

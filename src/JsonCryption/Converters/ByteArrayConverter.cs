@@ -1,5 +1,4 @@
 ﻿using JsonCryption.Encrypters;
-using System;
 using System.Text.Json;
 
 namespace JsonCryption.Converters
@@ -10,10 +9,7 @@ namespace JsonCryption.Converters
         {
         }
 
-        public override byte[] Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => DecryptString(ref reader);
-
-        public override void Write(Utf8JsonWriter writer, byte[] value, JsonSerializerOptions options)
-            => writer.WriteStringValue(_encrypter.Encrypt(value));
+        protected override byte[] FromBytes(byte[] bytes) => bytes;
+        protected override byte[] ToBytes(byte[] value) => value;
     }
 }

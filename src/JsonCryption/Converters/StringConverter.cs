@@ -1,5 +1,6 @@
 ﻿using JsonCryption.Encrypters;
 using System;
+using System.Text;
 using System.Text.Json;
 
 namespace JsonCryption.Converters
@@ -10,7 +11,7 @@ namespace JsonCryption.Converters
         {
         }
 
-        public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => throw new NotImplementedException();
-        public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options) => throw new NotImplementedException();
+        protected override string FromBytes(byte[] bytes) => BitConverter.ToString(bytes);
+        protected override byte[] ToBytes(string value) => Encoding.UTF8.GetBytes(value);
     }
 }

@@ -35,15 +35,7 @@ namespace JsonCryption.Encrypters
             return outputStream.ToArray();
         }
 
-        internal string Encrypt(DateTime value) => EncryptBytes(BitConverter.GetBytes(value.ToBinary()));
-        internal string Encrypt(char value) => EncryptBytes(BitConverter.GetBytes(value));
-        internal string Encrypt(byte[] value) => EncryptBytes(value);
-        internal string Encrypt(byte value) => EncryptBytes(BitConverter.GetBytes(value));
-        internal string Encrypt(bool value) => EncryptBytes(BitConverter.GetBytes(value));
-
-        protected abstract SymmetricAlgorithm GetAlgorithm();
-
-        protected string EncryptBytes(byte[] bytes)
+        internal string Encrypt(byte[] bytes)
         {
             using var inputStream = new MemoryStream(bytes, writable: false);
             using var outputStream = new MemoryStream();
@@ -62,5 +54,7 @@ namespace JsonCryption.Encrypters
 
             return Convert.ToBase64String(outputStream.ToArray());
         }
+
+        protected abstract SymmetricAlgorithm GetAlgorithm();
     }
 }

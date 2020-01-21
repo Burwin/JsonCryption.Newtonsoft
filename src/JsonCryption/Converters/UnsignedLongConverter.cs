@@ -10,7 +10,7 @@ namespace JsonCryption.Converters
         {
         }
 
-        public override ulong Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => throw new NotImplementedException();
-        public override void Write(Utf8JsonWriter writer, ulong value, JsonSerializerOptions options) => throw new NotImplementedException();
+        protected override ulong FromBytes(byte[] bytes) => BitConverter.ToUInt64(bytes, 0);
+        protected override byte[] ToBytes(ulong value) => BitConverter.GetBytes(value);
     }
 }

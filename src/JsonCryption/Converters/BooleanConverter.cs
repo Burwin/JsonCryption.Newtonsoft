@@ -10,13 +10,7 @@ namespace JsonCryption.Converters
         {
         }
 
-        public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            var bytes = DecryptString(ref reader);
-            return BitConverter.ToBoolean(bytes, startIndex: 0);
-        }
-
-        public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)
-            => writer.WriteStringValue(_encrypter.Encrypt(value));
+        protected override bool FromBytes(byte[] bytes) => BitConverter.ToBoolean(bytes, 0);
+        protected override byte[] ToBytes(bool value) => BitConverter.GetBytes(value);
     }
 }

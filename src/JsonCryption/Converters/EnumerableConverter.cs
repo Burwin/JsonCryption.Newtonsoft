@@ -11,7 +11,7 @@ namespace JsonCryption.Converters
         {
         }
 
-        public override IEnumerable Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => throw new NotImplementedException();
-        public override void Write(Utf8JsonWriter writer, IEnumerable value, JsonSerializerOptions options) => throw new NotImplementedException();
+        protected override IEnumerable FromBytes(byte[] bytes) => throw new NotImplementedException();
+        protected override byte[] ToBytes(IEnumerable value) => throw new NotImplementedException();
     }
 }
