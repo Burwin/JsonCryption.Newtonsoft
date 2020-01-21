@@ -154,7 +154,29 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void DateTimeOffset_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(GenerateRandomKey());
+
+            var myDateTimeOffset = DateTimeOffset.Parse("2020-01-21");
+            var foo = new FooDateTimeOffset { MyDateTimeOffset = myDateTimeOffset };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooDateTimeOffset.MyDateTimeOffset));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyDateTimeOffset));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooDateTimeOffset>(json);
+            decrypted.MyDateTimeOffset.ShouldBe(myDateTimeOffset);
+        }
+
+        private class FooDateTimeOffset
+        {
+            [Encrypt]
+            public DateTimeOffset MyDateTimeOffset { get; set; }
         }
 
         [Fact]
