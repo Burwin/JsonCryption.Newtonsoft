@@ -73,6 +73,7 @@ namespace JsonCryption
                 {typeof(float), (encrypter, options) => new FloatConverter(encrypter, options) },
                 {typeof(string), (encrypter, options) => new StringConverter(encrypter, options) },
                 {typeof(ushort), (encrypter, options) => new UnsignedShortConverter(encrypter, options) },
+                {typeof(uint), (encrypter, options) => new UnsignedIntConverter(encrypter, options) },
             };
         }
     }

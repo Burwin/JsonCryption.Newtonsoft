@@ -446,7 +446,29 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void UInt32_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(GenerateRandomKey());
+
+            var myUnsignedInt = uint.MaxValue;
+            var foo = new FooUnsignedInt { MyUnsignedInt = myUnsignedInt };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooUnsignedInt.MyUnsignedInt));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyUnsignedInt));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooUnsignedInt>(json);
+            decrypted.MyUnsignedInt.ShouldBe(myUnsignedInt);
+        }
+
+        private class FooUnsignedInt
+        {
+            [Encrypt]
+            public uint MyUnsignedInt { get; set; }
         }
 
         [Fact]
