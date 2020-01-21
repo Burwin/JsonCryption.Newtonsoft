@@ -182,7 +182,29 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Decimal_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(GenerateRandomKey());
+
+            var myDecimal = 123.456m;
+            var foo = new FooDecimal { MyDecimal = myDecimal };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooDecimal.MyDecimal));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyDecimal));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooDecimal>(json);
+            decrypted.MyDecimal.ShouldBe(myDecimal);
+        }
+
+        private class FooDecimal
+        {
+            [Encrypt]
+            public decimal MyDecimal { get; set; }
         }
 
         [Fact]

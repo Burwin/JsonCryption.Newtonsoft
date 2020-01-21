@@ -64,6 +64,7 @@ namespace JsonCryption
                 {typeof(char), (encrypter, options) => new CharConverter(encrypter, options) },
                 {typeof(DateTime), (encrypter, options) => new DateTimeConverter(encrypter, options) },
                 {typeof(DateTimeOffset), (encrypter, options) => new DateTimeOffsetConverter(encrypter, options) },
+                {typeof(decimal), (encrypter, options) => new DecimalConverter(encrypter, options) },
             };
         }
     }

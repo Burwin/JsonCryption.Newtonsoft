@@ -11,8 +11,6 @@ namespace JsonCryption.Converters
         {
         }
 
-        public override decimal Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => throw new NotImplementedException();
-        public override void Write(Utf8JsonWriter writer, decimal value, JsonSerializerOptions options) => throw new NotImplementedException();
         protected override decimal FromBytes(byte[] bytes)
         {
             var bits = new int[4]
