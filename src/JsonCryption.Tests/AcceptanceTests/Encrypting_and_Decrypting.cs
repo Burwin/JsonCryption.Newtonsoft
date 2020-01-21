@@ -390,7 +390,29 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void String_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(GenerateRandomKey());
+
+            var myString = "something secret";
+            var foo = new FooString { MyString = myString };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooString.MyString));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyString));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooString>(json);
+            decrypted.MyString.ShouldBe(myString);
+        }
+
+        private class FooString
+        {
+            [Encrypt]
+            public string MyString { get; set; }
         }
 
         [Fact]
