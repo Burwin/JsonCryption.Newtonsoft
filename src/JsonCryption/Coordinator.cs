@@ -60,6 +60,8 @@ namespace JsonCryption
             {
                 {typeof(bool), (encrypter, options) => new BooleanConverter(encrypter, options) },
                 {typeof(byte), (encrypter, options) => new ByteConverter(encrypter, options) },
+                {typeof(byte[]), (encrypter, options) => new ByteArrayConverter(encrypter, options) },
+                {typeof(char), (encrypter, options) => new CharConverter(encrypter, options) },
             };
         }
     }

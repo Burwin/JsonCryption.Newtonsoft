@@ -72,13 +72,55 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Byte_array_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(GenerateRandomKey());
+
+            var foo = new FooByteArray { MyBytes = new byte[] { 1, 1, 2, 3, 5, 8 } };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var myByte = jsonDoc.RootElement.GetProperty(nameof(FooByteArray.MyBytes));
+                myByte.ValueKind.ShouldBe(JsonValueKind.String);
+                myByte.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyBytes));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooByteArray>(json);
+            decrypted.MyBytes.ShouldBe(new byte[] { 1, 1, 2, 3, 5, 8 });
+        }
+
+        private class FooByteArray
+        {
+            [Encrypt]
+            public byte[] MyBytes { get; set; }
         }
 
         [Fact]
         public void Char_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(GenerateRandomKey());
+
+            var foo = new FooChar { MyChar = 'x' };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var myByte = jsonDoc.RootElement.GetProperty(nameof(FooChar.MyChar));
+                myByte.ValueKind.ShouldBe(JsonValueKind.String);
+                myByte.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyChar));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooChar>(json);
+            decrypted.MyChar.ShouldBe('x');
+        }
+
+        private class FooChar
+        {
+            [Encrypt]
+            public char MyChar { get; set; }
         }
 
         [Fact]

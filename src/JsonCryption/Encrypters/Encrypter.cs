@@ -35,6 +35,8 @@ namespace JsonCryption.Encrypters
             return outputStream.ToArray();
         }
 
+        internal string Encrypt(char value) => EncryptBytes(BitConverter.GetBytes(value));
+        internal string Encrypt(byte[] value) => EncryptBytes(value);
         internal string Encrypt(byte value) => EncryptBytes(BitConverter.GetBytes(value));
         internal string Encrypt(bool value) => EncryptBytes(BitConverter.GetBytes(value));
 

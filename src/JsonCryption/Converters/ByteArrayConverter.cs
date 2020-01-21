@@ -10,7 +10,10 @@ namespace JsonCryption.Converters
         {
         }
 
-        public override byte[] Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => throw new NotImplementedException();
-        public override void Write(Utf8JsonWriter writer, byte[] value, JsonSerializerOptions options) => throw new NotImplementedException();
+        public override byte[] Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            => DecryptString(ref reader);
+
+        public override void Write(Utf8JsonWriter writer, byte[] value, JsonSerializerOptions options)
+            => writer.WriteStringValue(_encrypter.Encrypt(value));
     }
 }
