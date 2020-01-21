@@ -306,7 +306,29 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Int64_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(GenerateRandomKey());
+
+            var myLong = 357L;
+            var foo = new FooLong { MyLong = myLong };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooLong.MyLong));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyLong));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooLong>(json);
+            decrypted.MyLong.ShouldBe(myLong);
+        }
+
+        private class FooLong
+        {
+            [Encrypt]
+            public long MyLong { get; set; }
         }
 
         [Fact]
