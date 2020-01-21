@@ -250,7 +250,29 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Int16_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(GenerateRandomKey());
+
+            var myShort = (short)357;
+            var foo = new FooShort { MyShort = myShort };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooShort.MyShort));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyShort));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooShort>(json);
+            decrypted.MyShort.ShouldBe(myShort);
+        }
+
+        private class FooShort
+        {
+            [Encrypt]
+            public short MyShort { get; set; }
         }
 
         [Fact]
