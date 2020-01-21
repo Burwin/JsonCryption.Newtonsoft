@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using JsonCryption.Encrypters;
+using System;
 using System.Text.Json;
 
 namespace JsonCryption.Converters
 {
     internal sealed class ByteConverter : EncryptedConverter<byte>
     {
-        public ByteConverter(IEncrypter encrypter, JsonSerializerOptions options) : base(encrypter, options)
+        public ByteConverter(Encrypter encrypter, JsonSerializerOptions options) : base(encrypter, options)
         {
         }
 

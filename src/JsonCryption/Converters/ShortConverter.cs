@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using JsonCryption.Encrypters;
+using System;
 using System.Text.Json;
 
 namespace JsonCryption.Converters
 {
     internal sealed class ShortConverter : EncryptedConverter<short>
     {
-        public ShortConverter(IEncrypter encrypter, JsonSerializerOptions options) : base(encrypter, options)
+        public ShortConverter(Encrypter encrypter, JsonSerializerOptions options) : base(encrypter, options)
         {
         }
 

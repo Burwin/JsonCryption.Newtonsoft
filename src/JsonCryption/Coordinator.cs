@@ -1,4 +1,5 @@
 ﻿using JsonCryption.Converters;
+using JsonCryption.Encrypters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,17 +8,17 @@ using System.Text.Json.Serialization;
 
 namespace JsonCryption
 {
-    public class JsonCryption
+    public class Coordinator
     {
-        private readonly Dictionary<Type, Func<IEncrypter, JsonSerializerOptions, JsonConverter>> _converterFactories;
+        private readonly Dictionary<Type, Func<Encrypter, JsonSerializerOptions, JsonConverter>> _converterFactories;
         private readonly Dictionary<Type, JsonConverter> _converters; 
         
-        public static JsonCryption Singleton { get; private set; }
-        public JsonCryptionOptions Options { get; }
-        public IEncrypter Encrypter => Options.Encrypter;
+        public static Coordinator Singleton { get; private set; }
+        public CoordinatorOptions Options { get; }
+        internal Encrypter Encrypter => Options.Encrypter;
         public JsonSerializerOptions JsonSerializerOptions => Options.JsonSerializerOptions;
 
-        private JsonCryption(JsonCryptionOptions options)
+        private Coordinator(CoordinatorOptions options)
         {
             Options = options;
 
@@ -41,23 +42,27 @@ namespace JsonCryption
 
         internal bool HasConverter(Type type) => _converters.ContainsKey(type);
 
-        public static JsonCryption Create(Action<JsonCryptionOptions> configure)
+        public static Coordinator Create(Action<CoordinatorOptions> configure)
         {
             if (Singleton != null)
                 throw new InvalidOperationException("Can only configure once");
 
-            var options = new JsonCryptionOptions();
+            var options = CoordinatorOptions.Empty;
             configure(options);
+            options.Validate();
 
-            Singleton = new JsonCryption(options);
+            Singleton = new Coordinator(options);
             return Singleton;
         }
 
-        private Dictionary<Type, Func<IEncrypter, JsonSerializerOptions, JsonConverter>> BuildConverterFactories()
+        public static Coordinator CreateDefault(byte[] key) => Create(options => options.Encrypter = new AesManagedEncrypter(key));
+
+        private Dictionary<Type, Func<Encrypter, JsonSerializerOptions, JsonConverter>> BuildConverterFactories()
         {
-            return new Dictionary<Type, Func<IEncrypter, JsonSerializerOptions, JsonConverter>>
+            return new Dictionary<Type, Func<Encrypter, JsonSerializerOptions, JsonConverter>>
             {
-                {typeof(byte), (encrypter, options) => new ByteConverter(encrypter, options) }
+                {typeof(byte), (encrypter, options) => new ByteConverter(encrypter, options) },
+                {typeof(bool), (encrypter, options) => new BooleanConverter(encrypter, options) },
             };
         }
     }

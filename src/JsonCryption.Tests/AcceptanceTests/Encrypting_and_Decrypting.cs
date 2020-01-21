@@ -1,16 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Shouldly;
+using System;
+using System.Security.Cryptography;
+using System.Text.Json;
 using Xunit;
 
 namespace JsonCryption.Tests.AcceptanceTests
 {
     public class Encrypting_and_Decrypting
     {
+        private byte[] GenerateRandomKey()
+        {
+            using (var aes = Aes.Create())
+            {
+                return aes.Key;
+            }
+        }
+
         [Fact]
         public void Boolean_works()
         {
-            throw new NotImplementedException();
+            Coordinator.CreateDefault(GenerateRandomKey());
+
+            var foo = new FooBool { MyBool = true };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var myBool = jsonDoc.RootElement.GetProperty(nameof(FooBool.MyBool));
+                myBool.ValueKind.ShouldBe(JsonValueKind.String);
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooBool>(json);
+            decrypted.MyBool.ShouldBeTrue();
+        }
+
+        private class FooBool
+        {
+            [Encrypt]
+            public bool MyBool { get; set; }
         }
 
         [Fact]

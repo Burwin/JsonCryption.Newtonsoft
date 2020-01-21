@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JsonCryption.Encrypters;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
@@ -7,7 +8,7 @@ namespace JsonCryption.Converters
 {
     internal sealed class ArrayConverter : EncryptedConverter<Array>
     {
-        public ArrayConverter(IEncrypter encrypter, JsonSerializerOptions options) : base(encrypter, options)
+        public ArrayConverter(Encrypter encrypter, JsonSerializerOptions options) : base(encrypter, options)
         {
         }
 

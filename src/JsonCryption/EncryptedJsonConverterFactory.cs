@@ -6,8 +6,8 @@ namespace JsonCryption
 {
     internal class EncryptedJsonConverterFactory : JsonConverterFactory
     {
-        public override bool CanConvert(Type typeToConvert) => JsonCryption.Singleton.HasConverter(typeToConvert);
+        public override bool CanConvert(Type typeToConvert) => Coordinator.Singleton.HasConverter(typeToConvert);
         public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
-            => JsonCryption.Singleton.GetConverter(typeToConvert, options);
+            => Coordinator.Singleton.GetConverter(typeToConvert, options);
     }
 }

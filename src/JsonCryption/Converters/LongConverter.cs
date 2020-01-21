@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using JsonCryption.Encrypters;
+using System;
 using System.Text.Json;
 
 namespace JsonCryption.Converters
 {
     internal sealed class LongConverter : EncryptedConverter<long>
     {
-        public LongConverter(IEncrypter encrypter, JsonSerializerOptions options) : base(encrypter, options)
+        public LongConverter(Encrypter encrypter, JsonSerializerOptions options) : base(encrypter, options)
         {
         }
 

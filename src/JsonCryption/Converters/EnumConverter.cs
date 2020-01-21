@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using JsonCryption.Encrypters;
+using System;
 using System.Text.Json;
 
 namespace JsonCryption.Converters
@@ -8,7 +7,7 @@ namespace JsonCryption.Converters
     // TODO: I think this needs to be a factory?
     internal sealed class EnumConverter : EncryptedConverter<Enum>
     {
-        public EnumConverter(IEncrypter encrypter, JsonSerializerOptions options) : base(encrypter, options)
+        public EnumConverter(Encrypter encrypter, JsonSerializerOptions options) : base(encrypter, options)
         {
         }
 
