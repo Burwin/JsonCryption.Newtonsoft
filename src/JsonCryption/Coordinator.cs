@@ -42,11 +42,8 @@ namespace JsonCryption
 
         internal bool HasConverter(Type type) => _converters.ContainsKey(type);
 
-        public static Coordinator Create(Action<CoordinatorOptions> configure)
+        public static Coordinator Configure(Action<CoordinatorOptions> configure)
         {
-            if (Singleton != null)
-                throw new InvalidOperationException("Can only configure once");
-
             var options = CoordinatorOptions.Empty;
             configure(options);
             options.Validate();
@@ -55,14 +52,14 @@ namespace JsonCryption
             return Singleton;
         }
 
-        public static Coordinator CreateDefault(byte[] key) => Create(options => options.Encrypter = new AesManagedEncrypter(key));
+        public static Coordinator ConfigureDefault(byte[] key) => Configure(options => options.Encrypter = new AesManagedEncrypter(key));
 
         private Dictionary<Type, Func<Encrypter, JsonSerializerOptions, JsonConverter>> BuildConverterFactories()
         {
             return new Dictionary<Type, Func<Encrypter, JsonSerializerOptions, JsonConverter>>
             {
-                {typeof(byte), (encrypter, options) => new ByteConverter(encrypter, options) },
                 {typeof(bool), (encrypter, options) => new BooleanConverter(encrypter, options) },
+                {typeof(byte), (encrypter, options) => new ByteConverter(encrypter, options) },
             };
         }
     }

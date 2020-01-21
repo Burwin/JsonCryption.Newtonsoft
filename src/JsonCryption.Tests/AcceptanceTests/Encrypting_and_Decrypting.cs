@@ -19,7 +19,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Boolean_works()
         {
-            Coordinator.CreateDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(GenerateRandomKey());
 
             var foo = new FooBool { MyBool = true };
             var json = JsonSerializer.Serialize(foo);
@@ -45,7 +45,28 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Single_byte_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(GenerateRandomKey());
+
+            var foo = new FooByte { MyByte = 5 };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var myByte = jsonDoc.RootElement.GetProperty(nameof(FooByte.MyByte));
+                myByte.ValueKind.ShouldBe(JsonValueKind.String);
+                myByte.GetString().ShouldNotBe(foo.MyByte.ToString());
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooByte>(json);
+            decrypted.MyByte.ShouldBe((byte)5);
+        }
+
+        private class FooByte
+        {
+            [Encrypt]
+            public byte MyByte { get; set; }
         }
 
         [Fact]
