@@ -474,7 +474,29 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void UInt64_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(GenerateRandomKey());
+
+            var myUnsignedLong = ulong.MaxValue;
+            var foo = new FooUnsignedLong { MyUnsignedLong = myUnsignedLong };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooUnsignedLong.MyUnsignedLong));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyUnsignedLong));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooUnsignedLong>(json);
+            decrypted.MyUnsignedLong.ShouldBe(myUnsignedLong);
+        }
+
+        private class FooUnsignedLong
+        {
+            [Encrypt]
+            public ulong MyUnsignedLong { get; set; }
         }
 
         [Fact]
