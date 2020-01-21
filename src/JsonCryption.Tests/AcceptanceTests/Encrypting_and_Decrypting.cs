@@ -210,7 +210,29 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Double_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(GenerateRandomKey());
+
+            var myDouble = 123.456d;
+            var foo = new FooDouble { MyDouble = myDouble };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooDouble.MyDouble));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyDouble));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooDouble>(json);
+            decrypted.MyDouble.ShouldBe(myDouble);
+        }
+
+        private class FooDouble
+        {
+            [Encrypt]
+            public double MyDouble { get; set; }
         }
 
         [Fact]
