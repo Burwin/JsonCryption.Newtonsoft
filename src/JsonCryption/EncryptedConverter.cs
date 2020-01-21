@@ -14,5 +14,15 @@ namespace JsonCryption
             _encrypter = encrypter;
             _options = options;
         }
+
+        protected byte[] DecryptString(ref Utf8JsonReader reader)
+        {
+            // If it's encrypted, it should be a string
+            if (reader.TokenType != JsonTokenType.String)
+                throw new JsonException();
+
+            var encrypted = reader.GetString();
+            return _encrypter.DecryptToByteArray(encrypted);
+        }
     }
 }

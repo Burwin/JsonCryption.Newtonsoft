@@ -12,12 +12,7 @@ namespace JsonCryption.Converters
 
         public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            // If it's encrypted, it should be a string
-            if (reader.TokenType != JsonTokenType.String)
-                throw new JsonException();
-
-            var encrypted = reader.GetString();
-            var bytes = _encrypter.DecryptToByteArray(encrypted);
+            var bytes = DecryptString(ref reader);
             return BitConverter.ToBoolean(bytes, startIndex: 0);
         }
 
