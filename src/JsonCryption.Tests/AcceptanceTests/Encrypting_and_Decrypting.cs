@@ -27,8 +27,8 @@ namespace JsonCryption.Tests.AcceptanceTests
             // make sure it's encrypted
             using (var jsonDoc = JsonDocument.Parse(json))
             {
-                var myBool = jsonDoc.RootElement.GetProperty(nameof(FooBool.MyBool));
-                myBool.ValueKind.ShouldBe(JsonValueKind.String);
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooBool.MyBool));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
             }
 
             // decrypt and check
@@ -53,9 +53,9 @@ namespace JsonCryption.Tests.AcceptanceTests
             // make sure it's encrypted
             using (var jsonDoc = JsonDocument.Parse(json))
             {
-                var myByte = jsonDoc.RootElement.GetProperty(nameof(FooByte.MyByte));
-                myByte.ValueKind.ShouldBe(JsonValueKind.String);
-                myByte.GetString().ShouldNotBe(foo.MyByte.ToString());
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooByte.MyByte));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(foo.MyByte.ToString());
             }
 
             // decrypt and check
@@ -80,9 +80,9 @@ namespace JsonCryption.Tests.AcceptanceTests
             // make sure it's encrypted
             using (var jsonDoc = JsonDocument.Parse(json))
             {
-                var myByte = jsonDoc.RootElement.GetProperty(nameof(FooByteArray.MyBytes));
-                myByte.ValueKind.ShouldBe(JsonValueKind.String);
-                myByte.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyBytes));
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooByteArray.MyBytes));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyBytes));
             }
 
             // decrypt and check
@@ -107,9 +107,9 @@ namespace JsonCryption.Tests.AcceptanceTests
             // make sure it's encrypted
             using (var jsonDoc = JsonDocument.Parse(json))
             {
-                var myByte = jsonDoc.RootElement.GetProperty(nameof(FooChar.MyChar));
-                myByte.ValueKind.ShouldBe(JsonValueKind.String);
-                myByte.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyChar));
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooChar.MyChar));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyChar));
             }
 
             // decrypt and check
@@ -126,7 +126,29 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void DateTime_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(GenerateRandomKey());
+
+            var myDateTime = DateTime.Parse("2020-01-21");
+            var foo = new FooDateTime { MyDateTime = myDateTime };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooDateTime.MyDateTime));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyDateTime));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooDateTime>(json);
+            decrypted.MyDateTime.ShouldBe(myDateTime);
+        }
+
+        private class FooDateTime
+        {
+            [Encrypt]
+            public DateTime MyDateTime { get; set; }
         }
 
         [Fact]
