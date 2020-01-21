@@ -1,25 +1,16 @@
 ﻿using Shouldly;
 using System;
-using System.Security.Cryptography;
 using System.Text.Json;
 using Xunit;
 
 namespace JsonCryption.Tests.AcceptanceTests
 {
-    public class Encrypting_and_Decrypting
+    public class Built_in_types
     {
-        private byte[] GenerateRandomKey()
-        {
-            using (var aes = Aes.Create())
-            {
-                return aes.Key;
-            }
-        }
-
         [Fact]
         public void Boolean_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var foo = new FooBool { MyBool = true };
             var json = JsonSerializer.Serialize(foo);
@@ -45,7 +36,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Single_byte_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var foo = new FooByte { MyByte = 5 };
             var json = JsonSerializer.Serialize(foo);
@@ -72,7 +63,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Byte_array_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var foo = new FooByteArray { MyBytes = new byte[] { 1, 1, 2, 3, 5, 8 } };
             var json = JsonSerializer.Serialize(foo);
@@ -99,7 +90,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Char_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var foo = new FooChar { MyChar = 'x' };
             var json = JsonSerializer.Serialize(foo);
@@ -126,7 +117,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void DateTime_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var myDateTime = DateTime.Parse("2020-01-21");
             var foo = new FooDateTime { MyDateTime = myDateTime };
@@ -154,7 +145,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void DateTimeOffset_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var myDateTimeOffset = DateTimeOffset.Parse("2020-01-21");
             var foo = new FooDateTimeOffset { MyDateTimeOffset = myDateTimeOffset };
@@ -182,7 +173,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Decimal_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var myDecimal = 123.456m;
             var foo = new FooDecimal { MyDecimal = myDecimal };
@@ -210,7 +201,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Double_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var myDouble = 123.456d;
             var foo = new FooDouble { MyDouble = myDouble };
@@ -236,80 +227,9 @@ namespace JsonCryption.Tests.AcceptanceTests
         }
 
         [Fact]
-        public void Enum_works_zero_based()
-        {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
-
-            var myEnum = Sports.Football;
-            var foo = new FooSportsEnum { MySports = myEnum };
-            var json = JsonSerializer.Serialize(foo);
-
-            // make sure it's encrypted
-            using (var jsonDoc = JsonDocument.Parse(json))
-            {
-                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooSportsEnum.MySports));
-                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
-                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MySports));
-            }
-
-            // decrypt and check
-            var decrypted = JsonSerializer.Deserialize<FooSportsEnum>(json);
-            decrypted.MySports.ShouldBe(myEnum);
-        }
-
-        [Fact]
-        public void Enum_works_one_based()
-        {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
-
-            var myEnum = Fruit.Banana;
-            var foo = new FooFruitEnum { MyFruit = myEnum };
-            var json = JsonSerializer.Serialize(foo);
-
-            // make sure it's encrypted
-            using (var jsonDoc = JsonDocument.Parse(json))
-            {
-                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooFruitEnum.MyFruit));
-                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
-                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyFruit));
-            }
-
-            // decrypt and check
-            var decrypted = JsonSerializer.Deserialize<FooFruitEnum>(json);
-            decrypted.MyFruit.ShouldBe(myEnum);
-        }
-
-        private enum Fruit
-        {
-            Apple = 1,
-            Orange,
-            Banana
-        }
-
-        private enum Sports
-        {
-            Baseball = 0,
-            Basketball,
-            Football,
-            Hockey
-        }
-
-        private class FooFruitEnum
-        {
-            [Encrypt]
-            public Fruit MyFruit { get; set; }
-        }
-
-        private class FooSportsEnum
-        {
-            [Encrypt]
-            public Sports MySports { get; set; }
-        }
-
-        [Fact]
         public void Guid_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var myGuid = Guid.NewGuid();
             var foo = new FooGuid { MyGuid = myGuid };
@@ -337,7 +257,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Int16_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var myShort = (short)357;
             var foo = new FooShort { MyShort = myShort };
@@ -365,7 +285,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Int32_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var myInt = 357;
             var foo = new FooInt { MyInt = myInt };
@@ -393,7 +313,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Int64_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var myLong = 357L;
             var foo = new FooLong { MyLong = myLong };
@@ -421,7 +341,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void SByte_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var mySByte = (sbyte)5;
             var foo = new FooSByte { MySByte = mySByte };
@@ -447,9 +367,9 @@ namespace JsonCryption.Tests.AcceptanceTests
         }
 
         [Fact]
-        public void Single_works()
+        public void Float_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var myFloat = 123.456f;
             var foo = new FooFloat { MyFloat = myFloat };
@@ -477,7 +397,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void String_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var myString = "something secret";
             var foo = new FooString { MyString = myString };
@@ -505,7 +425,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void UInt16_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var myUnsignedShort = ushort.MaxValue;
             var foo = new FooUnsignedShort { MyUnsignedShort = myUnsignedShort };
@@ -533,7 +453,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void UInt32_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var myUnsignedInt = uint.MaxValue;
             var foo = new FooUnsignedInt { MyUnsignedInt = myUnsignedInt };
@@ -561,7 +481,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void UInt64_works()
         {
-            Coordinator.ConfigureDefault(GenerateRandomKey());
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
             var myUnsignedLong = ulong.MaxValue;
             var foo = new FooUnsignedLong { MyUnsignedLong = myUnsignedLong };
@@ -584,90 +504,6 @@ namespace JsonCryption.Tests.AcceptanceTests
         {
             [Encrypt]
             public ulong MyUnsignedLong { get; set; }
-        }
-
-        [Fact]
-        public void Array_works()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void Enumerable_works()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void KeyValuePair_works()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void One_property_but_not_the_other()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void Fields_instead_of_properties()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void Internal_properties_and_fields()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void Protected_properties_and_fields()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void Private_properties_and_fields()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void Structs_with_supported_properties()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void Structs_with_unsupported_properties()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void Structs_with_mix_of_supported_and_unsupported_properties()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void Classes_with_supported_properties()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void Classes_with_unsupported_properties()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void Classes_with_mix_of_supported_and_unsupported_properties()
-        {
-            throw new NotImplementedException();
         }
     }
 }
