@@ -418,7 +418,29 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void UInt16_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(GenerateRandomKey());
+
+            var myUnsignedShort = ushort.MaxValue;
+            var foo = new FooUnsignedShort { MyUnsignedShort = myUnsignedShort };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooUnsignedShort.MyUnsignedShort));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyUnsignedShort));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooUnsignedShort>(json);
+            decrypted.MyUnsignedShort.ShouldBe(myUnsignedShort);
+        }
+
+        private class FooUnsignedShort
+        {
+            [Encrypt]
+            public ushort MyUnsignedShort { get; set; }
         }
 
         [Fact]
