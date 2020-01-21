@@ -75,6 +75,7 @@ namespace JsonCryption
                 {typeof(ushort), (encrypter, options) => new UnsignedShortConverter(encrypter, options) },
                 {typeof(uint), (encrypter, options) => new UnsignedIntConverter(encrypter, options) },
                 {typeof(ulong), (encrypter, options) => new UnsignedLongConverter(encrypter, options) },
+                {typeof(Guid), (encrypter, options) => new GuidConverter(encrypter, options) },
             };
         }
     }

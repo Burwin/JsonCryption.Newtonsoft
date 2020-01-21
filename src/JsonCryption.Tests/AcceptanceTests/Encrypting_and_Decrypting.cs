@@ -244,7 +244,29 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Guid_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(GenerateRandomKey());
+
+            var myGuid = Guid.NewGuid();
+            var foo = new FooGuid { MyGuid = myGuid };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooGuid.MyGuid));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(myGuid.ToString());
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooGuid>(json);
+            decrypted.MyGuid.ShouldBe(myGuid);
+        }
+
+        private class FooGuid
+        {
+            [Encrypt]
+            public Guid MyGuid { get; set; }
         }
 
         [Fact]
