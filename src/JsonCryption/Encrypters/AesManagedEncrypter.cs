@@ -1,5 +1,4 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 
 namespace JsonCryption.Encrypters
 {
@@ -8,8 +7,6 @@ namespace JsonCryption.Encrypters
         public AesManagedEncrypter(byte[] key) : base(key)
         {
         }
-
-        public override string Encrypt(bool value) => EncryptBytes(BitConverter.GetBytes(value));
 
         protected override SymmetricAlgorithm GetAlgorithm() => new AesManaged();
     }

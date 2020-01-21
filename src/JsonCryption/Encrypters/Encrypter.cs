@@ -35,7 +35,8 @@ namespace JsonCryption.Encrypters
             return outputStream.ToArray();
         }
 
-        public abstract string Encrypt(bool value);
+        internal string Encrypt(byte value) => EncryptBytes(BitConverter.GetBytes(value));
+        internal string Encrypt(bool value) => EncryptBytes(BitConverter.GetBytes(value));
 
         protected abstract SymmetricAlgorithm GetAlgorithm();
 
