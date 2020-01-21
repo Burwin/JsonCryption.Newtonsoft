@@ -334,7 +334,29 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void SByte_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(GenerateRandomKey());
+
+            var mySByte = (sbyte)5;
+            var foo = new FooSByte { MySByte = mySByte };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooSByte.MySByte));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MySByte));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooSByte>(json);
+            decrypted.MySByte.ShouldBe(mySByte);
+        }
+
+        private class FooSByte
+        {
+            [Encrypt]
+            public sbyte MySByte { get; set; }
         }
 
         [Fact]

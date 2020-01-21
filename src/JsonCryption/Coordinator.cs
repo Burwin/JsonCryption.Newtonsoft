@@ -69,6 +69,7 @@ namespace JsonCryption
                 {typeof(short), (encrypter, options) => new ShortConverter(encrypter, options) },
                 {typeof(int), (encrypter, options) => new IntConverter(encrypter, options) },
                 {typeof(long), (encrypter, options) => new LongConverter(encrypter, options) },
+                {typeof(sbyte), (encrypter, options) => new SByteConverter(encrypter, options) },
             };
         }
     }
