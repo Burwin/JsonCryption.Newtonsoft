@@ -25,7 +25,7 @@ namespace JsonCryption
             _converterFactories = BuildConverterFactories();
 
             _converters = _converterFactories
-                .Select(kvp => (kvp.Key, Converter: kvp.Value.Invoke(Encrypter, null)))
+                .Select(kvp => (kvp.Key, Converter: kvp.Value.Invoke(Encrypter, JsonSerializerOptions)))
                 .ToDictionary(x => x.Key, x => x.Converter);
         }
 
@@ -34,13 +34,22 @@ namespace JsonCryption
 
         private JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
+            if (typeToConvert.IsEnum)
+                return new EnumConverterFactory(Encrypter, options).CreateConverter(typeToConvert, options);
+            
             if (!_converterFactories.TryGetValue(typeToConvert, out var factoryMethod))
                 throw new InvalidOperationException($"No Converter for type {typeToConvert.FullName}");
 
             return factoryMethod.Invoke(Encrypter, options);
         }
 
-        internal bool HasConverter(Type type) => _converters.ContainsKey(type);
+        internal bool HasConverter(Type type)
+        {
+            if (type.IsEnum)
+                return true;
+
+            return _converters.ContainsKey(type);
+        }
 
         public static Coordinator Configure(Action<CoordinatorOptions> configure)
         {
