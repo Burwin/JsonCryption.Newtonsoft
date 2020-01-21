@@ -70,6 +70,7 @@ namespace JsonCryption
                 {typeof(int), (encrypter, options) => new IntConverter(encrypter, options) },
                 {typeof(long), (encrypter, options) => new LongConverter(encrypter, options) },
                 {typeof(sbyte), (encrypter, options) => new SByteConverter(encrypter, options) },
+                {typeof(float), (encrypter, options) => new FloatConverter(encrypter, options) },
             };
         }
     }

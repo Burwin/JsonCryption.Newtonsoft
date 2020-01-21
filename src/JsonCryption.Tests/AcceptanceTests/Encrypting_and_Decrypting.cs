@@ -362,7 +362,29 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Single_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(GenerateRandomKey());
+
+            var myFloat = 123.456f;
+            var foo = new FooFloat { MyFloat = myFloat };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooFloat.MyFloat));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyFloat));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooFloat>(json);
+            decrypted.MyFloat.ShouldBe(myFloat);
+        }
+
+        private class FooFloat
+        {
+            [Encrypt]
+            public float MyFloat { get; set; }
         }
 
         [Fact]
