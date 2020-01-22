@@ -1,5 +1,4 @@
 ﻿using Shouldly;
-using System;
 using System.Linq;
 using System.Text.Json;
 using Xunit;
@@ -41,6 +40,41 @@ namespace JsonCryption.Tests.AcceptanceTests
         {
             [Encrypt]
             public string[] MyStrings { get; set; }
+        }
+
+        [Fact]
+        public void Int_array_works()
+        {
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
+
+            var myInts = new[] { int.MinValue, -1, 0, 1, int.MaxValue };
+            var foo = new FooIntArray { MyInts = myInts };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooIntArray.MyInts));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.Array);
+
+                var jsonProperties = jsonProperty.EnumerateArray().ToList();
+                jsonProperties.ForEach(el => el.ValueKind.ShouldBe(JsonValueKind.String));
+
+                for (int i = 0; i < jsonProperties.Count; i++)
+                {
+                    jsonProperties[i].GetString().ShouldNotBe(myInts[i].ToString());
+                }
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooIntArray>(json);
+            decrypted.MyInts.ShouldBe(myInts);
+        }
+
+        private class FooIntArray
+        {
+            [Encrypt]
+            public int[] MyInts { get; set; }
         }
     }
 }
