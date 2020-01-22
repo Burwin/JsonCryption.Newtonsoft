@@ -9,7 +9,7 @@ namespace JsonCryption.Tests.AcceptanceTests
     public class Arrays
     {
         [Fact]
-        public void Array_works()
+        public void String_array_works()
         {
             Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
