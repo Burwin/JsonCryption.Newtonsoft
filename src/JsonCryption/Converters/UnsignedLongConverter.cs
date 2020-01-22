@@ -10,7 +10,7 @@ namespace JsonCryption.Converters
         {
         }
 
-        protected override ulong FromBytes(byte[] bytes) => BitConverter.ToUInt64(bytes, 0);
-        protected override byte[] ToBytes(ulong value) => BitConverter.GetBytes(value);
+        public override ulong FromBytes(byte[] bytes) => BitConverter.ToUInt64(bytes, 0);
+        public override byte[] ToBytes(ulong value) => BitConverter.GetBytes(value);
     }
 }

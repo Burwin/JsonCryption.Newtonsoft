@@ -11,7 +11,7 @@ namespace JsonCryption.Converters
         {
         }
 
-        protected override DateTimeOffset FromBytes(byte[] bytes)
+        public override DateTimeOffset FromBytes(byte[] bytes)
         {
             var dateTimeTicks = BitConverter.ToInt64(bytes, 0);
             var timeSpanTicks = BitConverter.ToInt64(bytes, 8);
@@ -20,7 +20,7 @@ namespace JsonCryption.Converters
             return new DateTimeOffset(dateTimeTicks, offset);
         }
 
-        protected override byte[] ToBytes(DateTimeOffset value)
+        public override byte[] ToBytes(DateTimeOffset value)
             => BitConverter
                 .GetBytes(value.Ticks)
                 .Concat(BitConverter.GetBytes(value.Offset.Ticks))

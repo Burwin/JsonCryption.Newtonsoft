@@ -10,7 +10,7 @@ namespace JsonCryption.Converters
         {
         }
 
-        protected override sbyte FromBytes(byte[] bytes) => (sbyte)bytes[0];
-        protected override byte[] ToBytes(sbyte value) => BitConverter.GetBytes(value);
+        public override sbyte FromBytes(byte[] bytes) => (sbyte)bytes[0];
+        public override byte[] ToBytes(sbyte value) => BitConverter.GetBytes(value);
     }
 }

@@ -38,9 +38,9 @@ namespace JsonCryption
             return _encrypter.DecryptToByteArray(encrypted);
         }
 
-        protected abstract T FromBytes(byte[] bytes);
+        public abstract T FromBytes(byte[] bytes);
 
-        protected abstract byte[] ToBytes(T value);
+        public abstract byte[] ToBytes(T value);
 
         protected virtual byte[] ReadToBytes(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             => DecryptString(ref reader);

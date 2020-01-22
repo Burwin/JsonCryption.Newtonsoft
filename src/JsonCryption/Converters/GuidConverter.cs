@@ -10,7 +10,7 @@ namespace JsonCryption.Converters
         {
         }
 
-        protected override Guid FromBytes(byte[] bytes) => new Guid(bytes);
-        protected override byte[] ToBytes(Guid value) => value.ToByteArray();
+        public override Guid FromBytes(byte[] bytes) => new Guid(bytes);
+        public override byte[] ToBytes(Guid value) => value.ToByteArray();
     }
 }

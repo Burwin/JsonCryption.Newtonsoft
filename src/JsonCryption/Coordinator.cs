@@ -36,6 +36,10 @@ namespace JsonCryption
         {
             if (typeToConvert.IsEnum)
                 return new EnumConverterFactory(Encrypter, options).CreateConverter(typeToConvert, options);
+
+            // byte arrays are handled more natively
+            if (typeToConvert.IsArray && typeToConvert != typeof(byte[]))
+                return new ArrayConverterFactory(Encrypter, options).CreateConverter(typeToConvert, options);
             
             if (!_converterFactories.TryGetValue(typeToConvert, out var factoryMethod))
                 throw new InvalidOperationException($"No Converter for type {typeToConvert.FullName}");
@@ -46,6 +50,9 @@ namespace JsonCryption
         internal bool HasConverter(Type type)
         {
             if (type.IsEnum)
+                return true;
+
+            if (type.IsArray)
                 return true;
 
             return _converters.ContainsKey(type);

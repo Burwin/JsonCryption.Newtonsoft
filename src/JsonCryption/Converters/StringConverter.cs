@@ -10,7 +10,7 @@ namespace JsonCryption.Converters
         {
         }
 
-        protected override string FromBytes(byte[] bytes) => Encoding.UTF8.GetString(bytes);
-        protected override byte[] ToBytes(string value) => Encoding.UTF8.GetBytes(value);
+        public override string FromBytes(byte[] bytes) => Encoding.UTF8.GetString(bytes);
+        public override byte[] ToBytes(string value) => Encoding.UTF8.GetBytes(value);
     }
 }

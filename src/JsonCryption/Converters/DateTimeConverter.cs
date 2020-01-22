@@ -10,12 +10,12 @@ namespace JsonCryption.Converters
         {
         }
 
-        protected override DateTime FromBytes(byte[] bytes)
+        public override DateTime FromBytes(byte[] bytes)
         {
             var dateAsLong = BitConverter.ToInt64(bytes, 0);
             return DateTime.FromBinary(dateAsLong);
         }
 
-        protected override byte[] ToBytes(DateTime value) => BitConverter.GetBytes(value.ToBinary());
+        public override byte[] ToBytes(DateTime value) => BitConverter.GetBytes(value.ToBinary());
     }
 }

@@ -11,7 +11,7 @@ namespace JsonCryption.Converters
         {
         }
 
-        protected override IEnumerable FromBytes(byte[] bytes) => throw new NotImplementedException();
-        protected override byte[] ToBytes(IEnumerable value) => throw new NotImplementedException();
+        public override IEnumerable FromBytes(byte[] bytes) => throw new NotImplementedException();
+        public override byte[] ToBytes(IEnumerable value) => throw new NotImplementedException();
     }
 }

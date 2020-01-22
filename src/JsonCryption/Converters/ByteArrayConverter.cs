@@ -9,7 +9,7 @@ namespace JsonCryption.Converters
         {
         }
 
-        protected override byte[] FromBytes(byte[] bytes) => bytes;
-        protected override byte[] ToBytes(byte[] value) => value;
+        public override byte[] FromBytes(byte[] bytes) => bytes;
+        public override byte[] ToBytes(byte[] value) => value;
     }
 }

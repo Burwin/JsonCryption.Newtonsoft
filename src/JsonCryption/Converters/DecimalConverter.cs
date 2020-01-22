@@ -11,7 +11,7 @@ namespace JsonCryption.Converters
         {
         }
 
-        protected override decimal FromBytes(byte[] bytes)
+        public override decimal FromBytes(byte[] bytes)
         {
             var bits = new int[4]
                 .Select((_, index) => BitConverter.ToInt32(bytes, index * 4))
@@ -20,7 +20,7 @@ namespace JsonCryption.Converters
             return new decimal(bits);
         }
 
-        protected override byte[] ToBytes(decimal value)
+        public override byte[] ToBytes(decimal value)
             => decimal
                 .GetBits(value)
                 .SelectMany(i => BitConverter.GetBytes(i))

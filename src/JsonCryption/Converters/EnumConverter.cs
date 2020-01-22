@@ -12,7 +12,7 @@ namespace JsonCryption.Converters
         {
         }
 
-        protected override T FromBytes(byte[] bytes) => (T)Enum.Parse(typeof(T), Encoding.UTF8.GetString(bytes));
-        protected override byte[] ToBytes(T value) => Encoding.UTF8.GetBytes(Enum.GetName(typeof(T), value));
+        public override T FromBytes(byte[] bytes) => (T)Enum.Parse(typeof(T), Encoding.UTF8.GetString(bytes));
+        public override byte[] ToBytes(T value) => Encoding.UTF8.GetBytes(Enum.GetName(typeof(T), value));
     }
 }

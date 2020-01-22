@@ -10,7 +10,7 @@ namespace JsonCryption.Converters
         {
         }
 
-        protected override float FromBytes(byte[] bytes) => BitConverter.ToSingle(bytes, 0);
-        protected override byte[] ToBytes(float value) => BitConverter.GetBytes(value);
+        public override float FromBytes(byte[] bytes) => BitConverter.ToSingle(bytes, 0);
+        public override byte[] ToBytes(float value) => BitConverter.GetBytes(value);
     }
 }
