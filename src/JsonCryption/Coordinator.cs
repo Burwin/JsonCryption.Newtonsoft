@@ -63,15 +63,15 @@ namespace JsonCryption
             return factoryMethod.Invoke(Encrypter, options);
         }
 
-        internal bool HasConverter(Type type)
+        internal bool HasConverter(Type typeToConvert)
         {
-            if (type.IsEnum)
+            if (typeToConvert.IsEnum)
                 return true;
 
-            if (type.IsArray)
+            if (EnumerableConverterFactory.CanConvertType(typeToConvert))
                 return true;
 
-            return _converters.ContainsKey(type);
+            return _converters.ContainsKey(typeToConvert);
         }
 
         public static Coordinator Configure(Action<CoordinatorOptions> configure)

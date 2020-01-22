@@ -28,15 +28,6 @@ namespace JsonCryption.Converters
 
             converter = CreateSpecificConverter(typeToConvert, options);
 
-            var elementType = typeToConvert.GetElementType();
-
-            converter = (JsonConverter)Activator.CreateInstance(
-                    typeof(EncryptedArrayConverter<>).MakeGenericType(elementType),
-                    BindingFlags.Instance | BindingFlags.Public,
-                    binder: null,
-                    args: new object[] { _encrypter, _options },
-                    culture: null);
-
             _cachedConverters[(typeToConvert, options)] = converter;
 
             return converter;
@@ -45,10 +36,27 @@ namespace JsonCryption.Converters
         private JsonConverter CreateSpecificConverter(Type typeToConvert, JsonSerializerOptions options)
         {
             if (typeToConvert.IsArray)
-                return CreateTypedConverter(typeof(EncryptedArrayConverter<>), typeToConvert.GetElementType(), options);
+                return (JsonConverter)Activator.CreateInstance(
+                    typeof(EncryptedArrayConverter<>).MakeGenericType(typeToConvert.GetElementType()),
+                    BindingFlags.Instance | BindingFlags.Public,
+                    binder: null,
+                    args: new object[] { _encrypter, options },
+                    culture: null);
 
             else
-                return CreateTypedConverter(typeof(EnumerableConverter), typeToConvert.GetGenericArguments()[0], options);
+            {
+                var arrayType = typeToConvert.GetGenericArguments()[0].MakeArrayType();
+                var key = (arrayType, options);
+                if (!_cachedConverters.TryGetValue(key, out var arrayConverter))
+                    _cachedConverters[key] = arrayConverter = CreateConverter(arrayType, options);
+                
+                return (JsonConverter)Activator.CreateInstance(
+                    typeof(EncryptedEnumerableConverter<>).MakeGenericType(typeToConvert.GetGenericArguments()[0]),
+                    BindingFlags.Instance | BindingFlags.Public,
+                    binder: null,
+                    args: new object[] { _encrypter, options, arrayConverter },
+                    culture: null);
+            }
         }
 
         private JsonConverter CreateTypedConverter(Type converterType, Type elementType, JsonSerializerOptions options)
