@@ -42,6 +42,9 @@ namespace JsonCryption
             if (EnumerableConverterFactory.CanConvertType(typeToConvert))
                 return true;
 
+            if (KeyValuePairConverterFactory.CanConvertType(typeToConvert))
+                return true;
+
             return _converters.ContainsKey(typeToConvert);
         }
 

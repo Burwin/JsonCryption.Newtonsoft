@@ -12,19 +12,85 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void KeyValuePair_of_string_string_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
+
+            var myKvp = new KeyValuePair<string, string>("foo", "bar");
+            var foo = new FooKvpStringString { MyKvps = myKvp };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooKvpStringString.MyKvps));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyKvps));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooKvpStringString>(json);
+            decrypted.MyKvps.ShouldBe(myKvp);
+        }
+
+        private class FooKvpStringString
+        {
+            [Encrypt]
+            public KeyValuePair<string, string> MyKvps { get; set; }
         }
 
         [Fact]
         public void KeyValuePair_of_int_int_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
+
+            var myKvp = new KeyValuePair<int, int>(int.MinValue, int.MaxValue);
+            var foo = new FooKvpIntInt { MyKvps = myKvp };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooKvpIntInt.MyKvps));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyKvps));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooKvpIntInt>(json);
+            decrypted.MyKvps.ShouldBe(myKvp);
+        }
+
+        private class FooKvpIntInt
+        {
+            [Encrypt]
+            public KeyValuePair<int, int> MyKvps { get; set; }
         }
 
         [Fact]
         public void KeyValuePair_of_Guid_string_works()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
+
+            var myKvp = new KeyValuePair<Guid, string>(Guid.NewGuid(), "foo");
+            var foo = new FooKvpGuidString { MyKvps = myKvp };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooKvpGuidString.MyKvps));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
+                jsonProperty.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyKvps));
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooKvpGuidString>(json);
+            decrypted.MyKvps.ShouldBe(myKvp);
+        }
+
+        private class FooKvpGuidString
+        {
+            [Encrypt]
+            public KeyValuePair<Guid, string> MyKvps { get; set; }
         }
 
         [Fact]
