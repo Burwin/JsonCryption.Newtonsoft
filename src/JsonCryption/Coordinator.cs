@@ -10,7 +10,8 @@ namespace JsonCryption
 {
     public class Coordinator
     {
-        private readonly Dictionary<Type, Func<Encrypter, JsonSerializerOptions, JsonConverter>> _converterFactories;
+        private readonly Dictionary<Type, Func<Encrypter, JsonSerializerOptions, JsonConverter>> _defaultConverterFactories;
+        private readonly Dictionary<(Type Type, JsonSerializerOptions Options), JsonConverterFactory> _specialConverterFactories;
         private readonly Dictionary<Type, JsonConverter> _converters; 
         
         public static Coordinator Singleton { get; private set; }
@@ -22,9 +23,10 @@ namespace JsonCryption
         {
             Options = options;
 
-            _converterFactories = BuildConverterFactories();
+            _specialConverterFactories = new Dictionary<(Type Type, JsonSerializerOptions Options), JsonConverterFactory>();
 
-            _converters = _converterFactories
+            _defaultConverterFactories = BuildConverterFactories();
+            _converters = _defaultConverterFactories
                 .Select(kvp => (kvp.Key, Converter: kvp.Value.Invoke(Encrypter, JsonSerializerOptions)))
                 .ToDictionary(x => x.Key, x => x.Converter);
         }
@@ -34,14 +36,28 @@ namespace JsonCryption
 
         private JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
+            options ??= JsonSerializerOptions;
+            
             if (typeToConvert.IsEnum)
-                return new EnumConverterFactory(Encrypter, options).CreateConverter(typeToConvert, options);
+            {
+                var key = (typeToConvert, options);
+                if (!_specialConverterFactories.TryGetValue(key, out var factory))
+                    _specialConverterFactories[key] = factory = new EnumConverterFactory(Encrypter, options);
+
+                return factory.CreateConverter(typeToConvert, options);
+            }
 
             // byte arrays are handled more natively
-            if (typeToConvert.IsArray && typeToConvert != typeof(byte[]))
-                return new ArrayConverterFactory(Encrypter, options).CreateConverter(typeToConvert, options);
+            if (EnumerableConverterFactory.CanConvertType(typeToConvert) && typeToConvert != typeof(byte[]))
+            {
+                var key = (typeToConvert, options);
+                if (!_specialConverterFactories.TryGetValue(key, out var factory))
+                    _specialConverterFactories[key] = factory = new EnumerableConverterFactory(Encrypter, options);
+
+                return factory.CreateConverter(typeToConvert, options);
+            }
             
-            if (!_converterFactories.TryGetValue(typeToConvert, out var factoryMethod))
+            if (!_defaultConverterFactories.TryGetValue(typeToConvert, out var factoryMethod))
                 throw new InvalidOperationException($"No Converter for type {typeToConvert.FullName}");
 
             return factoryMethod.Invoke(Encrypter, options);
