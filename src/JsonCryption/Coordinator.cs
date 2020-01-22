@@ -34,35 +34,6 @@ namespace JsonCryption
         internal JsonConverter GetConverter(Type typeToConvert, JsonSerializerOptions options)
             => options is null ? _converters[typeToConvert] : CreateConverter(typeToConvert, options);
 
-        private JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
-        {
-            options ??= JsonSerializerOptions;
-            
-            if (typeToConvert.IsEnum)
-            {
-                var key = (typeToConvert, options);
-                if (!_specialConverterFactories.TryGetValue(key, out var factory))
-                    _specialConverterFactories[key] = factory = new EnumConverterFactory(Encrypter, options);
-
-                return factory.CreateConverter(typeToConvert, options);
-            }
-
-            // byte arrays are handled more natively
-            if (EnumerableConverterFactory.CanConvertType(typeToConvert) && typeToConvert != typeof(byte[]))
-            {
-                var key = (typeToConvert, options);
-                if (!_specialConverterFactories.TryGetValue(key, out var factory))
-                    _specialConverterFactories[key] = factory = new EnumerableConverterFactory(Encrypter, options);
-
-                return factory.CreateConverter(typeToConvert, options);
-            }
-            
-            if (!_defaultConverterFactories.TryGetValue(typeToConvert, out var factoryMethod))
-                throw new InvalidOperationException($"No Converter for type {typeToConvert.FullName}");
-
-            return factoryMethod.Invoke(Encrypter, options);
-        }
-
         internal bool HasConverter(Type typeToConvert)
         {
             if (typeToConvert.IsEnum)
@@ -85,6 +56,55 @@ namespace JsonCryption
         }
 
         public static Coordinator ConfigureDefault(byte[] key) => Configure(options => options.Encrypter = new AesManagedEncrypter(key));
+
+        #region Private Helpers
+
+        private JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+        {
+            options ??= JsonSerializerOptions;
+
+            if (typeToConvert.IsEnum)
+                return CreateEnumConverter(typeToConvert, options);
+
+            // byte arrays are handled more natively
+            if (EnumerableConverterFactory.CanConvertType(typeToConvert) && typeToConvert != typeof(byte[]))
+                return CreateEnumerableConverter(typeToConvert, options);
+
+            if (KeyValuePairConverterFactory.CanConvertType(typeToConvert))
+                return CreateKeyValuePairConverter(typeToConvert, options);
+
+            if (!_defaultConverterFactories.TryGetValue(typeToConvert, out var factoryMethod))
+                throw new InvalidOperationException($"No Converter for type {typeToConvert.FullName}");
+
+            return factoryMethod.Invoke(Encrypter, options);
+        }
+
+        private JsonConverter CreateKeyValuePairConverter(Type typeToConvert, JsonSerializerOptions options)
+        {
+            var key = (typeToConvert, options);
+            if (!_specialConverterFactories.TryGetValue(key, out var factory))
+                _specialConverterFactories[key] = factory = new KeyValuePairConverterFactory(Encrypter, options);
+
+            return factory.CreateConverter(typeToConvert, options);
+        }
+
+        private JsonConverter CreateEnumerableConverter(Type typeToConvert, JsonSerializerOptions options)
+        {
+            var key = (typeToConvert, options);
+            if (!_specialConverterFactories.TryGetValue(key, out var factory))
+                _specialConverterFactories[key] = factory = new EnumerableConverterFactory(Encrypter, options);
+
+            return factory.CreateConverter(typeToConvert, options);
+        }
+
+        private JsonConverter CreateEnumConverter(Type typeToConvert, JsonSerializerOptions options)
+        {
+            var key = (typeToConvert, options);
+            if (!_specialConverterFactories.TryGetValue(key, out var factory))
+                _specialConverterFactories[key] = factory = new EnumConverterFactory(Encrypter, options);
+
+            return factory.CreateConverter(typeToConvert, options);
+        }
 
         private Dictionary<Type, Func<Encrypter, JsonSerializerOptions, JsonConverter>> BuildConverterFactories()
         {
@@ -110,5 +130,7 @@ namespace JsonCryption
                 {typeof(Guid), (encrypter, options) => new GuidConverter(encrypter, options) },
             };
         }
+
+        #endregion Private Helpers
     }
 }
