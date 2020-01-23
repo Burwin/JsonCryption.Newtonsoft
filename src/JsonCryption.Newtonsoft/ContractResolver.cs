@@ -1,8 +1,11 @@
 ﻿using JsonCryption.Newtonsoft.Converters;
 using JsonCryption.Newtonsoft.Encrypters;
+using JsonCryption.Newtonsoft.ValueProviders;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Linq;
+using System.Reflection;
 
 namespace JsonCryption.Newtonsoft
 {
@@ -15,14 +18,40 @@ namespace JsonCryption.Newtonsoft
             _encrypter = encrypter;
         }
 
-        public override JsonContract ResolveContract(Type type) => base.ResolveContract(type);
-
-        protected override JsonConverter ResolveContractConverter(Type objectType)
+        public override JsonContract ResolveContract(Type type)
         {
-            if (objectType == typeof(bool))
-                return new BoolConverter(_encrypter);
+            var contract = base.ResolveContract(type);
+            if (contract is JsonObjectContract objectContract)
+            {
+                var p = objectContract.Properties.FirstOrDefault();
+                if (p?.ValueProvider is EncryptedValueProvider)
+                {
+                    p.PropertyType = typeof(object);
+                }
+            }
 
-            return base.ResolveContractConverter(objectType);
+            return contract;
         }
+
+        protected override IValueProvider CreateMemberValueProvider(MemberInfo member)
+        {
+            if (member.ShouldEncrypt())
+                return new BoolValueProvider(_encrypter,base.CreateMemberValueProvider(member));
+            
+            return base.CreateMemberValueProvider(member);
+        }
+
+        //protected override JsonConverter ResolveContractConverter(Type objectType)
+        //{
+        //    if (objectType == typeof(bool))
+        //        return new BoolConverter(_encrypter);
+
+        //    return base.ResolveContractConverter(objectType);
+        //}
+    }
+
+    internal static class MemberInfoExtensions
+    {
+        public static bool ShouldEncrypt(this MemberInfo info) => info.GetCustomAttribute<EncryptAttribute>(inherit: true) != null;
     }
 }
