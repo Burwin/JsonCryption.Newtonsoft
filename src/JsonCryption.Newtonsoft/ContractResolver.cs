@@ -1,7 +1,5 @@
-﻿using JsonCryption.Newtonsoft.Converters;
-using JsonCryption.Newtonsoft.Encrypters;
+﻿using JsonCryption.Newtonsoft.Encryption;
 using JsonCryption.Newtonsoft.ValueProviders;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Linq;

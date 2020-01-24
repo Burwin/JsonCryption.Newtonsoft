@@ -1,4 +1,4 @@
-﻿using JsonCryption.Newtonsoft.Encrypters;
+﻿using JsonCryption.Newtonsoft.Encryption;
 using System;
 
 namespace JsonCryption.Newtonsoft.Converters

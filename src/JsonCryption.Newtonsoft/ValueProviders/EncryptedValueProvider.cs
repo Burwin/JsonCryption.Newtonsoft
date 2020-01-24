@@ -1,4 +1,4 @@
-﻿using JsonCryption.Newtonsoft.Encrypters;
+﻿using JsonCryption.Newtonsoft.Encryption;
 using Newtonsoft.Json.Serialization;
 
 namespace JsonCryption.Newtonsoft.ValueProviders

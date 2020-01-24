@@ -1,7 +1,6 @@
-﻿using JsonCryption.Newtonsoft.Encrypters;
+﻿using JsonCryption.Newtonsoft.Encryption;
 using Newtonsoft.Json;
 using Shouldly;
-using System;
 using System.IO;
 using System.Text;
 using Xunit;
@@ -13,7 +12,7 @@ namespace JsonCryption.Newtonsoft.Tests
         [Fact]
         public void Public_properties_are_encrypted_and_decrypted()
         {
-            var encrypter = new AesManagedEncrypter(Helpers.GenerateRandomKey());
+            var encrypter = Helpers.GetTestEncrypter();
             var contractResolver = new ContractResolver(encrypter);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
@@ -43,7 +42,7 @@ namespace JsonCryption.Newtonsoft.Tests
         [Fact]
         public void Public_properties_not_decorated_with_EncryptAttribute_should_not_be_encrypted()
         {
-            var encrypter = new AesManagedEncrypter(Helpers.GenerateRandomKey());
+            var encrypter = Helpers.GetTestEncrypter();
             var contractResolver = new ContractResolver(encrypter);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
