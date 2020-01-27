@@ -33,7 +33,7 @@ namespace JsonCryption.Newtonsoft.Tests
             using var reader = new JsonTextReader(textReader);
             var decrypted = serializer.Deserialize<FooCharPublic>(reader);
 
-            decrypted.MyChar.ShouldBe((char)5);;
+            decrypted.MyChar.ShouldBe((char)5);
         }
 
         private class FooCharPublic
