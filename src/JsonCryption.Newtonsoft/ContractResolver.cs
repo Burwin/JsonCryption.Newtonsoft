@@ -20,6 +20,7 @@ namespace JsonCryption.Newtonsoft
                 { typeof(bool), dataProtectionProvider => new BoolConverter(dataProtectionProvider) },
                 { typeof(byte), dataProtectionProvider => new ByteConverter(dataProtectionProvider) },
                 { typeof(byte[]), dataProtectionProvider => new ByteArrayConverter(dataProtectionProvider) },
+                { typeof(char), dataProtectionProvider => new CharConverter(dataProtectionProvider) },
             };
 
         private static readonly Dictionary<Type, Func<IEncryptedConverter, IValueProvider, IValueProvider>> _valueProviderFactories
@@ -28,6 +29,7 @@ namespace JsonCryption.Newtonsoft
                 { typeof(bool), (converter, innerProvider) => new BoolValueProvider((IEncryptedConverter<bool>)converter, innerProvider) },
                 { typeof(byte), (converter, innerProvider) => new ByteValueProvider((IEncryptedConverter<byte>)converter, innerProvider) },
                 { typeof(byte[]), (converter, innerProvider) => new ByteArrayValueProvider((IEncryptedConverter<byte[]>)converter, innerProvider) },
+                { typeof(char), (converter, innerProvider) => new CharValueProvider((IEncryptedConverter<char>)converter, innerProvider) },
             };
 
         public ContractResolver(IDataProtectionProvider dataProtectionProvider)
