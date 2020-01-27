@@ -1,5 +1,6 @@
-﻿using JsonCryption.Newtonsoft.Encryption;
+﻿using Microsoft.AspNetCore.DataProtection;
 using Newtonsoft.Json.Serialization;
+using System;
 
 namespace JsonCryption.Newtonsoft.ValueProviders
 {
@@ -7,8 +8,8 @@ namespace JsonCryption.Newtonsoft.ValueProviders
     {
         private readonly IValueProvider _innerProvider;
 
-        public EncryptedValueProvider(Encrypter encrypter, IValueProvider innerProvider)
-            : base(encrypter)
+        public EncryptedValueProvider(IDataProtector dataProtector, IValueProvider innerProvider)
+            : base(dataProtector)
         {
             _innerProvider = innerProvider;
         }
@@ -16,16 +17,18 @@ namespace JsonCryption.Newtonsoft.ValueProviders
         public override object GetValue(object target)
         {
             var raw = (T)_innerProvider.GetValue(target);
-            var bytes = ToBytes(raw);
-            var encrypted = _encrypter.Encrypt(bytes);
-            return encrypted;
+            var unprotectedBytes = ToBytes(raw);
+            var protectedBytes = _dataProtector.Protect(unprotectedBytes);
+            var cipherText = Convert.ToBase64String(protectedBytes);
+            return cipherText;
         }
 
         public override void SetValue(object target, object value)
         {
-            var encrypted = (string)value;
-            var bytes = _encrypter.DecryptToByteArray(encrypted);
-            _innerProvider.SetValue(target, FromBytes(bytes));
+            var cipherText = (string)value;
+            var protectedBytes = Convert.FromBase64String(cipherText);
+            var unprotectedBytes = _dataProtector.Unprotect(protectedBytes);
+            _innerProvider.SetValue(target, FromBytes(unprotectedBytes));
         }
 
         public abstract T FromBytes(byte[] bytes);
@@ -34,11 +37,11 @@ namespace JsonCryption.Newtonsoft.ValueProviders
 
     internal abstract class EncryptedValueProvider : IValueProvider
     {
-        protected readonly Encrypter _encrypter;
+        protected readonly IDataProtector _dataProtector;
 
-        public EncryptedValueProvider(Encrypter encrypter)
+        public EncryptedValueProvider(IDataProtector dataProtector)
         {
-            _encrypter = encrypter;
+            _dataProtector = dataProtector;
         }
         
         public abstract object GetValue(object target);

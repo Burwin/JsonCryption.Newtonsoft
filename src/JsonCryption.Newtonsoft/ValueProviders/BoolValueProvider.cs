@@ -1,4 +1,4 @@
-﻿using JsonCryption.Newtonsoft.Encryption;
+﻿using Microsoft.AspNetCore.DataProtection;
 using Newtonsoft.Json.Serialization;
 using System;
 
@@ -6,7 +6,10 @@ namespace JsonCryption.Newtonsoft.ValueProviders
 {
     internal sealed class BoolValueProvider : EncryptedValueProvider<bool>
     {
-        public BoolValueProvider(Encrypter encrypter, IValueProvider innerProvider) : base(encrypter, innerProvider)
+        private static readonly string _purpose = typeof(BoolValueProvider).FullName;
+        
+        public BoolValueProvider(IDataProtectionProvider dataProtectionProvider, IValueProvider innerProvider)
+            : base(dataProtectionProvider.CreateProtector(_purpose), innerProvider)
         {
         }
 

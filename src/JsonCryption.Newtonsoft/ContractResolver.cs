@@ -1,5 +1,5 @@
-﻿using JsonCryption.Newtonsoft.Encryption;
-using JsonCryption.Newtonsoft.ValueProviders;
+﻿using JsonCryption.Newtonsoft.ValueProviders;
+using Microsoft.AspNetCore.DataProtection;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Linq;
@@ -9,11 +9,11 @@ namespace JsonCryption.Newtonsoft
 {
     public sealed class ContractResolver : DefaultContractResolver
     {
-        private readonly Encrypter _encrypter;
+        private readonly IDataProtectionProvider _dataProtectionProvider;
 
-        public ContractResolver(Encrypter encrypter)
+        public ContractResolver(IDataProtectionProvider dataProtectionProvider)
         {
-            _encrypter = encrypter;
+            _dataProtectionProvider = dataProtectionProvider;
         }
 
         public override JsonContract ResolveContract(Type type)
@@ -34,7 +34,7 @@ namespace JsonCryption.Newtonsoft
         protected override IValueProvider CreateMemberValueProvider(MemberInfo member)
         {
             if (member.ShouldEncrypt())
-                return new BoolValueProvider(_encrypter,base.CreateMemberValueProvider(member));
+                return new BoolValueProvider(_dataProtectionProvider, base.CreateMemberValueProvider(member));
             
             return base.CreateMemberValueProvider(member);
         }
