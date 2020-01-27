@@ -8,7 +8,7 @@ namespace JsonCryption.Newtonsoft.Tests
 {
     public class DecimalTests
     {
-        private static readonly string ApplicationName = typeof(DateTimeTests).AssemblyQualifiedName;
+        private static readonly string ApplicationName = typeof(DecimalTests).AssemblyQualifiedName;
 
         [Fact]
         public void Public_property_is_encrypted_and_decrypted()
