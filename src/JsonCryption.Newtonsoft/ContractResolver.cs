@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -12,6 +13,20 @@ namespace JsonCryption.Newtonsoft
     public sealed class ContractResolver : DefaultContractResolver
     {
         private readonly IDataProtectionProvider _dataProtectionProvider;
+
+        private static readonly Dictionary<Type, Func<IDataProtectionProvider, JsonConverter>> _jsonConverterFactories
+            = new Dictionary<Type, Func<IDataProtectionProvider, JsonConverter>>
+            {
+                { typeof(bool), dataProtectionProvider => new BoolConverter(dataProtectionProvider) },
+                { typeof(byte), dataProtectionProvider => new ByteConverter(dataProtectionProvider) },
+            };
+
+        private static readonly Dictionary<Type, Func<IEncryptedConverter, IValueProvider, IValueProvider>> _valueProviderFactories
+            = new Dictionary<Type, Func<IEncryptedConverter, IValueProvider, IValueProvider>>
+            {
+                { typeof(bool), (converter, innerProvider) => new BoolValueProvider((IEncryptedConverter<bool>)converter, innerProvider) },
+                { typeof(byte), (converter, innerProvider) => new ByteValueProvider((IEncryptedConverter<byte>)converter, innerProvider) },
+            };
 
         public ContractResolver(IDataProtectionProvider dataProtectionProvider)
         {
@@ -49,19 +64,19 @@ namespace JsonCryption.Newtonsoft
         {
             if (converter is IEncryptedConverter)
                 return converter;
-            
-            if (type == typeof(bool))
-                return new BoolConverter(_dataProtectionProvider);
 
-            throw new NotImplementedException();
+            return _jsonConverterFactories[type].Invoke(_dataProtectionProvider);
         }
 
         protected override IValueProvider CreateMemberValueProvider(MemberInfo member)
+            => member.ShouldEncrypt() ? CreateEncryptedValueProvider(member) : base.CreateMemberValueProvider(member);
+
+        private IValueProvider CreateEncryptedValueProvider(MemberInfo member)
         {
-            if (member.ShouldEncrypt())
-                return new BoolValueProvider(new BoolConverter(_dataProtectionProvider), base.CreateMemberValueProvider(member));
-            
-            return base.CreateMemberValueProvider(member);
+            var type = member.GetUnderlyingType();
+            var converter = _jsonConverterFactories[type].Invoke(_dataProtectionProvider) as IEncryptedConverter;
+            var innerProvider = base.CreateMemberValueProvider(member);
+            return _valueProviderFactories[type].Invoke(converter, innerProvider);
         }
     }
 }
