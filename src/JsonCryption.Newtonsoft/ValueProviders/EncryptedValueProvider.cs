@@ -7,16 +7,18 @@ namespace JsonCryption.Newtonsoft.ValueProviders
     {
         private readonly IEncryptedConverter<T> _encryptedConverter;
         private readonly IValueProvider _innerProvider;
+        private readonly T _emptyValue;
 
-        public EncryptedValueProvider(IEncryptedConverter<T> encryptedConverter, IValueProvider innerProvider)
+        public EncryptedValueProvider(IEncryptedConverter<T> encryptedConverter, IValueProvider innerProvider, T emptyValue = default)
         {
             _encryptedConverter = encryptedConverter;
             _innerProvider = innerProvider;
+            _emptyValue = emptyValue;
         }
 
         public override object GetValue(object target)
         {
-            var value = (T)_innerProvider.GetValue(target);
+            var value = (T)_innerProvider.GetValue(target) ?? _emptyValue;
             return _encryptedConverter.ToCipherText(value);
         }
 
