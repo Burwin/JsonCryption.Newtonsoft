@@ -1,27 +1,29 @@
 ﻿using Newtonsoft.Json;
 using Shouldly;
+using System;
 using System.IO;
 using System.Text;
 using Xunit;
 
 namespace JsonCryption.Newtonsoft.Tests
 {
-    public class CharTests
+    public class DateTimeTests
     {
-        private static readonly string ApplicationName = typeof(CharTests).AssemblyQualifiedName;
+        private static readonly string ApplicationName = typeof(DateTimeTests).AssemblyQualifiedName;
 
         [Fact]
-        public void Public_properties_are_encrypted_and_decrypted()
+        public void Public_property_is_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
             var contractResolver = new ContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
-            var instance = new FooCharPublic { MyChar = (char)5 };
+            var myDate = DateTime.Parse("2020-01-27");
+            var instance = new FooDateTimePublic { MyDate = myDate };
 
             var builder = new StringBuilder();
             using (var textWriter = new StringWriter(builder))
-            serializer.Serialize(textWriter, instance);
+                serializer.Serialize(textWriter, instance);
 
             var json = builder.ToString();
 
@@ -29,29 +31,30 @@ namespace JsonCryption.Newtonsoft.Tests
 
             using var textReader = new StringReader(json);
             using var reader = new JsonTextReader(textReader);
-            var decrypted = serializer.Deserialize<FooCharPublic>(reader);
+            var decrypted = serializer.Deserialize<FooDateTimePublic>(reader);
 
-            decrypted.MyChar.ShouldBe((char)5);
+            decrypted.MyDate.ShouldBe(myDate);
         }
 
-        private class FooCharPublic
+        private class FooDateTimePublic
         {
             [Encrypt]
-            public char MyChar { get; set; }
+            public DateTime MyDate { get; set; }
         }
 
         [Fact]
-        public void Private_fields_are_encrypted_and_decrypted()
+        public void Private_field_is_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
             var contractResolver = new ContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
-            var instance = new FooCharPrivate((char)5);
+            var myDate = DateTime.Parse("2020-01-27");
+            var instance = new FooDateTimePrivate(myDate);
 
             var builder = new StringBuilder();
             using (var textWriter = new StringWriter(builder))
-            serializer.Serialize(textWriter, instance);
+                serializer.Serialize(textWriter, instance);
 
             var json = builder.ToString();
 
@@ -59,21 +62,21 @@ namespace JsonCryption.Newtonsoft.Tests
 
             using var textReader = new StringReader(json);
             using var reader = new JsonTextReader(textReader);
-            var decrypted = serializer.Deserialize<FooCharPrivate>(reader);
+            var decrypted = serializer.Deserialize<FooDateTimePrivate>(reader);
 
-            decrypted.GetMyChar().ShouldBe((char)5);
+            decrypted.GetMyDate().ShouldBe(myDate);
         }
 
-        private class FooCharPrivate
+        private class FooDateTimePrivate
         {
             [Encrypt]
             [JsonProperty]
-            private char _myChar;
-            public char GetMyChar() => _myChar;
+            private DateTime _myDate;
+            public DateTime GetMyDate() => _myDate;
 
-            public FooCharPrivate(char myChar)
+            public FooDateTimePrivate(DateTime myDate)
             {
-                _myChar = myChar;
+                _myDate = myDate;
             }
         }
     }
