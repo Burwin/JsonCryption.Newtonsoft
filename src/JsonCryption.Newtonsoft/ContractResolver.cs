@@ -77,7 +77,7 @@ namespace JsonCryption.Newtonsoft
             if (converter is IEncryptedConverter)
                 return converter;
 
-            return _jsonConverterFactories[type].Invoke(_dataProtectionProvider);
+            return CreateEncryptedConverter(type, _dataProtectionProvider) as JsonConverter;
         }
 
         protected override IValueProvider CreateMemberValueProvider(MemberInfo member)
@@ -86,9 +86,54 @@ namespace JsonCryption.Newtonsoft
         private IValueProvider CreateEncryptedValueProvider(MemberInfo member)
         {
             var type = member.GetUnderlyingType();
-            var converter = _jsonConverterFactories[type].Invoke(_dataProtectionProvider) as IEncryptedConverter;
+            var converter = CreateEncryptedConverter(type, _dataProtectionProvider);
             var innerProvider = base.CreateMemberValueProvider(member);
-            return _valueProviderFactories[type].Invoke(converter, innerProvider);
+            var valueProvider = ResolveValueProvider(type, converter, innerProvider);
+            return valueProvider;
+        }
+
+        private IEncryptedConverter CreateEncryptedConverter(Type type, IDataProtectionProvider dataProtectionProvider)
+        {
+            if (_jsonConverterFactories.TryGetValue(type, out var factory))
+                return factory.Invoke(dataProtectionProvider) as IEncryptedConverter;
+
+            if (type.IsArray)
+                return ResolveArrayEncryptedConverter(type, dataProtectionProvider);
+
+            throw new NotImplementedException();
+        }
+
+        private IEncryptedConverter ResolveArrayEncryptedConverter(Type type, IDataProtectionProvider dataProtectionProvider)
+        {
+            return (IEncryptedConverter)Activator.CreateInstance(
+                typeof(EncryptedArrayConverter<>).MakeGenericType(type.GetElementType()),
+                BindingFlags.Instance | BindingFlags.Public,
+                binder: null,
+                args: new object[] { dataProtectionProvider },
+                culture: null);
+        }
+
+        private IValueProvider ResolveValueProvider(Type type, IEncryptedConverter converter, IValueProvider innerProvider)
+        {
+            if (_valueProviderFactories.TryGetValue(type, out var factory))
+                return factory.Invoke(converter, innerProvider);
+
+            if (type.IsArray)
+                return ResolveArrayValueProvider(type, converter, innerProvider);
+
+            throw new NotImplementedException();
+        }
+
+        private IValueProvider ResolveArrayValueProvider(Type type, IEncryptedConverter converter, IValueProvider innerProvider)
+        {
+            var elementType = type.GetElementType();
+            
+            return (IValueProvider)Activator.CreateInstance(
+                typeof(EncryptedArrayValueProvider<>).MakeGenericType(elementType),
+                BindingFlags.Instance | BindingFlags.Public,
+                binder: null,
+                args: new object[] { converter, innerProvider, Array.CreateInstance(elementType, 0), new JsonSerializer() },
+                culture: null);
         }
     }
 }

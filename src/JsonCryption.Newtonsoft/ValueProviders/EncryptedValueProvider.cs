@@ -1,4 +1,5 @@
 ﻿using JsonCryption.Newtonsoft.JsonConverters;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace JsonCryption.Newtonsoft.ValueProviders
@@ -8,18 +9,20 @@ namespace JsonCryption.Newtonsoft.ValueProviders
         private readonly IEncryptedConverter<T> _encryptedConverter;
         private readonly IValueProvider _innerProvider;
         private readonly T _emptyValue;
+        private readonly JsonSerializer _serializer;
 
-        public EncryptedValueProvider(IEncryptedConverter<T> encryptedConverter, IValueProvider innerProvider, T emptyValue = default)
+        public EncryptedValueProvider(IEncryptedConverter<T> encryptedConverter, IValueProvider innerProvider, T emptyValue = default, JsonSerializer serializer = null)
         {
             _encryptedConverter = encryptedConverter;
             _innerProvider = innerProvider;
             _emptyValue = emptyValue;
+            _serializer = serializer;
         }
 
         public override object GetValue(object target)
         {
             var value = (T)_innerProvider.GetValue(target) ?? _emptyValue;
-            return _encryptedConverter.ToCipherText(value);
+            return _encryptedConverter.ToCipherText(value, _serializer);
         }
 
         public override void SetValue(object target, object value)
