@@ -100,7 +100,20 @@ namespace JsonCryption.Newtonsoft
             if (type.IsArray)
                 return ResolveArrayEncryptedConverter(type, dataProtectionProvider);
 
+            if (type.IsIDictionary())
+                return ResolveDictionaryEncryptedConverter(type, dataProtectionProvider);
+
             throw new NotImplementedException();
+        }
+
+        private IEncryptedConverter ResolveDictionaryEncryptedConverter(Type type, IDataProtectionProvider dataProtectionProvider)
+        {
+            return (IEncryptedConverter)Activator.CreateInstance(
+                typeof(EncryptedDictionaryConverter<,>).MakeGenericType(type.GenericTypeArguments),
+                BindingFlags.Instance | BindingFlags.Public,
+                binder: null,
+                args: new object[] { dataProtectionProvider },
+                culture: null);
         }
 
         private IEncryptedConverter ResolveArrayEncryptedConverter(Type type, IDataProtectionProvider dataProtectionProvider)
@@ -121,7 +134,28 @@ namespace JsonCryption.Newtonsoft
             if (type.IsArray)
                 return ResolveArrayValueProvider(type, converter, innerProvider);
 
+            if (type.IsIDictionary())
+                return ResolveDictionaryValueProvider(type, converter, innerProvider);
+
             throw new NotImplementedException();
+        }
+
+        private IValueProvider ResolveDictionaryValueProvider(Type type, IEncryptedConverter converter, IValueProvider innerProvider)
+        {
+            var genericArgTypes = type.GenericTypeArguments;
+            var defaultValue = Activator.CreateInstance(
+                typeof(Dictionary<,>).MakeGenericType(genericArgTypes),
+                BindingFlags.Instance | BindingFlags.Public,
+                binder: null,
+                args: null,
+                culture: null);
+            
+            return (IValueProvider)Activator.CreateInstance(
+                typeof(EncryptedDictionaryValueProvider<,>).MakeGenericType(genericArgTypes),
+                BindingFlags.Instance | BindingFlags.Public,
+                binder: null,
+                args: new object[] { converter, innerProvider, defaultValue, new JsonSerializer() },
+                culture: null);
         }
 
         private IValueProvider ResolveArrayValueProvider(Type type, IEncryptedConverter converter, IValueProvider innerProvider)
