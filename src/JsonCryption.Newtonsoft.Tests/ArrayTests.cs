@@ -45,17 +45,38 @@ namespace JsonCryption.Newtonsoft.Tests
         [Fact]
         public void Private_field_is_encrypted_and_decrypted()
         {
-            throw new NotImplementedException();
+            var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
+            var contractResolver = new ContractResolver(dataProtectionProvider);
+            var serializer = new JsonSerializer() { ContractResolver = contractResolver };
+
+            var myDoubles = new[] { 1.1, 2.2, 3.3 };
+            var instance = new FooDoubleArrayPrivate(myDoubles);
+
+            var builder = new StringBuilder();
+            using (var textWriter = new StringWriter(builder))
+                serializer.Serialize(textWriter, instance);
+
+            var json = builder.ToString();
+
+            json.ShouldNotBe(JsonConvert.SerializeObject(instance));
+
+            using var textReader = new StringReader(json);
+            using var reader = new JsonTextReader(textReader);
+            var decrypted = serializer.Deserialize<FooDoubleArrayPrivate>(reader);
+
+            decrypted.GetMyDoubles().ShouldBe(myDoubles);
         }
 
         private class FooDoubleArrayPrivate
         {
-            private double[] _myInts;
-            public double[] GetMyDoubles() => _myInts;
+            [Encrypt]
+            [JsonProperty]
+            private double[] _myDoubles;
+            public double[] GetMyDoubles() => _myDoubles;
 
-            public FooDoubleArrayPrivate(double[] myInts)
+            public FooDoubleArrayPrivate(double[] myDoubles)
             {
-                _myInts = myInts;
+                _myDoubles = myDoubles;
             }
         }
     }
