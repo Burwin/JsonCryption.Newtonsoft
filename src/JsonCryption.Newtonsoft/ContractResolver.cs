@@ -1,4 +1,5 @@
-﻿using JsonCryption.Newtonsoft.JsonConverters;
+﻿using JsonCryption.Newtonsoft.ByteConverters;
+using JsonCryption.Newtonsoft.JsonConverters;
 using JsonCryption.Newtonsoft.ValueProviders;
 using Microsoft.AspNetCore.DataProtection;
 using Newtonsoft.Json;
@@ -123,7 +124,27 @@ namespace JsonCryption.Newtonsoft
             if (type.IsIDictionary())
                 return ResolveDictionaryEncryptedConverter(type, dataProtectionProvider);
 
+            if (type.IsEnum)
+                return ResolveEnumEncryptedConverter(type, dataProtectionProvider);
+
             throw new NotImplementedException();
+        }
+
+        private IEncryptedConverter ResolveEnumEncryptedConverter(Type type, IDataProtectionProvider dataProtectionProvider)
+        {
+            var byteConverter = (dynamic)Activator.CreateInstance(
+                typeof(EnumByteConverter<>).MakeGenericType(type),
+                BindingFlags.Instance | BindingFlags.Public,
+                binder: null,
+                args: null,
+                culture: null);
+
+            return (IEncryptedConverter)Activator.CreateInstance(
+                typeof(EnumConverter<>).MakeGenericType(type),
+                BindingFlags.Instance | BindingFlags.Public,
+                binder: null,
+                args: new object[] { dataProtectionProvider, byteConverter },
+                culture: null);
         }
 
         private IEncryptedConverter ResolveDictionaryEncryptedConverter(Type type, IDataProtectionProvider dataProtectionProvider)
@@ -157,7 +178,20 @@ namespace JsonCryption.Newtonsoft
             if (type.IsIDictionary())
                 return ResolveDictionaryValueProvider(type, converter, innerProvider);
 
+            if (type.IsEnum)
+                return ResolveEnumValueProvider(type, converter, innerProvider);
+
             throw new NotImplementedException();
+        }
+
+        private IValueProvider ResolveEnumValueProvider(Type type, IEncryptedConverter converter, IValueProvider innerProvider)
+        {
+            return (IValueProvider)Activator.CreateInstance(
+                typeof(EnumValueProvider<>).MakeGenericType(type),
+                BindingFlags.Instance | BindingFlags.Public,
+                binder: null,
+                args: new object[] { converter, innerProvider },
+                culture: null);
         }
 
         private IValueProvider ResolveDictionaryValueProvider(Type type, IEncryptedConverter converter, IValueProvider innerProvider)
