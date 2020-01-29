@@ -27,6 +27,7 @@ namespace JsonCryption.Newtonsoft
                 { typeof(double), dataProtectionProvider => new DoubleConverter(dataProtectionProvider) },
                 { typeof(float), dataProtectionProvider => new FloatConverter(dataProtectionProvider) },
                 { typeof(Guid), dataProtectionProvider => new GuidConverter(dataProtectionProvider) },
+                { typeof(int), dataProtectionProvider => new IntConverter(dataProtectionProvider) },
             };
 
         private static readonly Dictionary<Type, Func<IEncryptedConverter, IValueProvider, IValueProvider>> _valueProviderFactories
@@ -42,6 +43,7 @@ namespace JsonCryption.Newtonsoft
                 { typeof(double), (converter, innerProvider) => new DoubleValueProvider((IEncryptedConverter<double>)converter, innerProvider) },
                 { typeof(float), (converter, innerProvider) => new FloatValueProvider((IEncryptedConverter<float>)converter, innerProvider) },
                 { typeof(Guid), (converter, innerProvider) => new GuidValueProvider((IEncryptedConverter<Guid>)converter, innerProvider) },
+                { typeof(int), (converter, innerProvider) => new IntValueProvider((IEncryptedConverter<int>)converter, innerProvider) },
             };
 
         public ContractResolver(IDataProtectionProvider dataProtectionProvider)
