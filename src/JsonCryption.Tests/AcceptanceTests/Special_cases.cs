@@ -100,8 +100,6 @@ namespace JsonCryption.Tests.AcceptanceTests
             var decrypted = JsonSerializer.Deserialize<FooInternalProperties>(json);
             decrypted.MyString.ShouldBe(foo.MyString);
             decrypted.MyInt.ShouldBe(foo.MyInt);
-
-            throw new NotImplementedException();
         }
 
         private class FooInternalProperties
@@ -126,39 +124,38 @@ namespace JsonCryption.Tests.AcceptanceTests
         }
 
         [Fact]
-        public void Structs_with_supported_properties()
+        public void Structs_with_supported_properties_should_encrypt_and_decrypt()
         {
-            throw new NotImplementedException();
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
+
+            var foo = new BarPublicProperties { MyInt = 57, MyString = "foo" };
+            var json = JsonSerializer.Serialize(foo);
+
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var encryptedInt = jsonDoc.RootElement.GetProperty(nameof(BarPublicProperties.MyInt));
+                encryptedInt.ValueKind.ShouldBe(JsonValueKind.String);
+                encryptedInt.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.MyInt));
+
+                var encryptedString = jsonDoc.RootElement.GetProperty(nameof(BarPublicProperties.MyString));
+                encryptedString.ValueKind.ShouldBe(JsonValueKind.String);
+                encryptedString.GetString().ShouldNotBe(foo.MyString);
+            }
+
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<BarPublicProperties>(json);
+            decrypted.MyString.ShouldBe(foo.MyString);
+            decrypted.MyInt.ShouldBe(foo.MyInt);
         }
 
-        [Fact]
-        public void Structs_with_unsupported_properties()
+        private struct BarPublicProperties
         {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void Structs_with_mix_of_supported_and_unsupported_properties()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void Classes_with_supported_properties()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void Classes_with_unsupported_properties()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void Classes_with_mix_of_supported_and_unsupported_properties()
-        {
-            throw new NotImplementedException();
+            [Encrypt]
+            public int MyInt { get; set; }
+            
+            [Encrypt]
+            public string MyString { get; set; }
         }
     }
 }
