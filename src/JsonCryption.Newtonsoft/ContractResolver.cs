@@ -31,6 +31,7 @@ namespace JsonCryption.Newtonsoft
                 { typeof(long), dataProtectionProvider => new LongConverter(dataProtectionProvider) },
                 { typeof(sbyte), dataProtectionProvider => new SByteConverter(dataProtectionProvider) },
                 { typeof(short), dataProtectionProvider => new ShortConverter(dataProtectionProvider) },
+                { typeof(string), dataProtectionProvider => new StringConverter(dataProtectionProvider) },
             };
 
         private static readonly Dictionary<Type, Func<IEncryptedConverter, IValueProvider, IValueProvider>> _valueProviderFactories
@@ -50,6 +51,7 @@ namespace JsonCryption.Newtonsoft
                 { typeof(long), (converter, innerProvider) => new LongValueProvider((IEncryptedConverter<long>)converter, innerProvider) },
                 { typeof(sbyte), (converter, innerProvider) => new SByteValueProvider((IEncryptedConverter<sbyte>)converter, innerProvider) },
                 { typeof(short), (converter, innerProvider) => new ShortValueProvider((IEncryptedConverter<short>)converter, innerProvider) },
+                { typeof(string), (converter, innerProvider) => new StringValueProvider((IEncryptedConverter<string>)converter, innerProvider) },
             };
 
         public ContractResolver(IDataProtectionProvider dataProtectionProvider)
