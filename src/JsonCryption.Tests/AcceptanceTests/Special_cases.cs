@@ -40,44 +40,43 @@ namespace JsonCryption.Tests.AcceptanceTests
             public string UnencryptedString { get; set; }
         }
 
-        // field support not yet available for System.Text.Json
-        //[Fact]
-        //public void Fields_instead_of_properties()
-        //{
-        //    Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
+        [Fact(Skip = "Waiting to be supported by System.Text.Json")]
+        public void Fields_instead_of_properties()
+        {
+            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
 
-        //    var foo = new FooPublicFields();
-        //    foo.EncryptedInt = 57;
-        //    foo.UnencryptedString = "foo";
+            var foo = new FooPublicFields();
+            foo.EncryptedInt = 57;
+            foo.UnencryptedString = "foo";
 
-        //    var json = JsonSerializer.Serialize(foo);
+            var json = JsonSerializer.Serialize(foo);
 
-        //    // make sure it's encrypted
-        //    using (var jsonDoc = JsonDocument.Parse(json))
-        //    {
-        //        var encryptedInt = jsonDoc.RootElement.GetProperty(nameof(FooPublicFields.EncryptedInt));
-        //        encryptedInt.ValueKind.ShouldBe(JsonValueKind.String);
-        //        encryptedInt.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.EncryptedInt));
+            // make sure it's encrypted
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                var encryptedInt = jsonDoc.RootElement.GetProperty(nameof(FooPublicFields.EncryptedInt));
+                encryptedInt.ValueKind.ShouldBe(JsonValueKind.String);
+                encryptedInt.GetString().ShouldNotBe(JsonSerializer.Serialize(foo.EncryptedInt));
 
-        //        var unencryptedString = jsonDoc.RootElement.GetProperty(nameof(FooPublicFields.UnencryptedString));
-        //        unencryptedString.ValueKind.ShouldBe(JsonValueKind.String);
-        //        unencryptedString.GetString().ShouldBe(foo.UnencryptedString);
-        //    }
+                var unencryptedString = jsonDoc.RootElement.GetProperty(nameof(FooPublicFields.UnencryptedString));
+                unencryptedString.ValueKind.ShouldBe(JsonValueKind.String);
+                unencryptedString.GetString().ShouldBe(foo.UnencryptedString);
+            }
 
-        //    // decrypt and check
-        //    var decrypted = JsonSerializer.Deserialize<FooPublicFields>(json);
-        //    decrypted.UnencryptedString.ShouldBe(foo.UnencryptedString);
-        //    decrypted.EncryptedInt.ShouldBe(foo.EncryptedInt);
-        //}
+            // decrypt and check
+            var decrypted = JsonSerializer.Deserialize<FooPublicFields>(json);
+            decrypted.UnencryptedString.ShouldBe(foo.UnencryptedString);
+            decrypted.EncryptedInt.ShouldBe(foo.EncryptedInt);
+        }
 
-        //private class FooPublicFields
-        //{
-        //    [Encrypt]
-        //    public int EncryptedInt;
-        //    public string UnencryptedString;
-        //}
+        private class FooPublicFields
+        {
+            [Encrypt]
+            public int EncryptedInt;
+            public string UnencryptedString;
+        }
 
-        [Fact]
+        [Fact(Skip = "Waiting to be supported by System.Text.Json")]
         public void Internal_properties()
         {
             Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
@@ -114,13 +113,13 @@ namespace JsonCryption.Tests.AcceptanceTests
             internal string MyString { get; set; }
         }
 
-        [Fact]
+        [Fact(Skip = "Waiting to be supported by System.Text.Json")]
         public void Protected_properties()
         {
             throw new NotImplementedException();
         }
 
-        [Fact]
+        [Fact(Skip = "Waiting to be supported by System.Text.Json")]
         public void Private_properties()
         {
             throw new NotImplementedException();
