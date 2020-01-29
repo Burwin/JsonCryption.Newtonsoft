@@ -48,8 +48,8 @@ namespace JsonCryption.Newtonsoft.Tests
             var contractResolver = new ContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
-            var myDecimal = 123.4567f;
-            var instance = new FooFloatPrivate(myDecimal);
+            var myFloat = 123.4567f;
+            var instance = new FooFloatPrivate(myFloat);
 
             var builder = new StringBuilder();
             using (var textWriter = new StringWriter(builder))
@@ -63,7 +63,7 @@ namespace JsonCryption.Newtonsoft.Tests
             using var reader = new JsonTextReader(textReader);
             var decrypted = serializer.Deserialize<FooFloatPrivate>(reader);
 
-            decrypted.GetMyFloat().ShouldBe(myDecimal);
+            decrypted.GetMyFloat().ShouldBe(myFloat);
         }
 
         private class FooFloatPrivate
