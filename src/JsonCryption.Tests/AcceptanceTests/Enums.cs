@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.DataProtection;
-using Shouldly;
+﻿using Shouldly;
 using System.Text.Json;
 using Xunit;
 

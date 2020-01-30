@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.DataProtection;
-using Shouldly;
+﻿using Shouldly;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
