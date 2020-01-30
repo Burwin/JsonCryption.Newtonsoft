@@ -1,4 +1,4 @@
-﻿using JsonCryption.Encrypters;
+﻿using Microsoft.AspNetCore.DataProtection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -6,12 +6,12 @@ namespace JsonCryption.Converters
 {
     internal abstract class EncryptedConverterFactory : JsonConverterFactory
     {
-        protected readonly Encrypter _encrypter;
+        protected readonly IDataProtectionProvider _dataProtectionProvider;
         protected readonly JsonSerializerOptions _options;
 
-        protected EncryptedConverterFactory(Encrypter encrypter, JsonSerializerOptions options)
+        protected EncryptedConverterFactory(IDataProtectionProvider dataProtectionProvider, JsonSerializerOptions options)
         {
-            _encrypter = encrypter;
+            _dataProtectionProvider = dataProtectionProvider;
             _options = options;
         }
     }

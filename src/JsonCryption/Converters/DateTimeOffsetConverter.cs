@@ -1,4 +1,4 @@
-﻿using JsonCryption.Encrypters;
+﻿using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Linq;
 using System.Text.Json;
@@ -7,7 +7,10 @@ namespace JsonCryption.Converters
 {
     internal sealed class DateTimeOffsetConverter : EncryptedConverter<DateTimeOffset>
     {
-        public DateTimeOffsetConverter(Encrypter encrypter, JsonSerializerOptions options) : base(encrypter, options)
+        private static readonly string _purpose = typeof(DateTimeOffsetConverter).FullName;
+
+        public DateTimeOffsetConverter(IDataProtectionProvider dataProtectionProvider, JsonSerializerOptions options)
+            : base(dataProtectionProvider.CreateProtector(_purpose), options)
         {
         }
 

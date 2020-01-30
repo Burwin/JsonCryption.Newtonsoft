@@ -1,4 +1,4 @@
-﻿using JsonCryption.Encrypters;
+﻿using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Linq;
 using System.Text.Json;
@@ -7,7 +7,10 @@ namespace JsonCryption.Converters
 {
     internal sealed class DecimalConverter : EncryptedConverter<decimal>
     {
-        public DecimalConverter(Encrypter encrypter, JsonSerializerOptions options) : base(encrypter, options)
+        private static readonly string _purpose = typeof(DecimalConverter).FullName;
+
+        public DecimalConverter(IDataProtectionProvider dataProtectionProvider, JsonSerializerOptions options)
+            : base(dataProtectionProvider.CreateProtector(_purpose), options)
         {
         }
 

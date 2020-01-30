@@ -1,5 +1,5 @@
 ﻿using JsonCryption.Converters;
-using JsonCryption.Encrypters;
+using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +10,13 @@ namespace JsonCryption
 {
     public class Coordinator
     {
-        private readonly Dictionary<Type, Func<Encrypter, JsonSerializerOptions, JsonConverter>> _defaultConverterFactories;
+        private readonly Dictionary<Type, Func<IDataProtectionProvider, JsonSerializerOptions, JsonConverter>> _defaultConverterFactories;
         private readonly Dictionary<(Type Type, JsonSerializerOptions Options), JsonConverterFactory> _specialConverterFactories;
         private readonly Dictionary<Type, JsonConverter> _converters; 
         
         public static Coordinator Singleton { get; private set; }
         public CoordinatorOptions Options { get; }
-        internal Encrypter Encrypter => Options.Encrypter;
+        internal IDataProtectionProvider DataProtectionProvider => Options.DataProtectionProvider;
         public JsonSerializerOptions JsonSerializerOptions => Options.JsonSerializerOptions;
 
         private Coordinator(CoordinatorOptions options)
@@ -27,7 +27,7 @@ namespace JsonCryption
 
             _defaultConverterFactories = BuildConverterFactories();
             _converters = _defaultConverterFactories
-                .Select(kvp => (kvp.Key, Converter: kvp.Value.Invoke(Encrypter, JsonSerializerOptions)))
+                .Select(kvp => (kvp.Key, Converter: kvp.Value.Invoke(DataProtectionProvider, JsonSerializerOptions)))
                 .ToDictionary(x => x.Key, x => x.Converter);
         }
 
@@ -58,7 +58,11 @@ namespace JsonCryption
             return Singleton;
         }
 
-        public static Coordinator ConfigureDefault(byte[] key) => Configure(options => options.Encrypter = new AesManagedEncrypter(key));
+        public static Coordinator ConfigureDefault(byte[] key)
+        {
+            //Configure(options => options.DataProtectionProvider = new AesManagedEncrypter(key));
+            throw new NotImplementedException();
+        }
 
         #region Private Helpers
 
@@ -79,14 +83,14 @@ namespace JsonCryption
             if (!_defaultConverterFactories.TryGetValue(typeToConvert, out var factoryMethod))
                 throw new InvalidOperationException($"No Converter for type {typeToConvert.FullName}");
 
-            return factoryMethod.Invoke(Encrypter, options);
+            return factoryMethod.Invoke(DataProtectionProvider, options);
         }
 
         private JsonConverter CreateKeyValuePairConverter(Type typeToConvert, JsonSerializerOptions options)
         {
             var key = (typeToConvert, options);
             if (!_specialConverterFactories.TryGetValue(key, out var factory))
-                _specialConverterFactories[key] = factory = new KeyValuePairConverterFactory(Encrypter, options);
+                _specialConverterFactories[key] = factory = new KeyValuePairConverterFactory(DataProtectionProvider, options);
 
             return factory.CreateConverter(typeToConvert, options);
         }
@@ -95,7 +99,7 @@ namespace JsonCryption
         {
             var key = (typeToConvert, options);
             if (!_specialConverterFactories.TryGetValue(key, out var factory))
-                _specialConverterFactories[key] = factory = new EnumerableConverterFactory(Encrypter, options);
+                _specialConverterFactories[key] = factory = new EnumerableConverterFactory(DataProtectionProvider, options);
 
             return factory.CreateConverter(typeToConvert, options);
         }
@@ -104,14 +108,14 @@ namespace JsonCryption
         {
             var key = (typeToConvert, options);
             if (!_specialConverterFactories.TryGetValue(key, out var factory))
-                _specialConverterFactories[key] = factory = new EnumConverterFactory(Encrypter, options);
+                _specialConverterFactories[key] = factory = new EnumConverterFactory(DataProtectionProvider, options);
 
             return factory.CreateConverter(typeToConvert, options);
         }
 
-        private Dictionary<Type, Func<Encrypter, JsonSerializerOptions, JsonConverter>> BuildConverterFactories()
+        private Dictionary<Type, Func<IDataProtectionProvider, JsonSerializerOptions, JsonConverter>> BuildConverterFactories()
         {
-            return new Dictionary<Type, Func<Encrypter, JsonSerializerOptions, JsonConverter>>
+            return new Dictionary<Type, Func<IDataProtectionProvider, JsonSerializerOptions, JsonConverter>>
             {
                 {typeof(bool), (encrypter, options) => new BooleanConverter(encrypter, options) },
                 {typeof(byte), (encrypter, options) => new ByteConverter(encrypter, options) },

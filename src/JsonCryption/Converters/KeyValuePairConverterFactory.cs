@@ -1,4 +1,4 @@
-﻿using JsonCryption.Encrypters;
+﻿using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -9,7 +9,8 @@ namespace JsonCryption.Converters
 {
     internal sealed class KeyValuePairConverterFactory : EncryptedConverterFactory
     {
-        public KeyValuePairConverterFactory(Encrypter encrypter, JsonSerializerOptions options) : base(encrypter, options)
+        public KeyValuePairConverterFactory(IDataProtectionProvider dataProtectionProvider, JsonSerializerOptions options)
+            : base(dataProtectionProvider, options)
         {
         }
 
@@ -29,7 +30,7 @@ namespace JsonCryption.Converters
                     typeof(KeyValuePairConverter<,>).MakeGenericType(typeToConvert.GenericTypeArguments),
                     BindingFlags.Instance | BindingFlags.Public,
                     binder: null,
-                    args: new object[] { _encrypter, options },
+                    args: new object[] { _dataProtectionProvider, options },
                     culture: null);
         }
     }

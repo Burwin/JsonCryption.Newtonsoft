@@ -1,4 +1,4 @@
-﻿using JsonCryption.Encrypters;
+﻿using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -11,7 +11,8 @@ namespace JsonCryption.Converters
     {
         private readonly Dictionary<(Type Type, JsonSerializerOptions Options), JsonConverter> _cachedConverters;
 
-        public EnumConverterFactory(Encrypter encrypter, JsonSerializerOptions options) : base(encrypter, options)
+        public EnumConverterFactory(IDataProtectionProvider dataProtectionProvider, JsonSerializerOptions options)
+            : base(dataProtectionProvider, options)
         {
             _cachedConverters = new Dictionary<(Type Type, JsonSerializerOptions Options), JsonConverter>();
         }
@@ -27,7 +28,7 @@ namespace JsonCryption.Converters
                     typeof(EnumConverter<>).MakeGenericType(typeToConvert),
                     BindingFlags.Instance | BindingFlags.Public,
                     binder: null,
-                    args: new object[] { _encrypter, _options },
+                    args: new object[] { _dataProtectionProvider, _options },
                     culture: null);
 
             _cachedConverters[(typeToConvert, options)] = converter;

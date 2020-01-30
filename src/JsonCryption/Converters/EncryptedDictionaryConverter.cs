@@ -1,4 +1,4 @@
-﻿using JsonCryption.Encrypters;
+﻿using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,14 +9,14 @@ namespace JsonCryption.Converters
 {
     internal class EncryptedDictionaryConverter<TKey, TValue> : JsonConverter<Dictionary<TKey, TValue>>
     {
-        private readonly Encrypter _encrypter;
+        private readonly IDataProtector _dataProtector;
         private readonly JsonSerializerOptions _options;
         private readonly EncryptedArrayConverter<KeyValuePair<TKey, TValue>> _arrayConverter;
 
-        public EncryptedDictionaryConverter(Encrypter encrypter, JsonSerializerOptions options,
+        public EncryptedDictionaryConverter(IDataProtector dataProtector, JsonSerializerOptions options,
             EncryptedArrayConverter<KeyValuePair<TKey, TValue>> arrayConverter)
         {
-            _encrypter = encrypter;
+            _dataProtector = dataProtector;
             _options = options;
             _arrayConverter = arrayConverter;
         }
