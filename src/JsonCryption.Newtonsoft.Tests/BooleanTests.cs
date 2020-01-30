@@ -14,7 +14,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Public_properties_are_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new ContractResolver(dataProtectionProvider);
+            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var instance = new FooBool { MyBool = true };
@@ -44,7 +44,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Public_properties_not_decorated_with_EncryptAttribute_should_not_be_encrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new ContractResolver(dataProtectionProvider);
+            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var instance = new FooBoolNoEncrypt { MyBool = true };
@@ -73,7 +73,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Internal_properties_are_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new ContractResolver(dataProtectionProvider);
+            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var instance = new FooBoolInternalProperty { MyBool = true };
@@ -105,7 +105,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Protected_properties_are_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new ContractResolver(dataProtectionProvider);
+            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var instance = new FooBoolProtectedProperty(true);
@@ -143,7 +143,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Private_properties_are_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new ContractResolver(dataProtectionProvider);
+            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var instance = new FooBoolPrivateProperty(true);
@@ -181,7 +181,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Public_fields_are_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new ContractResolver(dataProtectionProvider);
+            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var instance = new FooBoolPublicField { MyBool = true };
@@ -212,7 +212,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Internal_fields_are_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new ContractResolver(dataProtectionProvider);
+            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var instance = new FooBoolInternalField { MyBool = true };
@@ -244,7 +244,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Protected_fields_are_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new ContractResolver(dataProtectionProvider);
+            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var instance = new FooBoolProtectedField(true);
@@ -282,7 +282,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Private_fields_are_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new ContractResolver(dataProtectionProvider);
+            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var instance = new FooBoolPrivateField(true);

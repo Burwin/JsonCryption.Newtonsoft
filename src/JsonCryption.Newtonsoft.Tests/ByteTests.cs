@@ -14,7 +14,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Public_properties_are_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new ContractResolver(dataProtectionProvider);
+            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var instance = new FooBytePublic { MyByte = 5 };
@@ -44,7 +44,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Private_fields_are_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new ContractResolver(dataProtectionProvider);
+            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var instance = new FooBytePrivate(5);

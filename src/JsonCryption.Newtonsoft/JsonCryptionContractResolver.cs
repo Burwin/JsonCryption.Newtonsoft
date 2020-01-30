@@ -11,7 +11,7 @@ using System.Reflection;
 
 namespace JsonCryption.Newtonsoft
 {
-    public sealed class ContractResolver : DefaultContractResolver
+    public sealed class JsonCryptionContractResolver : DefaultContractResolver
     {
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
@@ -61,7 +61,7 @@ namespace JsonCryption.Newtonsoft
                 { typeof(ushort), (converter, innerProvider) => new UShortValueProvider((IEncryptedConverter<ushort>)converter, innerProvider) },
             };
 
-        public ContractResolver(IDataProtectionProvider dataProtectionProvider)
+        public JsonCryptionContractResolver(IDataProtectionProvider dataProtectionProvider)
         {
             _dataProtectionProvider = dataProtectionProvider;
         }

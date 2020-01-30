@@ -14,7 +14,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Public_property_is_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new ContractResolver(dataProtectionProvider);
+            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var myEnum = Fruit.Banana;
@@ -52,7 +52,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Private_field_is_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new ContractResolver(dataProtectionProvider);
+            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var myEnum = Sports.Basketball;
