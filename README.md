@@ -1,6 +1,10 @@
 # JsonCryption
 ## Property-level Encrypted JSON serialization
 JsonCryption offers .NET developers the ability to encrypt/decrypt individual properties/fields during serialization using Microsoft.AspNetCore.DataProtection (encryption/decryption, key management, algorithm management, etc.)
+
+### Installation
+Coming soon...
+
 ### Motivation
 Integrating encryption/decryption of specified fields/properties of C# objects at the moment of JSON serialization/deserialization should be:
 - Relatively easy to use
