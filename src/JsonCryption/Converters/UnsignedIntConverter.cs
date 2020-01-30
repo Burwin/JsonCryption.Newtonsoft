@@ -1,4 +1,4 @@
-﻿using JsonCryption.Encrypters;
+﻿using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Text.Json;
 
@@ -6,7 +6,10 @@ namespace JsonCryption.Converters
 {
     internal sealed class UnsignedIntConverter : EncryptedConverter<uint>
     {
-        public UnsignedIntConverter(Encrypter encrypter, JsonSerializerOptions options) : base(encrypter, options)
+        private static readonly string _purpose = typeof(UnsignedIntConverter).FullName;
+
+        public UnsignedIntConverter(IDataProtectionProvider dataProtectionProvider, JsonSerializerOptions options)
+            : base(dataProtectionProvider.CreateProtector(_purpose), options)
         {
         }
 

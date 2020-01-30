@@ -1,4 +1,4 @@
-﻿using JsonCryption.Encrypters;
+﻿using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -11,7 +11,8 @@ namespace JsonCryption.Converters
     {
         private readonly Dictionary<(Type Type, JsonSerializerOptions Options), JsonConverter> _cachedConverters;
         
-        public EnumerableConverterFactory(Encrypter encrypter, JsonSerializerOptions options) : base(encrypter, options)
+        public EnumerableConverterFactory(IDataProtectionProvider dataProtectionProvider, JsonSerializerOptions options)
+            : base(dataProtectionProvider, options)
         {
             _cachedConverters = new Dictionary<(Type Type, JsonSerializerOptions Options), JsonConverter>();
         }
@@ -57,7 +58,7 @@ namespace JsonCryption.Converters
                 typeof(EncryptedEnumerableConverter<>).MakeGenericType(elementType),
                 BindingFlags.Instance | BindingFlags.Public,
                 binder: null,
-                args: new object[] { _encrypter, options, arrayConverter },
+                args: new object[] { _dataProtectionProvider, options, arrayConverter },
                 culture: null);
         }
 
@@ -73,7 +74,7 @@ namespace JsonCryption.Converters
                 typeof(EncryptedDictionaryConverter<,>).MakeGenericType(typeToConvert.GenericTypeArguments),
                 BindingFlags.Instance | BindingFlags.Public,
                 binder: null,
-                args: new object[] { _encrypter, options, arrayConverter },
+                args: new object[] { _dataProtectionProvider, options, arrayConverter },
                 culture: null);
         }
 
@@ -83,7 +84,7 @@ namespace JsonCryption.Converters
                                 typeof(EncryptedArrayConverter<>).MakeGenericType(typeToConvert.GetElementType()),
                                 BindingFlags.Instance | BindingFlags.Public,
                                 binder: null,
-                                args: new object[] { _encrypter, options },
+                                args: new object[] { _dataProtectionProvider, options },
                                 culture: null);
         }
 
@@ -102,7 +103,7 @@ namespace JsonCryption.Converters
                     converterType.MakeGenericType(elementType),
                     BindingFlags.Instance | BindingFlags.Public,
                     binder: null,
-                    args: new object[] { _encrypter, options },
+                    args: new object[] { _dataProtectionProvider, options },
                     culture: null);
         }
 

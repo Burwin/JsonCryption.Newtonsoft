@@ -1,4 +1,4 @@
-﻿using JsonCryption.Encrypters;
+﻿using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,15 +9,15 @@ namespace JsonCryption.Converters
 {
     internal sealed class EncryptedEnumerableConverter<T> : JsonConverter<IEnumerable<T>>
     {
-        private readonly Encrypter _encrypter;
+        private readonly IDataProtector _dataProtector;
         private readonly JsonSerializerOptions _options;
         private readonly EncryptedArrayConverter<T> _arrayConverter;
         private readonly Type _elementType;
         private readonly Type _arrayType;
 
-        public EncryptedEnumerableConverter(Encrypter encrypter, JsonSerializerOptions options, EncryptedArrayConverter<T> arrayConverter)
+        public EncryptedEnumerableConverter(IDataProtector dataProtector, JsonSerializerOptions options, EncryptedArrayConverter<T> arrayConverter)
         {
-            _encrypter = encrypter;
+            _dataProtector = dataProtector;
             _options = options;
             _arrayConverter = arrayConverter;
 

@@ -1,4 +1,4 @@
-﻿using JsonCryption.Encrypters;
+﻿using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Text.Json;
 
@@ -7,7 +7,7 @@ namespace JsonCryption
     public sealed class CoordinatorOptions
     {
         public JsonSerializerOptions JsonSerializerOptions { get; set; }
-        public Encrypter Encrypter { get; set; }
+        public Func<IDataProtectionProvider> DataProtectionProviderFactory { get; set; }
 
         public static CoordinatorOptions Empty => new CoordinatorOptions();
 
@@ -16,19 +16,22 @@ namespace JsonCryption
 
         }
 
-        private CoordinatorOptions(Encrypter encrypter, JsonSerializerOptions options)
+        private CoordinatorOptions(Func<IDataProtectionProvider> dataProtectionProviderFactory, JsonSerializerOptions options)
         {
-            Encrypter = encrypter;
+            DataProtectionProviderFactory = dataProtectionProviderFactory;
             JsonSerializerOptions = options;
         }
 
         public static CoordinatorOptions CreateDefault(byte[] key)
-            => new CoordinatorOptions(new AesManagedEncrypter(key), new JsonSerializerOptions());
+        {
+            //return new CoordinatorOptions(new AesManagedEncrypter(key), new JsonSerializerOptions());
+            throw new NotImplementedException();
+        }
 
         public void Validate()
         {
-            if (Encrypter is null)
-                throw new NullReferenceException(nameof(Encrypter));
+            if (DataProtectionProviderFactory is null)
+                throw new NullReferenceException(nameof(DataProtectionProviderFactory));
         }
     }
 }

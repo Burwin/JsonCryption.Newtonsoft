@@ -1,4 +1,4 @@
-﻿using JsonCryption.Encrypters;
+﻿using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -8,13 +8,13 @@ namespace JsonCryption.Converters
 {
     internal sealed class EncryptedArrayConverter<T> : JsonConverter<T[]>
     {
-        private readonly Encrypter _encrypter;
+        private readonly IDataProtector _dataProtector;
         private readonly JsonSerializerOptions _options;
         private readonly Type _elementType;
 
-        public EncryptedArrayConverter(Encrypter encrypter, JsonSerializerOptions options)
+        public EncryptedArrayConverter(IDataProtector dataProtector, JsonSerializerOptions options)
         {
-            _encrypter = encrypter;
+            _dataProtector = dataProtector;
             _options = options;
             _elementType = typeof(T);
         }
@@ -35,10 +35,11 @@ namespace JsonCryption.Converters
                 if (reader.TokenType != JsonTokenType.String)
                     throw new JsonException();
 
-                var encrypted = reader.GetString();
+                var cipherText = reader.GetString();
                 reader.Read();
 
-                var bytes = _encrypter.DecryptToByteArray(encrypted);
+                var base64 = _dataProtector.Unprotect(cipherText);
+                var bytes = Convert.FromBase64String(base64);
                 var item = elementConverter.FromBytes(bytes);
                 items.Add(item);
             }
@@ -61,8 +62,9 @@ namespace JsonCryption.Converters
                 foreach (var item in value)
                 {
                     var bytes = elementConverter.ToBytes(item);
-                    var encrypted = _encrypter.Encrypt(bytes);
-                    writer.WriteStringValue(encrypted);
+                    var base64 = Convert.ToBase64String(bytes);
+                    var cipherText = _dataProtector.Protect(base64);
+                    writer.WriteStringValue(cipherText);
                 }
 
                 writer.WriteEndArray();

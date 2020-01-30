@@ -1,4 +1,5 @@
-﻿using Shouldly;
+﻿using Microsoft.AspNetCore.DataProtection;
+using Shouldly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void KeyValuePair_of_string_string_works()
         {
-            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
+            Coordinator.ConfigureDefault("test");
 
             var myKvp = new KeyValuePair<string, string>("foo", "bar");
             var foo = new FooKvpStringString { MyKvps = myKvp };
@@ -40,7 +41,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void KeyValuePair_of_int_int_works()
         {
-            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
+            Coordinator.ConfigureDefault("test");
 
             var myKvp = new KeyValuePair<int, int>(int.MinValue, int.MaxValue);
             var foo = new FooKvpIntInt { MyKvps = myKvp };
@@ -68,7 +69,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void KeyValuePair_of_Guid_string_works()
         {
-            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
+            Coordinator.ConfigureDefault("test");
 
             var myKvp = new KeyValuePair<Guid, string>(Guid.NewGuid(), "foo");
             var foo = new FooKvpGuidString { MyKvps = myKvp };
@@ -96,7 +97,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Dictionary_of_string_string_works()
         {
-            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
+            Coordinator.ConfigureDefault("test");
 
             var myStrings = new Dictionary<string, string>
             {
