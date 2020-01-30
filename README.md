@@ -30,7 +30,14 @@ JsonCryption depends on the Microsoft.AspNetCore.DataProtection library. Therefo
 Next, configuration depends on the JSON serializer used...
 
 ##### Newtonsoft.Json
-TODO
+The implementation for Newtonsoft.Json relies on Dependency Injection. To configure JsonCryption, you'll need to register your default JsonSerializer:
+```
+// pseudo code
+container.Register<JsonSerializer>(() => new JsonSerializer()
+  {
+    ContractResolver = new JsonCryptionContractResolver(container.Resolve<IDataProtectionProvider>())
+  });
+```
 
 ##### System.Text.Json
 TODO
