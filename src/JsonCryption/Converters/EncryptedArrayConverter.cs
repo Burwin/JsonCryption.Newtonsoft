@@ -35,11 +35,11 @@ namespace JsonCryption.Converters
                 if (reader.TokenType != JsonTokenType.String)
                     throw new JsonException();
 
-                var encrypted = reader.GetString();
+                var cipherText = reader.GetString();
                 reader.Read();
 
-                var unencrypted = _dataProtector.Unprotect(encrypted);
-                var bytes = Convert.FromBase64String(unencrypted);
+                var base64 = _dataProtector.Unprotect(cipherText);
+                var bytes = Convert.FromBase64String(base64);
                 var item = elementConverter.FromBytes(bytes);
                 items.Add(item);
             }
@@ -62,8 +62,8 @@ namespace JsonCryption.Converters
                 foreach (var item in value)
                 {
                     var bytes = elementConverter.ToBytes(item);
-                    var encryptedBytes = _dataProtector.Protect(bytes);
-                    var cipherText = Convert.ToBase64String(encryptedBytes);
+                    var base64 = Convert.ToBase64String(bytes);
+                    var cipherText = _dataProtector.Protect(base64);
                     writer.WriteStringValue(cipherText);
                 }
 

@@ -7,7 +7,7 @@ namespace JsonCryption
     public sealed class CoordinatorOptions
     {
         public JsonSerializerOptions JsonSerializerOptions { get; set; }
-        public IDataProtectionProvider DataProtectionProvider { get; set; }
+        public Func<IDataProtectionProvider> DataProtectionProviderFactory { get; set; }
 
         public static CoordinatorOptions Empty => new CoordinatorOptions();
 
@@ -16,9 +16,9 @@ namespace JsonCryption
 
         }
 
-        private CoordinatorOptions(IDataProtectionProvider dataProtectionProvider, JsonSerializerOptions options)
+        private CoordinatorOptions(Func<IDataProtectionProvider> dataProtectionProviderFactory, JsonSerializerOptions options)
         {
-            DataProtectionProvider = dataProtectionProvider;
+            DataProtectionProviderFactory = dataProtectionProviderFactory;
             JsonSerializerOptions = options;
         }
 
@@ -30,8 +30,8 @@ namespace JsonCryption
 
         public void Validate()
         {
-            if (DataProtectionProvider is null)
-                throw new NullReferenceException(nameof(DataProtectionProvider));
+            if (DataProtectionProviderFactory is null)
+                throw new NullReferenceException(nameof(DataProtectionProviderFactory));
         }
     }
 }

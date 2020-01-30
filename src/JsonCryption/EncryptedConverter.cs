@@ -25,7 +25,9 @@ namespace JsonCryption
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         {
             var bytes = ToBytes(value);
-            writer.WriteStringValue(_dataProtector.Protect(bytes));
+            var base64 = Convert.ToBase64String(bytes);
+            var cipherText = _dataProtector.Protect(base64);
+            writer.WriteStringValue(cipherText);
         }
 
         protected byte[] DecryptString(ref Utf8JsonReader reader)
@@ -34,9 +36,9 @@ namespace JsonCryption
             if (reader.TokenType != JsonTokenType.String)
                 throw new JsonException();
 
-            var encrypted = reader.GetString();
-            var unencrypted = _dataProtector.Unprotect(encrypted);
-            return Convert.FromBase64String(unencrypted);
+            var cipherText = reader.GetString();
+            var base64 = _dataProtector.Unprotect(cipherText);
+            return Convert.FromBase64String(base64);
         }
 
         public abstract T FromBytes(byte[] bytes);

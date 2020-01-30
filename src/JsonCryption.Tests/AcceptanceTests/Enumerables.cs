@@ -1,4 +1,5 @@
-﻿using Shouldly;
+﻿using Microsoft.AspNetCore.DataProtection;
+using Shouldly;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -11,7 +12,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void String_enumerable_works()
         {
-            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
+            Coordinator.ConfigureDefault("test");
 
             var myStrings = new[] { "some", "strings", "to test" };
             var foo = new FooStringEnumerable { MyStrings = myStrings };
@@ -46,7 +47,7 @@ namespace JsonCryption.Tests.AcceptanceTests
         [Fact]
         public void Int_enumerable_works()
         {
-            Coordinator.ConfigureDefault(Helpers.GenerateRandomKey());
+            Coordinator.ConfigureDefault("test");
 
             var myInts = new[] { int.MinValue, -1, 0, 1, int.MaxValue };
             var foo = new FooIntEnumerable { MyInts = myInts };
