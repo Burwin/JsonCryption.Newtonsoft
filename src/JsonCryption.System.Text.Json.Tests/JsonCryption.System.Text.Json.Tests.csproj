@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JsonCryption.System.Text.Json\JsonCryption.System.Text.Json.csproj" />
-    <ProjectReference Include="..\JsonCryption\JsonCryption.csproj" />
   </ItemGroup>
 
 </Project>
