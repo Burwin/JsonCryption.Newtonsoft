@@ -1,4 +1,4 @@
-﻿using JsonCryption.ByteConverters;
+﻿using JsonCryption.System.Text.Json;
 using Microsoft.AspNetCore.DataProtection;
 using System.Text.Json;
 
@@ -9,7 +9,7 @@ namespace JsonCryption.Converters
         private static readonly string _purpose = typeof(DecimalConverter).FullName;
 
         public DecimalConverter(IDataProtectionProvider dataProtectionProvider, JsonSerializerOptions options)
-            : base(dataProtectionProvider.CreateProtector(_purpose), options, new DecimalByteConverter())
+            : base(dataProtectionProvider.CreateProtector(_purpose), options, Coordinator.GetByteConverter<decimal>())
         {
         }
     }

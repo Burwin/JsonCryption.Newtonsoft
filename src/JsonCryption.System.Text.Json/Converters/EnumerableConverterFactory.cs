@@ -84,7 +84,7 @@ namespace JsonCryption.Converters
         private JsonConverter CreateArrayConverter(Type typeToConvert, JsonSerializerOptions options)
         {
             var elementType = typeToConvert.GetElementType();
-            var byteConverter = Coordinator.Singleton.GetByteConverter(elementType, options);
+            var byteConverter = Coordinator.GetByteConverter(elementType);
             
             return (JsonConverter)Activator.CreateInstance(
                                 typeof(EncryptedArrayConverter<>).MakeGenericType(typeToConvert.GetElementType()),

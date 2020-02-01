@@ -1,4 +1,4 @@
-﻿using JsonCryption.ByteConverters;
+﻿using JsonCryption.System.Text.Json;
 using Microsoft.AspNetCore.DataProtection;
 using System.Text.Json;
 
@@ -8,7 +8,7 @@ namespace JsonCryption.Converters
     {
         private static readonly string _purpose = typeof(ByteArrayConverter).FullName;
         public ByteArrayConverter(IDataProtectionProvider dataProtectionProvider, JsonSerializerOptions options)
-            : base(dataProtectionProvider.CreateProtector(_purpose), options, new ByteArrayByteConverter())
+            : base(dataProtectionProvider.CreateProtector(_purpose), options, Coordinator.GetByteConverter<byte[]>())
         {
         }
     }
