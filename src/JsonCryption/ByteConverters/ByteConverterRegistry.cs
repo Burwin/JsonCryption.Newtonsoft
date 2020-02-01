@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace JsonCryption.ByteConverters
 {
@@ -29,6 +30,8 @@ namespace JsonCryption.ByteConverters
 
         public IByteConverter<T> GetByteConverter<T>() => (IByteConverter<T>)_byteConverters[typeof(T)];
 
+        public object GetByteConverter(Type type) => _byteConverters[type];
+
         public void Add<T>(IByteConverter<T> converter)
         {
             _byteConverters.Add(typeof(T), converter);
@@ -51,6 +54,23 @@ namespace JsonCryption.ByteConverters
 
             converter = null;
             return false;
+        }
+
+        public object GetOrCreateEnumConverter(Type type)
+        {
+            if (TryGetByteConverter(type, out var converter))
+                return converter;
+            
+            converter = Activator.CreateInstance(
+                typeof(EnumByteConverter<>).MakeGenericType(type),
+                BindingFlags.Instance | BindingFlags.Public,
+                binder: null,
+                args: null,
+                culture: null);
+
+            Add(type, converter);
+
+            return converter;
         }
     }
 }

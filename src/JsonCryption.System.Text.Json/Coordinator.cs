@@ -100,14 +100,12 @@ namespace JsonCryption.System.Text.Json
         {
             if (_byteConverterRegistry.TryGetByteConverter(type, out var converter))
                 return converter;
-            
+
             if (type.IsEnum)
-                converter = GetEnumByteConverter(type);
+                converter = _byteConverterRegistry.GetOrCreateEnumConverter(type);
 
             if (type.IsKeyValuePair())
                 converter = GetKeyValuePairByteConverter(type);
-
-            _byteConverterRegistry.Add(type, converter);
 
             return converter;
         }
@@ -116,22 +114,16 @@ namespace JsonCryption.System.Text.Json
 
         private static object GetKeyValuePairByteConverter(Type type)
         {
-            return Activator.CreateInstance(
+            var converter = Activator.CreateInstance(
                 typeof(KeyValuePairByteConverter<,>).MakeGenericType(type.GenericTypeArguments),
                 BindingFlags.Instance | BindingFlags.Public,
                 binder: null,
                 args: null,
                 culture: null);
-        }
 
-        private static object GetEnumByteConverter(Type type)
-        {
-            return Activator.CreateInstance(
-                typeof(EnumByteConverter<>).MakeGenericType(type),
-                BindingFlags.Instance | BindingFlags.Public,
-                binder: null,
-                args: null,
-                culture: null);
+            _byteConverterRegistry.Add(type, converter);
+
+            return converter;
         }
 
         private JsonConverter CreateEnumerableConverter(Type typeToConvert, JsonSerializerOptions options)

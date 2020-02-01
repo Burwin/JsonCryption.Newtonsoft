@@ -7,8 +7,8 @@ namespace JsonCryption.Newtonsoft.JsonConverters
     {
         private static readonly string _purpose = typeof(BoolConverter).FullName;
         
-        public BoolConverter(IDataProtectionProvider dataProtectionProvider)
-            : base(dataProtectionProvider.CreateProtector(_purpose), new BoolByteConverter())
+        public BoolConverter(IDataProtectionProvider dataProtectionProvider, IByteConverter<bool> byteConverter)
+            : base(dataProtectionProvider.CreateProtector(_purpose), byteConverter)
         {
         }
     }

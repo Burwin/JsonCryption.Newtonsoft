@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace JsonCryption.ByteConverters
 {
-    public sealed class DateTimeOffsetByteConverter : IByteConverter<DateTimeOffset>
+    internal sealed class DateTimeOffsetByteConverter : IByteConverter<DateTimeOffset>
     {
         public DateTimeOffset FromBytes(byte[] bytes)
         {

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace JsonCryption.ByteConverters
 {
-    public sealed class DecimalByteConverter : IByteConverter<decimal>
+    internal sealed class DecimalByteConverter : IByteConverter<decimal>
     {
         public decimal FromBytes(byte[] bytes)
         {
