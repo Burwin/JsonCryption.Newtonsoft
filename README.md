@@ -29,12 +29,13 @@ JsonCryption should support any type serializable by the JSON serializer library
 
 ### Getting Started
 #### Configuration
-JsonCryption depends on the Microsoft.AspNetCore.DataProtection library. Therefore, you should first ensure that your DataProtection layer is [configured properly](https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/).
+##### Step 1: Configure Microsoft.AspNetCore.DataProtection
+JsonCryption depends on the `Microsoft.AspNetCore.DataProtection` library. Therefore, you should first ensure that your DataProtection layer is [configured properly](https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/).
 
 Next, configuration depends on the JSON serializer used...
 
-##### Newtonsoft.Json
-The implementation for Newtonsoft.Json relies on Dependency Injection. To configure JsonCryption, you'll need to register your default JsonSerializer:
+##### Step 2a: Configure Newtonsoft.Json
+The implementation for `Newtonsoft.Json` relies on Dependency Injection. To configure JsonCryption, you'll need to register your default JsonSerializer:
 ```
 // pseudo code
 container.Register<JsonSerializer>(() => new JsonSerializer()
@@ -43,8 +44,28 @@ container.Register<JsonSerializer>(() => new JsonSerializer()
   });
 ```
 
-##### System.Text.Json
-TODO
+##### Step 2b: Configure System.Text.Json
+`System.Text.Json` uses the static `JsonSerializer` to perform serialization operations. At the moment, that significantly changes the steps required for initial configuration. Nonetheless, I'm still trying to keep it simple.
+
+The first thing to go is Dependency Injection, which is weird considering how modern the `System.Text.Json` package is. So instead, I'm using a Singleton `Coordinator` to manage configuration... and I feel dirty doing it. I have some ideas for cleaning this up, but if anybody wants to take a crack at cleaning this to use DI, feel free to contact me and/or submit a PR.
+
+###### Default (for testing)
+The default configuration simply sets the root IDataProtectionProvider to use that provided by the static `DataProtectionProvider` class, given an application name. This should probably only be used for testing.
+```
+// somewhere before any serialization happens
+Coordinator.ConfigureDefault("my application name");
+```
+###### Custom (for everything else)
+For everything but testing...
+```
+// somewhere in your startup
+// pseudo code
+Coordinator.Configure(options =>
+{
+  options.DataProtectionProvider = container.Resolve<IDataProtectionProvider>();
+  options.JsonSerializerOptions = ...
+});
+```
 
 #### Usage
 Once configured, using JsonCryption is just a matter of decorating the properties/fields you wish to encrypt and the `EncryptAttribute` and serializing your C# objects as you normally would:
