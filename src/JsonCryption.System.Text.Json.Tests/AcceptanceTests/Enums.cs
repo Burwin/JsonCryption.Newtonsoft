@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Xunit;
 
-namespace JsonCryption.Tests.AcceptanceTests
+namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
 {
     public class Enums
     {

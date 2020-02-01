@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonCryption.Newtonsoft.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonCryption.System.Text.Json", "JsonCryption.System.Text.Json\JsonCryption.System.Text.Json.csproj", "{AE16BE0D-3FF4-4A3D-8007-930A3BFA35C1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonCryption.System.Text.Json.Tests", "JsonCryption.System.Text.Json.Tests\JsonCryption.System.Text.Json.Tests.csproj", "{A1A38F62-797F-4F05-A5CA-6BEECB457386}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{AE16BE0D-3FF4-4A3D-8007-930A3BFA35C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE16BE0D-3FF4-4A3D-8007-930A3BFA35C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE16BE0D-3FF4-4A3D-8007-930A3BFA35C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1A38F62-797F-4F05-A5CA-6BEECB457386}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1A38F62-797F-4F05-A5CA-6BEECB457386}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1A38F62-797F-4F05-A5CA-6BEECB457386}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1A38F62-797F-4F05-A5CA-6BEECB457386}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

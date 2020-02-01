@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace JsonCryption.Tests
+namespace JsonCryption.System.Text.Json.Tests
 {
     class Helpers
     {
