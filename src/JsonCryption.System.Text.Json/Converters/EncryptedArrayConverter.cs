@@ -25,50 +25,60 @@ namespace JsonCryption.Converters
 
         public override T[] Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if (reader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
+            var cipherText = reader.GetString();
+            var plainText = _dataProtector.Unprotect(cipherText);
+            var deserialized = JsonSerializer.Deserialize<T[]>(plainText);
+            return deserialized;
 
-            reader.Read();
+            //if (reader.TokenType != JsonTokenType.StartArray)
+            //    throw new JsonException();
+
+            //reader.Read();
             
-            var items = new List<T>();
+            //var items = new List<T>();
 
-            while (reader.TokenType != JsonTokenType.EndArray)
-            {
-                if (reader.TokenType != JsonTokenType.String)
-                    throw new JsonException();
+            //while (reader.TokenType != JsonTokenType.EndArray)
+            //{
+            //    if (reader.TokenType != JsonTokenType.String)
+            //        throw new JsonException();
 
-                var cipherText = reader.GetString();
-                reader.Read();
+            //    var cipherText = reader.GetString();
+            //    reader.Read();
 
-                var base64 = _dataProtector.Unprotect(cipherText);
-                var bytes = Convert.FromBase64String(base64);
-                var item = _byteConverter.FromBytes(bytes);
-                items.Add(item);
-            }
+            //    var base64 = _dataProtector.Unprotect(cipherText);
+            //    var bytes = Convert.FromBase64String(base64);
+            //    var item = _byteConverter.FromBytes(bytes);
+            //    items.Add(item);
+            //}
 
-            return items.ToArray();
+            //return items.ToArray();
         }
 
         public override void Write(Utf8JsonWriter writer, T[] value, JsonSerializerOptions options)
         {
-            if (value is null)
-            {
-                writer.WriteNullValue();
-            }
-            else
-            {
-                writer.WriteStartArray();
+            var plainText = JsonSerializer.Serialize(value, options);
+            var cipherText = _dataProtector.Protect(plainText);
+            writer.WriteStringValue(cipherText);
+            
+            
+            //if (value is null)
+            //{
+            //    writer.WriteNullValue();
+            //}
+            //else
+            //{
+            //    writer.WriteStartArray();
 
-                foreach (var item in value)
-                {
-                    var bytes = _byteConverter.ToBytes(item);
-                    var base64 = Convert.ToBase64String(bytes);
-                    var cipherText = _dataProtector.Protect(base64);
-                    writer.WriteStringValue(cipherText);
-                }
+            //    foreach (var item in value)
+            //    {
+            //        var bytes = _byteConverter.ToBytes(item);
+            //        var base64 = Convert.ToBase64String(bytes);
+            //        var cipherText = _dataProtector.Protect(base64);
+            //        writer.WriteStringValue(cipherText);
+            //    }
 
-                writer.WriteEndArray();
-            }
+            //    writer.WriteEndArray();
+            //}
         }
 
         private EncryptedConverter<T> GetElementConverter(JsonSerializerOptions options)

@@ -111,14 +111,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
             using (var jsonDoc = JsonDocument.Parse(json))
             {
                 var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooStringDictionary.MyStrings));
-                jsonProperty.ValueKind.ShouldBe(JsonValueKind.Array);
-
-                var jsonProperties = jsonProperty.EnumerateArray().ToList();
-                jsonProperties.ForEach(el => el.ValueKind.ShouldBe(JsonValueKind.String));
-
-                // shouldn't match any keys or values
-                jsonProperties.ForEach(el => myStrings.Keys.ToList().ForEach(key => key.ShouldNotBe(el.GetString())));
-                jsonProperties.ForEach(el => myStrings.Values.ToList().ForEach(key => key.ShouldNotBe(el.GetString())));
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
             }
 
             // decrypt and check
