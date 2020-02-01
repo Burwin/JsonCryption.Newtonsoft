@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.DataProtection;
-using System;
+﻿using JsonCryption.ByteConverters;
+using Microsoft.AspNetCore.DataProtection;
 using System.Text.Json;
 
 namespace JsonCryption.Converters
@@ -9,11 +9,8 @@ namespace JsonCryption.Converters
         private static readonly string _purpose = typeof(UnsignedIntConverter).FullName;
 
         public UnsignedIntConverter(IDataProtectionProvider dataProtectionProvider, JsonSerializerOptions options)
-            : base(dataProtectionProvider.CreateProtector(_purpose), options)
+            : base(dataProtectionProvider.CreateProtector(_purpose), options, new UIntByteConverter())
         {
         }
-
-        public override uint FromBytes(byte[] bytes) => BitConverter.ToUInt32(bytes, 0);
-        public override byte[] ToBytes(uint value) => BitConverter.GetBytes(value);
     }
 }

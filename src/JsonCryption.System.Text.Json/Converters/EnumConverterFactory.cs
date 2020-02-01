@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.DataProtection;
+﻿using JsonCryption.ByteConverters;
+using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -10,11 +11,13 @@ namespace JsonCryption.Converters
     internal sealed class EnumConverterFactory : EncryptedConverterFactory
     {
         private readonly Dictionary<(Type Type, JsonSerializerOptions Options), JsonConverter> _cachedConverters;
+        private readonly Dictionary<Type, object> _cachedByteConverters;
 
         public EnumConverterFactory(IDataProtectionProvider dataProtectionProvider, JsonSerializerOptions options)
             : base(dataProtectionProvider, options)
         {
             _cachedConverters = new Dictionary<(Type Type, JsonSerializerOptions Options), JsonConverter>();
+            _cachedByteConverters = new Dictionary<Type, object>();
         }
 
         public override bool CanConvert(Type typeToConvert) => typeToConvert.IsEnum;

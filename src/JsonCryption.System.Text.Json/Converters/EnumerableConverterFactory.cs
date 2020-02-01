@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.DataProtection;
+﻿using JsonCryption.System.Text.Json;
+using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -10,11 +11,13 @@ namespace JsonCryption.Converters
     internal class EnumerableConverterFactory : EncryptedConverterFactory
     {
         private readonly Dictionary<(Type Type, JsonSerializerOptions Options), JsonConverter> _cachedConverters;
+        private readonly Dictionary<Type, object> _cachedByteConverters;
         
         public EnumerableConverterFactory(IDataProtectionProvider dataProtectionProvider, JsonSerializerOptions options)
             : base(dataProtectionProvider, options)
         {
             _cachedConverters = new Dictionary<(Type Type, JsonSerializerOptions Options), JsonConverter>();
+            _cachedByteConverters = new Dictionary<Type, object>();
         }
 
         public override bool CanConvert(Type typeToConvert) => CanConvertType(typeToConvert);
@@ -80,11 +83,14 @@ namespace JsonCryption.Converters
 
         private JsonConverter CreateArrayConverter(Type typeToConvert, JsonSerializerOptions options)
         {
+            var elementType = typeToConvert.GetElementType();
+            var byteConverter = Coordinator.Singleton.GetByteConverter(elementType, options);
+            
             return (JsonConverter)Activator.CreateInstance(
                                 typeof(EncryptedArrayConverter<>).MakeGenericType(typeToConvert.GetElementType()),
                                 BindingFlags.Instance | BindingFlags.Public,
                                 binder: null,
-                                args: new object[] { _dataProtectionProvider, options },
+                                args: new object[] { _dataProtectionProvider, options, byteConverter },
                                 culture: null);
         }
 

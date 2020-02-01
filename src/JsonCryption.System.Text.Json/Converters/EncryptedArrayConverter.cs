@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.DataProtection;
+﻿using JsonCryption.ByteConverters;
+using JsonCryption.System.Text.Json;
+using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -10,12 +12,14 @@ namespace JsonCryption.Converters
     {
         private readonly IDataProtector _dataProtector;
         private readonly JsonSerializerOptions _options;
+        private readonly IByteConverter<T> _byteConverter;
         private readonly Type _elementType;
 
-        public EncryptedArrayConverter(IDataProtector dataProtector, JsonSerializerOptions options)
+        public EncryptedArrayConverter(IDataProtector dataProtector, JsonSerializerOptions options, IByteConverter<T> byteConverter)
         {
             _dataProtector = dataProtector;
             _options = options;
+            _byteConverter = byteConverter;
             _elementType = typeof(T);
         }
 
@@ -26,8 +30,6 @@ namespace JsonCryption.Converters
 
             reader.Read();
             
-            var elementConverter = GetElementConverter(options);
-
             var items = new List<T>();
 
             while (reader.TokenType != JsonTokenType.EndArray)
@@ -40,7 +42,7 @@ namespace JsonCryption.Converters
 
                 var base64 = _dataProtector.Unprotect(cipherText);
                 var bytes = Convert.FromBase64String(base64);
-                var item = elementConverter.FromBytes(bytes);
+                var item = _byteConverter.FromBytes(bytes);
                 items.Add(item);
             }
 
@@ -55,13 +57,11 @@ namespace JsonCryption.Converters
             }
             else
             {
-                var elementConverter = GetElementConverter(options);
-                
                 writer.WriteStartArray();
 
                 foreach (var item in value)
                 {
-                    var bytes = elementConverter.ToBytes(item);
+                    var bytes = _byteConverter.ToBytes(item);
                     var base64 = Convert.ToBase64String(bytes);
                     var cipherText = _dataProtector.Protect(base64);
                     writer.WriteStringValue(cipherText);

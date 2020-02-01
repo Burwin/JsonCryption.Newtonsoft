@@ -1,18 +1,22 @@
-﻿using JsonCryption.Converters;
+﻿using JsonCryption.ByteConverters;
+using JsonCryption.Converters;
+using JsonCryption.System.Text.Json.ByteConverters;
 using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace JsonCryption
+namespace JsonCryption.System.Text.Json
 {
     public class Coordinator
     {
         private readonly Dictionary<Type, Func<IDataProtectionProvider, JsonSerializerOptions, JsonConverter>> _defaultConverterFactories;
         private readonly Dictionary<(Type Type, JsonSerializerOptions Options), JsonConverterFactory> _specialConverterFactories;
-        private readonly Dictionary<Type, JsonConverter> _converters; 
+        private readonly Dictionary<Type, JsonConverter> _converters;
+        private readonly Dictionary<Type, object> _byteConverters;
         
         public static Coordinator Singleton { get; private set; }
         public CoordinatorOptions Options { get; }
@@ -25,10 +29,37 @@ namespace JsonCryption
 
             _specialConverterFactories = new Dictionary<(Type Type, JsonSerializerOptions Options), JsonConverterFactory>();
 
+            _byteConverters = BuildByteConverters(Options);
+
             _defaultConverterFactories = BuildConverterFactories();
             _converters = _defaultConverterFactories
                 .Select(kvp => (kvp.Key, Converter: kvp.Value.Invoke(_dataProtectionProviderFactory.Invoke(), JsonSerializerOptions)))
                 .ToDictionary(x => x.Key, x => x.Converter);
+        }
+
+        private Dictionary<Type, object> BuildByteConverters(CoordinatorOptions options)
+        {
+            return new Dictionary<Type, object>
+            {
+                { typeof(bool), new BoolByteConverter() },
+                { typeof(byte[]), new ByteArrayByteConverter() },
+                { typeof(byte), new ByteByteConverter() },
+                { typeof(char), new CharByteConverter() },
+                { typeof(DateTime), new DateTimeByteConverter() },
+                { typeof(DateTimeOffset), new DateTimeOffsetByteConverter() },
+                { typeof(decimal), new DecimalByteConverter() },
+                { typeof(double), new DoubleByteConverter() },
+                { typeof(float), new FloatByteConverter() },
+                { typeof(Guid), new GuidByteConverter() },
+                { typeof(int), new IntByteConverter() },
+                { typeof(long), new LongByteConverter() },
+                { typeof(sbyte), new SByteByteConverter() },
+                { typeof(short), new ShortByteConverter() },
+                { typeof(string), new StringByteConverter() },
+                { typeof(uint), new UIntByteConverter() },
+                { typeof(ulong), new ULongByteConverter() },
+                { typeof(ushort), new UShortByteConverter() },
+            };
         }
 
         internal JsonConverter GetConverter(Type typeToConvert, JsonSerializerOptions options)
@@ -91,6 +122,29 @@ namespace JsonCryption
 
             return factory.CreateConverter(typeToConvert, options);
         }
+
+        internal object GetByteConverter(Type type, JsonSerializerOptions options)
+        {
+            if (type.IsEnum)
+                return GetEnumByteConverter(type);
+
+            if (type.IsKeyValuePair())
+                return GetKeyValuePairByteConverter(type, options);
+
+            return _byteConverters[type];
+        }
+
+        private object GetKeyValuePairByteConverter(Type type, JsonSerializerOptions options)
+        {
+            return Activator.CreateInstance(
+                typeof(KeyValuePairByteConverter<,>).MakeGenericType(type.GenericTypeArguments),
+                BindingFlags.Instance | BindingFlags.Public,
+                binder: null,
+                args: new object[] { options },
+                culture: null);
+        }
+
+        private object GetEnumByteConverter(Type type) => throw new NotImplementedException();
 
         private JsonConverter CreateEnumerableConverter(Type typeToConvert, JsonSerializerOptions options)
         {

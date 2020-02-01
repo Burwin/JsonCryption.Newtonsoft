@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.DataProtection;
+﻿using JsonCryption.ByteConverters;
+using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -9,22 +10,24 @@ namespace JsonCryption
     {
         protected readonly IDataProtector _dataProtector;
         protected readonly JsonSerializerOptions _options;
+        private readonly IByteConverter<T> _byteConverter;
 
-        protected EncryptedConverter(IDataProtector dataProtector, JsonSerializerOptions options)
+        protected EncryptedConverter(IDataProtector dataProtector, JsonSerializerOptions options, IByteConverter<T> byteConverter)
         {
             _dataProtector = dataProtector;
             _options = options;
+            _byteConverter = byteConverter;
         }
 
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var bytes = ReadToBytes(ref reader, typeToConvert, options);
-            return FromBytes(bytes);
+            return _byteConverter.FromBytes(bytes);
         }
 
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         {
-            var bytes = ToBytes(value);
+            var bytes = _byteConverter.ToBytes(value);
             var base64 = Convert.ToBase64String(bytes);
             var cipherText = _dataProtector.Protect(base64);
             writer.WriteStringValue(cipherText);
@@ -40,10 +43,6 @@ namespace JsonCryption
             var base64 = _dataProtector.Unprotect(cipherText);
             return Convert.FromBase64String(base64);
         }
-
-        public abstract T FromBytes(byte[] bytes);
-
-        public abstract byte[] ToBytes(T value);
 
         protected virtual byte[] ReadToBytes(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             => DecryptString(ref reader);
