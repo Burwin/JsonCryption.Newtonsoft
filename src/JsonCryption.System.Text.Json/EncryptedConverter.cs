@@ -27,9 +27,9 @@ namespace JsonCryption
 
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         {
-            var bytes = _byteConverter.ToBytes(value);
-            var base64 = Convert.ToBase64String(bytes);
-            var cipherText = _dataProtector.Protect(base64);
+            var unprotectedBytes = _byteConverter.ToBytes(value);
+            var protectedBytes = _dataProtector.Protect(unprotectedBytes);
+            var cipherText = Convert.ToBase64String(protectedBytes);
             writer.WriteStringValue(cipherText);
         }
 
@@ -40,8 +40,9 @@ namespace JsonCryption
                 throw new JsonException();
 
             var cipherText = reader.GetString();
-            var base64 = _dataProtector.Unprotect(cipherText);
-            return Convert.FromBase64String(base64);
+            var protectedBytes = Convert.FromBase64String(cipherText);
+            var unprotectedBytes = _dataProtector.Unprotect(protectedBytes);
+            return unprotectedBytes;
         }
 
         protected virtual byte[] ReadToBytes(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
