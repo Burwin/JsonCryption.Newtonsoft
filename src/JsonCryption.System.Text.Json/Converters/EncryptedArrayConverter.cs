@@ -1,8 +1,6 @@
 ﻿using JsonCryption.ByteConverters;
-using JsonCryption.System.Text.Json;
 using Microsoft.AspNetCore.DataProtection;
 using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -11,16 +9,10 @@ namespace JsonCryption.Converters
     internal sealed class EncryptedArrayConverter<T> : JsonConverter<T[]>
     {
         private readonly IDataProtector _dataProtector;
-        private readonly JsonSerializerOptions _options;
-        private readonly IByteConverter<T> _byteConverter;
-        private readonly Type _elementType;
 
         public EncryptedArrayConverter(IDataProtector dataProtector, JsonSerializerOptions options, IByteConverter<T> byteConverter)
         {
             _dataProtector = dataProtector;
-            _options = options;
-            _byteConverter = byteConverter;
-            _elementType = typeof(T);
         }
 
         public override T[] Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -36,13 +28,6 @@ namespace JsonCryption.Converters
             var plainText = JsonSerializer.Serialize(value, options);
             var cipherText = _dataProtector.Protect(plainText);
             writer.WriteStringValue(cipherText);
-        }
-
-        private EncryptedConverter<T> GetElementConverter(JsonSerializerOptions options)
-        {
-            if (!(Coordinator.Singleton.GetConverter(_elementType, options ?? _options) is EncryptedConverter<T> itemConverter))
-                throw new JsonException();
-            return itemConverter;
         }
     }
 }
