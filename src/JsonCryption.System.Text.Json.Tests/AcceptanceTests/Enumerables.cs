@@ -1,6 +1,5 @@
 ﻿using Shouldly;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using Xunit;
 
@@ -21,15 +20,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
             using (var jsonDoc = JsonDocument.Parse(json))
             {
                 var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooStringEnumerable.MyStrings));
-                jsonProperty.ValueKind.ShouldBe(JsonValueKind.Array);
-
-                var jsonProperties = jsonProperty.EnumerateArray().ToList();
-                jsonProperties.ForEach(el => el.ValueKind.ShouldBe(JsonValueKind.String));
-
-                for (int i = 0; i < jsonProperties.Count; i++)
-                {
-                    jsonProperties[i].GetString().ShouldNotBe(myStrings[i]);
-                }
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
             }
 
             // decrypt and check
@@ -56,15 +47,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
             using (var jsonDoc = JsonDocument.Parse(json))
             {
                 var jsonProperty = jsonDoc.RootElement.GetProperty(nameof(FooIntEnumerable.MyInts));
-                jsonProperty.ValueKind.ShouldBe(JsonValueKind.Array);
-
-                var jsonProperties = jsonProperty.EnumerateArray().ToList();
-                jsonProperties.ForEach(el => el.ValueKind.ShouldBe(JsonValueKind.String));
-
-                for (int i = 0; i < jsonProperties.Count; i++)
-                {
-                    jsonProperties[i].GetString().ShouldNotBe(myInts[i].ToString());
-                }
+                jsonProperty.ValueKind.ShouldBe(JsonValueKind.String);
             }
 
             // decrypt and check
