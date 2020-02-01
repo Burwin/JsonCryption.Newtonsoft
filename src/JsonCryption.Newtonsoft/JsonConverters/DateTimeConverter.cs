@@ -1,4 +1,4 @@
-﻿using JsonCryption.Newtonsoft.ByteConverters;
+﻿using JsonCryption.ByteConverters;
 using Microsoft.AspNetCore.DataProtection;
 using System;
 
@@ -8,8 +8,8 @@ namespace JsonCryption.Newtonsoft.JsonConverters
     {
         private static readonly string _purpose = typeof(DateTimeConverter).FullName;
 
-        public DateTimeConverter(IDataProtectionProvider dataProtectionProvider)
-            : base(dataProtectionProvider.CreateProtector(_purpose), new DateTimeByteConverter())
+        public DateTimeConverter(IDataProtectionProvider dataProtectionProvider, IByteConverter<DateTime> byteConverter)
+            : base(dataProtectionProvider.CreateProtector(_purpose), byteConverter)
         {
         }
     }

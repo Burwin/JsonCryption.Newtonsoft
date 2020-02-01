@@ -1,4 +1,4 @@
-﻿using JsonCryption.Newtonsoft.ByteConverters;
+﻿using JsonCryption.ByteConverters;
 using Microsoft.AspNetCore.DataProtection;
 
 namespace JsonCryption.Newtonsoft.JsonConverters
@@ -6,8 +6,8 @@ namespace JsonCryption.Newtonsoft.JsonConverters
     internal sealed class DoubleConverter : EncryptedConverter<double>
     {
         private static readonly string _purpose = typeof(DoubleConverter).FullName;
-        public DoubleConverter(IDataProtectionProvider dataProtectionProvider)
-            : base(dataProtectionProvider.CreateProtector(_purpose), new DoubleByteConverter())
+        public DoubleConverter(IDataProtectionProvider dataProtectionProvider, IByteConverter<double> byteConverter)
+            : base(dataProtectionProvider.CreateProtector(_purpose), byteConverter)
         {
         }
     }

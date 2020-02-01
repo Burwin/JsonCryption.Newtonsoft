@@ -1,4 +1,4 @@
-﻿using JsonCryption.Newtonsoft.ByteConverters;
+﻿using JsonCryption.ByteConverters;
 using Microsoft.AspNetCore.DataProtection;
 
 namespace JsonCryption.Newtonsoft.JsonConverters
@@ -7,8 +7,8 @@ namespace JsonCryption.Newtonsoft.JsonConverters
     {
         private static readonly string _purpose = typeof(FloatConverter).FullName;
         
-        public FloatConverter(IDataProtectionProvider dataProtectionProvider)
-            : base(dataProtectionProvider.CreateProtector(_purpose), new FloatByteConverter())
+        public FloatConverter(IDataProtectionProvider dataProtectionProvider, IByteConverter<float> byteConverter)
+            : base(dataProtectionProvider.CreateProtector(_purpose), byteConverter)
         {
         }
     }

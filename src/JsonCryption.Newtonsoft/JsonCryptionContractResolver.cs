@@ -1,4 +1,4 @@
-﻿using JsonCryption.Newtonsoft.ByteConverters;
+﻿using JsonCryption.ByteConverters;
 using JsonCryption.Newtonsoft.JsonConverters;
 using JsonCryption.Newtonsoft.ValueProviders;
 using Microsoft.AspNetCore.DataProtection;
@@ -14,28 +14,31 @@ namespace JsonCryption.Newtonsoft
     public sealed class JsonCryptionContractResolver : DefaultContractResolver
     {
         private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly Dictionary<Type, IEncryptedConverter> _converters;
+
+        private static readonly ByteConverterRegistry _byteConverterRegistry = new ByteConverterRegistry();
 
         private static readonly Dictionary<Type, Func<IDataProtectionProvider, JsonConverter>> _jsonConverterFactories
             = new Dictionary<Type, Func<IDataProtectionProvider, JsonConverter>>
             {
-                { typeof(bool), dataProtectionProvider => new BoolConverter(dataProtectionProvider) },
-                { typeof(byte), dataProtectionProvider => new ByteConverter(dataProtectionProvider) },
-                { typeof(byte[]), dataProtectionProvider => new ByteArrayConverter(dataProtectionProvider) },
-                { typeof(char), dataProtectionProvider => new CharConverter(dataProtectionProvider) },
-                { typeof(DateTime), dataProtectionProvider => new DateTimeConverter(dataProtectionProvider) },
-                { typeof(DateTimeOffset), dataProtectionProvider => new DateTimeOffsetConverter(dataProtectionProvider) },
-                { typeof(decimal), dataProtectionProvider => new DecimalConverter(dataProtectionProvider) },
-                { typeof(double), dataProtectionProvider => new DoubleConverter(dataProtectionProvider) },
-                { typeof(float), dataProtectionProvider => new FloatConverter(dataProtectionProvider) },
-                { typeof(Guid), dataProtectionProvider => new GuidConverter(dataProtectionProvider) },
-                { typeof(int), dataProtectionProvider => new IntConverter(dataProtectionProvider) },
-                { typeof(long), dataProtectionProvider => new LongConverter(dataProtectionProvider) },
-                { typeof(sbyte), dataProtectionProvider => new SByteConverter(dataProtectionProvider) },
-                { typeof(short), dataProtectionProvider => new ShortConverter(dataProtectionProvider) },
-                { typeof(string), dataProtectionProvider => new StringConverter(dataProtectionProvider) },
-                { typeof(uint), dataProtectionProvider => new UIntConverter(dataProtectionProvider) },
-                { typeof(ulong), dataProtectionProvider => new ULongConverter(dataProtectionProvider) },
-                { typeof(ushort), dataProtectionProvider => new UShortConverter(dataProtectionProvider) },
+                { typeof(bool), dataProtectionProvider => new BoolConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<bool>()) },
+                { typeof(byte), dataProtectionProvider => new ByteConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<byte>()) },
+                { typeof(byte[]), dataProtectionProvider => new ByteArrayConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<byte[]>()) },
+                { typeof(char), dataProtectionProvider => new CharConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<char>()) },
+                { typeof(DateTime), dataProtectionProvider => new DateTimeConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<DateTime>()) },
+                { typeof(DateTimeOffset), dataProtectionProvider => new DateTimeOffsetConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<DateTimeOffset>()) },
+                { typeof(decimal), dataProtectionProvider => new DecimalConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<decimal>()) },
+                { typeof(double), dataProtectionProvider => new DoubleConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<double>()) },
+                { typeof(float), dataProtectionProvider => new FloatConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<float>()) },
+                { typeof(Guid), dataProtectionProvider => new GuidConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<Guid>()) },
+                { typeof(int), dataProtectionProvider => new IntConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<int>()) },
+                { typeof(long), dataProtectionProvider => new LongConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<long>()) },
+                { typeof(sbyte), dataProtectionProvider => new SByteConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<sbyte>()) },
+                { typeof(short), dataProtectionProvider => new ShortConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<short>()) },
+                { typeof(string), dataProtectionProvider => new StringConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<string>()) },
+                { typeof(uint), dataProtectionProvider => new UIntConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<uint>()) },
+                { typeof(ulong), dataProtectionProvider => new ULongConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<ulong>()) },
+                { typeof(ushort), dataProtectionProvider => new UShortConverter(dataProtectionProvider, _byteConverterRegistry.GetByteConverter<ushort>()) },
             };
 
         private static readonly Dictionary<Type, Func<IEncryptedConverter, IValueProvider, IValueProvider>> _valueProviderFactories
@@ -64,6 +67,7 @@ namespace JsonCryption.Newtonsoft
         public JsonCryptionContractResolver(IDataProtectionProvider dataProtectionProvider)
         {
             _dataProtectionProvider = dataProtectionProvider;
+            _converters = new Dictionary<Type, IEncryptedConverter>();
         }
 
         public override JsonContract ResolveContract(Type type)
@@ -98,7 +102,12 @@ namespace JsonCryption.Newtonsoft
             if (converter is IEncryptedConverter)
                 return converter;
 
-            return CreateEncryptedConverter(type, _dataProtectionProvider) as JsonConverter;
+            if (_converters.TryGetValue(type, out var encryptedConverter))
+                return (JsonConverter)encryptedConverter;
+
+            encryptedConverter = CreateEncryptedConverter(type, _dataProtectionProvider);
+            _converters.Add(type, encryptedConverter);
+            return (JsonConverter)encryptedConverter;
         }
 
         protected override IValueProvider CreateMemberValueProvider(MemberInfo member)
@@ -132,12 +141,7 @@ namespace JsonCryption.Newtonsoft
 
         private IEncryptedConverter ResolveEnumEncryptedConverter(Type type, IDataProtectionProvider dataProtectionProvider)
         {
-            var byteConverter = (dynamic)Activator.CreateInstance(
-                typeof(EnumByteConverter<>).MakeGenericType(type),
-                BindingFlags.Instance | BindingFlags.Public,
-                binder: null,
-                args: null,
-                culture: null);
+            var byteConverter = _byteConverterRegistry.GetOrCreateEnumConverter(type);
 
             return (IEncryptedConverter)Activator.CreateInstance(
                 typeof(EnumConverter<>).MakeGenericType(type),
