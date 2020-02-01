@@ -20,7 +20,7 @@ namespace JsonCryption
         
         public static Coordinator Singleton { get; private set; }
         public CoordinatorOptions Options { get; }
-        internal Func<IDataProtectionProvider> _dataProtectionProviderFactory => Options.DataProtectionProviderFactory;
+        internal IDataProtectionProvider _dataProtectionProvider => Options.DataProtectionProvider;
         public JsonSerializerOptions JsonSerializerOptions => Options.JsonSerializerOptions;
 
         private Coordinator(CoordinatorOptions options)
@@ -31,7 +31,7 @@ namespace JsonCryption
 
             _defaultConverterFactories = BuildConverterFactories();
             _converters = _defaultConverterFactories
-                .Select(kvp => (kvp.Key, Converter: kvp.Value.Invoke(_dataProtectionProviderFactory.Invoke(), JsonSerializerOptions)))
+                .Select(kvp => (kvp.Key, Converter: kvp.Value.Invoke(_dataProtectionProvider, JsonSerializerOptions)))
                 .ToDictionary(x => x.Key, x => x.Converter);
         }
 
@@ -63,7 +63,7 @@ namespace JsonCryption
         }
 
         public static Coordinator ConfigureDefault(string applicationName)
-            => Configure(options => options.DataProtectionProviderFactory = () => DataProtectionProvider.Create(applicationName));
+            => Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create(applicationName));
 
         #region Private Helpers
 
@@ -84,14 +84,14 @@ namespace JsonCryption
             if (!_defaultConverterFactories.TryGetValue(typeToConvert, out var factoryMethod))
                 throw new InvalidOperationException($"No Converter for type {typeToConvert.FullName}");
 
-            return factoryMethod.Invoke(_dataProtectionProviderFactory.Invoke(), options);
+            return factoryMethod.Invoke(_dataProtectionProvider, options);
         }
 
         private JsonConverter CreateKeyValuePairConverter(Type typeToConvert, JsonSerializerOptions options)
         {
             var key = (typeToConvert, options);
             if (!_specialConverterFactories.TryGetValue(key, out var factory))
-                _specialConverterFactories[key] = factory = new KeyValuePairConverterFactory(_dataProtectionProviderFactory.Invoke(), options);
+                _specialConverterFactories[key] = factory = new KeyValuePairConverterFactory(_dataProtectionProvider, options);
 
             return factory.CreateConverter(typeToConvert, options);
         }
@@ -130,7 +130,7 @@ namespace JsonCryption
         {
             var key = (typeToConvert, options);
             if (!_specialConverterFactories.TryGetValue(key, out var factory))
-                _specialConverterFactories[key] = factory = new EnumerableConverterFactory(_dataProtectionProviderFactory.Invoke(), options);
+                _specialConverterFactories[key] = factory = new EnumerableConverterFactory(_dataProtectionProvider, options);
 
             return factory.CreateConverter(typeToConvert, options);
         }
@@ -139,7 +139,7 @@ namespace JsonCryption
         {
             var key = (typeToConvert, options);
             if (!_specialConverterFactories.TryGetValue(key, out var factory))
-                _specialConverterFactories[key] = factory = new EnumConverterFactory(_dataProtectionProviderFactory.Invoke(), options);
+                _specialConverterFactories[key] = factory = new EnumConverterFactory(_dataProtectionProvider, options);
 
             return factory.CreateConverter(typeToConvert, options);
         }
