@@ -1,5 +1,5 @@
-﻿using JsonCryption.ByteConverters;
-using JsonCryption.Converters;
+﻿using JsonCryption.Converters;
+using JsonCryption.Extensions;
 using JsonCryption.System.Text.Json.ByteConverters;
 using Microsoft.AspNetCore.DataProtection;
 using System;
@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace JsonCryption.System.Text.Json
+namespace JsonCryption
 {
     public class Coordinator
     {

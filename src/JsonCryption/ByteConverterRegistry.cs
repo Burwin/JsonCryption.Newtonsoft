@@ -1,8 +1,9 @@
-﻿using System;
+﻿using JsonCryption.ByteConverters;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace JsonCryption.ByteConverters
+namespace JsonCryption
 {
     public sealed class ByteConverterRegistry
     {

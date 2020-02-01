@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
-namespace JsonCryption.System.Text.Json
+namespace JsonCryption.Extensions
 {
     public static class TypeExtensions
     {
+        public static bool IsIDictionary(this Type @this) => typeof(IDictionary).IsAssignableFrom(@this);
+
         public static bool IsKeyValuePair(this Type @this)
         {
             if (!@this.IsGenericType)
