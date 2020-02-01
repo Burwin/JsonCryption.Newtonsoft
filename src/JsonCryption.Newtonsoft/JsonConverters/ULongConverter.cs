@@ -1,4 +1,4 @@
-﻿using JsonCryption.Newtonsoft.ByteConverters;
+﻿using JsonCryption.ByteConverters;
 using Microsoft.AspNetCore.DataProtection;
 
 namespace JsonCryption.Newtonsoft.JsonConverters

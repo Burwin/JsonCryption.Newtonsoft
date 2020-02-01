@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text;
 
-namespace JsonCryption.Newtonsoft.ByteConverters
+namespace JsonCryption.ByteConverters
 {
-    internal sealed class EnumByteConverter<T> : IByteConverter<T>
+    public sealed class EnumByteConverter<T> : IByteConverter<T>
         where T : struct, Enum
     {
         public T FromBytes(byte[] bytes) => (T)Enum.Parse(typeof(T), Encoding.UTF8.GetString(bytes));

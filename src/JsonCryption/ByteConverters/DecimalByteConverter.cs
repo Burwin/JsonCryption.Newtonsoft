@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 
-namespace JsonCryption.Newtonsoft.ByteConverters
+namespace JsonCryption.ByteConverters
 {
-    internal sealed class DecimalByteConverter : IByteConverter<decimal>
+    public sealed class DecimalByteConverter : IByteConverter<decimal>
     {
         public decimal FromBytes(byte[] bytes)
         {

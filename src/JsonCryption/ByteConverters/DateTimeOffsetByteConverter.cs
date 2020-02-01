@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 
-namespace JsonCryption.Newtonsoft.ByteConverters
+namespace JsonCryption.ByteConverters
 {
-    internal sealed class DateTimeOffsetByteConverter : IByteConverter<DateTimeOffset>
+    public sealed class DateTimeOffsetByteConverter : IByteConverter<DateTimeOffset>
     {
         public DateTimeOffset FromBytes(byte[] bytes)
         {

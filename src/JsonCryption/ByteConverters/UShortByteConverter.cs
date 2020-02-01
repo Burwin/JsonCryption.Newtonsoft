@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace JsonCryption.Newtonsoft.ByteConverters
+namespace JsonCryption.ByteConverters
 {
-    internal sealed class UShortByteConverter : IByteConverter<ushort>
+    public sealed class UShortByteConverter : IByteConverter<ushort>
     {
         public ushort FromBytes(byte[] bytes) => BitConverter.ToUInt16(bytes, 0);
         public byte[] ToBytes(ushort value) => BitConverter.GetBytes(value);
