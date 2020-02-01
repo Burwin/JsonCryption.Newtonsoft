@@ -1,4 +1,5 @@
-﻿using JsonCryption.ByteConverters;
+﻿using JsonCryption.Extensions;
+using JsonCryption.Newtonsoft.Extensions;
 using JsonCryption.Newtonsoft.JsonConverters;
 using JsonCryption.Newtonsoft.ValueProviders;
 using Microsoft.AspNetCore.DataProtection;
@@ -9,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace JsonCryption.Newtonsoft
+namespace JsonCryption
 {
     public sealed class JsonCryptionContractResolver : DefaultContractResolver
     {

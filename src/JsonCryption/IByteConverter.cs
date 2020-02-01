@@ -1,4 +1,4 @@
-﻿namespace JsonCryption.ByteConverters
+﻿namespace JsonCryption
 {
     public interface IByteConverter<T>
     {

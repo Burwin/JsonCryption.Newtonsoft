@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace JsonCryption.Newtonsoft
+namespace JsonCryption.Newtonsoft.Extensions
 {
     internal static class MemberInfoExtensions
     {

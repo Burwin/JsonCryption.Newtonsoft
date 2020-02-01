@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JsonCryption.Newtonsoft
+namespace JsonCryption
 {
     public sealed class EncryptAttribute : Attribute
     {
