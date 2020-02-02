@@ -14,8 +14,8 @@ JsonCryption seeks to keep initial configuration to a minimum, and only requires
 ```
 class Foo
 {
-  [Encrypt]
-  public string MySecret { get; set; }
+    [Encrypt]
+    public string MySecret { get; set; }
 }
 ```
 
@@ -39,9 +39,9 @@ The implementation for `Newtonsoft.Json` relies on Dependency Injection. To conf
 ```
 // pseudo code
 container.Register<JsonSerializer>(() => new JsonSerializer()
-  {
+{
     ContractResolver = new JsonCryptionContractResolver(container.Resolve<IDataProtectionProvider>())
-  });
+});
 ```
 
 ##### Step 2b: Configure System.Text.Json
@@ -49,21 +49,13 @@ container.Register<JsonSerializer>(() => new JsonSerializer()
 
 The first thing to go is Dependency Injection, which is weird considering how modern the `System.Text.Json` package is. So instead, I'm using a Singleton `Coordinator` to manage configuration... and I feel dirty doing it. I have some ideas for cleaning this up, but if anybody wants to take a crack at cleaning this to use DI, feel free to contact me and/or submit a PR.
 
-###### Default (for testing)
-The default configuration simply sets the root `IDataProtectionProvider` to use that provided by the static `DataProtectionProvider` class, given an application name. This should probably only be used for testing.
-```
-// somewhere before any serialization happens
-Coordinator.ConfigureDefault("my application name");
-```
-###### Custom (for everything else)
-For everything but testing...
 ```
 // somewhere in your startup
 // pseudo code
 Coordinator.Configure(options =>
 {
-  options.DataProtectionProvider = container.Resolve<IDataProtectionProvider>();
-  options.JsonSerializerOptions = ...
+    options.DataProtectionProvider = container.Resolve<IDataProtectionProvider>();
+    options.JsonSerializerOptions = ...
 });
 ```
 
@@ -74,10 +66,10 @@ var myFoo = new Foo("some important value", "something very public");
 
 class Foo
 {
-  [Encrypt]
-  public string EncryptedString { get; }
+    [Encrypt]
+    public string EncryptedString { get; }
   
-  public string UnencryptedString { get; }
+    public string UnencryptedString { get; }
 }
 
 // Newtonsoft.Json
@@ -98,8 +90,8 @@ Currently, only `Newtonsoft.Json` supports serializing and encrypting fields:
 ```
 class FieldFoo
 {
-  [Encrypt]
-  public string MyPublicValue;
+    [Encrypt]
+    public string MyPublicValue;
 }
 ```
 
@@ -108,17 +100,17 @@ Again, only `Newtonsoft.Json` supports this currently. The easiest way to do thi
 ```
 class NonPublicFoo
 {
-  [Encrypt]
-  [JsonProperty]
-  internal string InternalProperty { get; set; }
+    [Encrypt]
+    [JsonProperty]
+    internal string InternalProperty { get; set; }
   
-  [Encrypt]
-  [JsonProperty]
-  protected bool ProtectedField;
+    [Encrypt]
+    [JsonProperty]
+    protected bool ProtectedField;
   
-  [Encrypt]
-  [JsonProperty]
-  private Guid PrivateProperty { get; set; }
+    [Encrypt]
+    [JsonProperty]
+    private Guid PrivateProperty { get; set; }
 }
 ```
 
