@@ -1,4 +1,5 @@
-﻿using Shouldly;
+﻿using Microsoft.AspNetCore.DataProtection;
+using Shouldly;
 using System.Text.Json;
 using Xunit;
 
@@ -9,7 +10,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void Enum_works_zero_based()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myEnum = Sports.Football;
             var foo = new FooSportsEnum { MySports = myEnum };
@@ -31,7 +32,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void Enum_works_one_based()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myEnum = Fruit.Banana;
             var foo = new FooFruitEnum { MyFruit = myEnum };

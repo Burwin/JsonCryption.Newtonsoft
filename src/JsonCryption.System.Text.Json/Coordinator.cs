@@ -62,9 +62,6 @@ namespace JsonCryption
             return Singleton;
         }
 
-        public static Coordinator ConfigureDefault(string applicationName)
-            => Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create(applicationName));
-
         #region Private Helpers
 
         private JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)

@@ -1,4 +1,5 @@
-﻿using Shouldly;
+﻿using Microsoft.AspNetCore.DataProtection;
+using Shouldly;
 using System.Text.Json;
 using Xunit;
 
@@ -9,7 +10,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void String_array_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myStrings = new[] { "some", "strings", "to test" };
             var foo = new FooStringArray { MyStrings = myStrings };
@@ -36,7 +37,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void Int_array_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myInts = new[] { int.MinValue, -1, 0, 1, int.MaxValue };
             var foo = new FooIntArray { MyInts = myInts };

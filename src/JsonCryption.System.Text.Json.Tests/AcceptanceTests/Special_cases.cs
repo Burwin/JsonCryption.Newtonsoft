@@ -1,4 +1,5 @@
-﻿using Shouldly;
+﻿using Microsoft.AspNetCore.DataProtection;
+using Shouldly;
 using System;
 using System.Text.Json;
 using Xunit;
@@ -10,7 +11,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void One_property_but_not_the_other()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var foo = new FooMixedEncryption { EncryptedInt = 57, UnencryptedString = "foo"};
             var json = JsonSerializer.Serialize(foo);
@@ -43,7 +44,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact(Skip = "Waiting to be supported by System.Text.Json")]
         public void Fields_instead_of_properties()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var foo = new FooPublicFields();
             foo.EncryptedInt = 57;
@@ -79,7 +80,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact(Skip = "Waiting to be supported by System.Text.Json")]
         public void Internal_properties()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var foo = new FooInternalProperties { MyInt = 57, MyString = "foo" };
             var json = JsonSerializer.Serialize(foo);
@@ -126,7 +127,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void Structs_with_supported_properties_should_encrypt_and_decrypt()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var foo = new BarPublicProperties { MyInt = 57, MyString = "foo" };
             var json = JsonSerializer.Serialize(foo);

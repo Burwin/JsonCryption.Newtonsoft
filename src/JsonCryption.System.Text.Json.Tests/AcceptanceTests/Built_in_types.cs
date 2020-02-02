@@ -1,4 +1,5 @@
-﻿using Shouldly;
+﻿using Microsoft.AspNetCore.DataProtection;
+using Shouldly;
 using System;
 using System.Text.Json;
 using Xunit;
@@ -10,7 +11,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void Boolean_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var foo = new FooBool { MyBool = true };
             var json = JsonSerializer.Serialize(foo);
@@ -36,7 +37,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void Single_byte_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var foo = new FooByte { MyByte = 5 };
             var json = JsonSerializer.Serialize(foo);
@@ -63,7 +64,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void Byte_array_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var foo = new FooByteArray { MyBytes = new byte[] { 1, 1, 2, 3, 5, 8 } };
             var json = JsonSerializer.Serialize(foo);
@@ -90,7 +91,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void Char_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var foo = new FooChar { MyChar = 'x' };
             var json = JsonSerializer.Serialize(foo);
@@ -117,7 +118,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void DateTime_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myDateTime = DateTime.Parse("2020-01-21");
             var foo = new FooDateTime { MyDateTime = myDateTime };
@@ -145,7 +146,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void DateTimeOffset_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myDateTimeOffset = DateTimeOffset.Parse("2020-01-21");
             var foo = new FooDateTimeOffset { MyDateTimeOffset = myDateTimeOffset };
@@ -173,7 +174,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void Decimal_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myDecimal = 123.456m;
             var foo = new FooDecimal { MyDecimal = myDecimal };
@@ -201,7 +202,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void Double_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myDouble = 123.456d;
             var foo = new FooDouble { MyDouble = myDouble };
@@ -229,7 +230,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void Guid_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myGuid = Guid.NewGuid();
             var foo = new FooGuid { MyGuid = myGuid };
@@ -257,7 +258,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void Int16_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myShort = (short)357;
             var foo = new FooShort { MyShort = myShort };
@@ -285,7 +286,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void Int32_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myInt = 357;
             var foo = new FooInt { MyInt = myInt };
@@ -313,7 +314,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void Int64_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myLong = 357L;
             var foo = new FooLong { MyLong = myLong };
@@ -341,7 +342,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void SByte_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var mySByte = (sbyte)5;
             var foo = new FooSByte { MySByte = mySByte };
@@ -369,7 +370,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void Float_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myFloat = 123.456f;
             var foo = new FooFloat { MyFloat = myFloat };
@@ -397,7 +398,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void String_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myString = "something secret";
             var foo = new FooString { MyString = myString };
@@ -425,7 +426,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void UInt16_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myUnsignedShort = ushort.MaxValue;
             var foo = new FooUnsignedShort { MyUnsignedShort = myUnsignedShort };
@@ -453,7 +454,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void UInt32_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myUnsignedInt = uint.MaxValue;
             var foo = new FooUnsignedInt { MyUnsignedInt = myUnsignedInt };
@@ -481,7 +482,7 @@ namespace JsonCryption.System.Text.Json.Tests.AcceptanceTests
         [Fact]
         public void UInt64_works()
         {
-            Coordinator.ConfigureDefault("test");
+            Coordinator.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create("test"));
 
             var myUnsignedLong = ulong.MaxValue;
             var foo = new FooUnsignedLong { MyUnsignedLong = myUnsignedLong };
