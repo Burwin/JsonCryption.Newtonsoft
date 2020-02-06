@@ -11,16 +11,31 @@ using System.Text.Json.Serialization;
 
 namespace JsonCryption
 {
-    public class Coordinator
+    /// <summary>
+    /// The starting point for configuring JsonCryption for System.Text.Json serialization
+    /// </summary>
+    public sealed class Coordinator
     {
         private readonly Dictionary<Type, Func<IDataProtectionProvider, JsonSerializerOptions, JsonConverter>> _defaultConverterFactories;
         private readonly Dictionary<(Type Type, JsonSerializerOptions Options), JsonConverterFactory> _specialConverterFactories;
         private readonly Dictionary<Type, JsonConverter> _converters;
         private static readonly ByteConverterRegistry _byteConverterRegistry = new ByteConverterRegistry();
         
+        /// <summary>
+        /// The Singleton instance of the <see cref="Coordinator"/>
+        /// </summary>
         public static Coordinator Singleton { get; private set; }
+
+        /// <summary>
+        /// The configured <see cref="CoordinatorOptions"/>
+        /// </summary>
         public CoordinatorOptions Options { get; }
+        
         internal IDataProtectionProvider _dataProtectionProvider => Options.DataProtectionProvider;
+        
+        /// <summary>
+        /// The <see cref="JsonSerializerOptions"/> to use when serializing/deserializing
+        /// </summary>
         public JsonSerializerOptions JsonSerializerOptions => Options.JsonSerializerOptions;
 
         private Coordinator(CoordinatorOptions options)
@@ -52,6 +67,11 @@ namespace JsonCryption
             return _converters.ContainsKey(typeToConvert);
         }
 
+        /// <summary>
+        /// The root method to configure the Singleton instance of the <see cref="Coordinator"/>
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <returns></returns>
         public static Coordinator Configure(Action<CoordinatorOptions> configure)
         {
             var options = CoordinatorOptions.Empty;

@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace JsonCryption
 {
-    public sealed class ByteConverterRegistry
+    internal sealed class ByteConverterRegistry
     {
         private readonly Dictionary<Type, object> _byteConverters = new Dictionary<Type, object>
         {

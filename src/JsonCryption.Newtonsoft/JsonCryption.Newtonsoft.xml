@@ -4,5 +4,57 @@
         <name>JsonCryption.Newtonsoft</name>
     </assembly>
     <members>
+        <member name="T:JsonCryption.EncryptAttribute">
+            <summary>
+            Decorate fields and properties to encrypt/decrypt when serializing/deserializing
+            
+            For anything but public properties, must also decorate with JsonPropertyAttribute:
+            
+            class Foo
+            {
+                [Encrypt]
+                [JsonProperty]
+                private string _myPrivateEncryptedField;
+            }
+            </summary>
+        </member>
+        <member name="T:JsonCryption.JsonCryptionContractResolver">
+            <summary>
+            When set as the <see cref="T:Newtonsoft.Json.Serialization.IContractResolver"/> for a <see cref="T:Newtonsoft.Json.JsonSerializer"/>, and
+            properly configured, it enables the automatic encryption/decryption of fields and properties
+            decorated with <see cref="T:JsonCryption.EncryptAttribute"/> during serialization/deserialization
+            </summary>
+        </member>
+        <member name="M:JsonCryption.JsonCryptionContractResolver.#ctor(Microsoft.AspNetCore.DataProtection.IDataProtectionProvider)">
+            <summary>
+            Creates a new <see cref="T:JsonCryption.JsonCryptionContractResolver"/> with the root <see cref="T:Microsoft.AspNetCore.DataProtection.IDataProtectionProvider"/>
+            </summary>
+            <param name="dataProtectionProvider"></param>
+        </member>
+        <member name="M:JsonCryption.JsonCryptionContractResolver.ResolveContract(System.Type)">
+            <summary>
+            Resolves a <see cref="T:Newtonsoft.Json.Serialization.JsonContract"/> for the given Type, enabling encryption/decryption if necessary
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:JsonCryption.JsonCryptionContractResolver.CreateProperty(System.Reflection.MemberInfo,Newtonsoft.Json.MemberSerialization)">
+            <summary>
+            Creates a <see cref="T:Newtonsoft.Json.Serialization.JsonProperty"/> from the given <paramref name="memberSerialization"/> and <paramref name="member"/>,
+            assigning an <see cref="T:JsonCryption.Newtonsoft.JsonConverters.IEncryptedConverter"/> as the property's Converter if the <paramref name="member"/> is
+            decorated with an <see cref="T:JsonCryption.EncryptAttribute"/>
+            </summary>
+            <param name="member"></param>
+            <param name="memberSerialization"></param>
+            <returns></returns>
+        </member>
+        <member name="M:JsonCryption.JsonCryptionContractResolver.CreateMemberValueProvider(System.Reflection.MemberInfo)">
+            <summary>
+            Creates an encrypted or normal <see cref="T:Newtonsoft.Json.Serialization.IValueProvider"/> depending on whether the
+            <paramref name="member"/> is decorated with an <see cref="T:JsonCryption.EncryptAttribute"/> or not
+            </summary>
+            <param name="member"></param>
+            <returns></returns>
+        </member>
     </members>
 </doc>

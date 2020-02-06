@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace JsonCryption.Extensions
 {
-    public static class TypeExtensions
+    internal static class TypeExtensions
     {
         public static bool IsIDictionary(this Type @this) => typeof(IDictionary).IsAssignableFrom(@this);
 

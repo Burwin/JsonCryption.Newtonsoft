@@ -12,6 +12,11 @@ using System.Reflection;
 
 namespace JsonCryption
 {
+    /// <summary>
+    /// When set as the <see cref="IContractResolver"/> for a <see cref="JsonSerializer"/>, and
+    /// properly configured, it enables the automatic encryption/decryption of fields and properties
+    /// decorated with <see cref="EncryptAttribute"/> during serialization/deserialization
+    /// </summary>
     public sealed class JsonCryptionContractResolver : DefaultContractResolver
     {
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -65,12 +70,21 @@ namespace JsonCryption
                 { typeof(ushort), (converter, innerProvider) => new UShortValueProvider((IEncryptedConverter<ushort>)converter, innerProvider) },
             };
 
+        /// <summary>
+        /// Creates a new <see cref="JsonCryptionContractResolver"/> with the root <see cref="IDataProtectionProvider"/>
+        /// </summary>
+        /// <param name="dataProtectionProvider"></param>
         public JsonCryptionContractResolver(IDataProtectionProvider dataProtectionProvider)
         {
             _dataProtectionProvider = dataProtectionProvider;
             _converters = new Dictionary<Type, IEncryptedConverter>();
         }
 
+        /// <summary>
+        /// Resolves a <see cref="JsonContract"/> for the given Type, enabling encryption/decryption if necessary
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public override JsonContract ResolveContract(Type type)
         {
             var contract = base.ResolveContract(type);
@@ -86,6 +100,14 @@ namespace JsonCryption
             return contract;
         }
 
+        /// <summary>
+        /// Creates a <see cref="JsonProperty"/> from the given <paramref name="memberSerialization"/> and <paramref name="member"/>,
+        /// assigning an <see cref="IEncryptedConverter"/> as the property's Converter if the <paramref name="member"/> is
+        /// decorated with an <see cref="EncryptAttribute"/>
+        /// </summary>
+        /// <param name="member"></param>
+        /// <param name="memberSerialization"></param>
+        /// <returns></returns>
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
             var property = base.CreateProperty(member, memberSerialization);
@@ -111,6 +133,12 @@ namespace JsonCryption
             return (JsonConverter)encryptedConverter;
         }
 
+        /// <summary>
+        /// Creates an encrypted or normal <see cref="IValueProvider"/> depending on whether the
+        /// <paramref name="member"/> is decorated with an <see cref="EncryptAttribute"/> or not
+        /// </summary>
+        /// <param name="member"></param>
+        /// <returns></returns>
         protected override IValueProvider CreateMemberValueProvider(MemberInfo member)
             => member.ShouldEncrypt() ? CreateEncryptedValueProvider(member) : base.CreateMemberValueProvider(member);
 
