@@ -21,6 +21,7 @@ namespace JsonCryption
     {
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly Dictionary<Type, IEncryptedConverter> _converters;
+        private readonly IEncryptedConverter _genericConverter;
 
         private static readonly ByteConverterRegistry _byteConverterRegistry = new ByteConverterRegistry();
 
@@ -78,6 +79,7 @@ namespace JsonCryption
         {
             _dataProtectionProvider = dataProtectionProvider;
             _converters = new Dictionary<Type, IEncryptedConverter>();
+            _genericConverter = new GenericConverter(dataProtectionProvider.CreateProtector(typeof(GenericConverter).FullName));
         }
 
         /// <summary>
@@ -90,10 +92,9 @@ namespace JsonCryption
             var contract = base.ResolveContract(type);
             if (contract is JsonObjectContract objectContract)
             {
-                var p = objectContract.Properties.FirstOrDefault();
-                if (p?.ValueProvider is EncryptedValueProvider)
+                foreach (var property in objectContract.Properties.Where(p => p.Converter is IEncryptedConverter))
                 {
-                    p.PropertyType = typeof(object);
+                    property.PropertyType = typeof(object);
                 }
             }
 
@@ -165,7 +166,7 @@ namespace JsonCryption
             if (type.IsEnum)
                 return ResolveEnumEncryptedConverter(type, dataProtectionProvider);
 
-            throw new NotImplementedException();
+            return _genericConverter;
         }
 
         private IEncryptedConverter ResolveEnumEncryptedConverter(Type type, IDataProtectionProvider dataProtectionProvider)
@@ -214,7 +215,17 @@ namespace JsonCryption
             if (type.IsEnum)
                 return ResolveEnumValueProvider(type, converter, innerProvider);
 
-            throw new NotImplementedException();
+            return ResolveGenericValueProvider(type, innerProvider);
+        }
+
+        private IValueProvider ResolveGenericValueProvider(Type type, IValueProvider innerProvider)
+        {
+            return (IValueProvider)Activator.CreateInstance(
+                typeof(GenericValueProvider<>).MakeGenericType(type),
+                BindingFlags.Instance | BindingFlags.Public,
+                binder: null,
+                args: new object[] { _genericConverter, innerProvider, new JsonSerializer() },
+                culture: null);
         }
 
         private IValueProvider ResolveEnumValueProvider(Type type, IEncryptedConverter converter, IValueProvider innerProvider)
