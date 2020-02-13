@@ -8,7 +8,6 @@
     <PackageProjectUrl>https://github.com/Burwin/JsonCryption</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Burwin/JsonCryption</RepositoryUrl>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
