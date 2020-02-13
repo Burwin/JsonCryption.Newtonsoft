@@ -52,3 +52,25 @@ jobs:
         with:
           name: nupkgs
           path: ./src/nupkgs
+  publish:
+    runs-on: [ubuntu-latest]
+    needs: [pack]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.100'
+      - name: Get Saved Artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: nupkgs
+          path: nupkgs
+      - name: Publish Packages to Nuget
+        run: |
+          FILES=/nupkgs/*
+          for f in $FILES
+          do
+            echo "Pushing $f..."
+            dotnet nuget push $f -k ${{nuget_key_v1}} -s https://api.nuget.org/v3/index.json --skip-duplicate -n
+          done
