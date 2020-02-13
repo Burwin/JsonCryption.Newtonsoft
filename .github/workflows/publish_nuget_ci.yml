@@ -68,7 +68,7 @@ jobs:
           path: nupkgs
       - name: Publish Packages to Nuget
         run: |
-          FILES=/nupkgs/*
+          FILES=./nupkgs/*
           for f in $FILES
           do
             echo "Pushing $f..."
