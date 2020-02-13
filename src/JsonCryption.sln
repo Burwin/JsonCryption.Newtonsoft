@@ -11,9 +11,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonCryption.Newtonsoft", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonCryption.Newtonsoft.Tests", "JsonCryption.Newtonsoft.Tests\JsonCryption.Newtonsoft.Tests.csproj", "{1687D1CE-D83B-43BE-9749-B90F5AAC9D13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonCryption.System.Text.Json", "JsonCryption.System.Text.Json\JsonCryption.System.Text.Json.csproj", "{AE16BE0D-3FF4-4A3D-8007-930A3BFA35C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonCryption.System.Text.Json", "JsonCryption.System.Text.Json\JsonCryption.System.Text.Json.csproj", "{AE16BE0D-3FF4-4A3D-8007-930A3BFA35C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonCryption.System.Text.Json.Tests", "JsonCryption.System.Text.Json.Tests\JsonCryption.System.Text.Json.Tests.csproj", "{A1A38F62-797F-4F05-A5CA-6BEECB457386}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonCryption.System.Text.Json.Tests", "JsonCryption.System.Text.Json.Tests\JsonCryption.System.Text.Json.Tests.csproj", "{A1A38F62-797F-4F05-A5CA-6BEECB457386}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9046A6A2-DD47-4FA5-B1F8-77EE7B53210A}"
+	ProjectSection(SolutionItems) = preProject
+		version.txt = version.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
