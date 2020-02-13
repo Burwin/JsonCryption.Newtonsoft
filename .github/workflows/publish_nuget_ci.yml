@@ -1,0 +1,46 @@
+name: Publish Nuget CI
+
+on:
+  push:
+    branches: [master]
+    tags-ignore: [release,rc]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.100'
+    - name: Build
+      run: dotnet build --configuration Release
+      working-directory: ./src
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.100'
+    - name: Test
+      run: dotnet test --blame --configuration Release
+      working-directory: ./src
+  
+  publish:
+    runs-on: [ubuntu-latest]
+    needs: [build, test]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.100'
+      - name: Create Nuget Package
+        run: dotnet pack --configuration Release --nologo --version-suffix ci-$GITHUB_RUN_NUMBER
+        working-directory: ./src
