@@ -43,6 +43,7 @@ jobs:
           dotnet-version: '3.1.100'
       - name: Create Nuget Package
         run: |
+          (Get-Host).Version
           $version_prefix = Get-Content -Path ./version.txt
           dotnet pack --configuration Release --nologo /p:Version=$version-prefix-ci-$GITHUB_RUN_NUMBER
         working-directory: ./src
