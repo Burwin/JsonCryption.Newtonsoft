@@ -42,5 +42,5 @@ jobs:
         with:
           dotnet-version: '3.1.100'
       - name: Create Nuget Package
-        run: dotnet pack --configuration Release --nologo --version-suffix ci-$GITHUB_RUN_NUMBER
+        run: dotnet pack --no-build --configuration Release --nologo --version-suffix ci-$GITHUB_RUN_NUMBER
         working-directory: ./src
