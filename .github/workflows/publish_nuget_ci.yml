@@ -45,5 +45,5 @@ jobs:
         shell: bash
         run: |
           version_prefix=`cat ./version.txt`
-          dotnet pack -c Release --nologo -v d /p:Version=$version_prefix-ci-$GITHUB_RUN_NUMBER
+          dotnet pack -c Release --nologo /p:Version=$version_prefix-ci-$GITHUB_RUN_NUMBER
         working-directory: ./src
