@@ -74,3 +74,4 @@ jobs:
             echo "Pushing $f..."
             dotnet nuget push $f -k ${{nuget_key_v1}} -s https://api.nuget.org/v3/index.json --skip-duplicate -n
           done
+        working-directory: ./
