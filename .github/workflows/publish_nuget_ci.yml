@@ -47,3 +47,8 @@ jobs:
           version_prefix=`cat ./version.txt`
           dotnet pack -c Release --nologo -o nupkgs /p:Version=$version_prefix-ci-$GITHUB_RUN_NUMBER
         working-directory: ./src
+      - name: Save Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: nupkgs
+          path: nupkgs
