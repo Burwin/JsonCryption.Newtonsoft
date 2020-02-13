@@ -44,6 +44,6 @@ jobs:
       - name: Create Nuget Package
         shell: bash
         run: |
-          version_prefix = `cat ./version.txt`
+          version_prefix=`cat ./version.txt`
           dotnet pack --configuration Release --nologo /p:Version=$version-prefix-ci-$GITHUB_RUN_NUMBER
         working-directory: ./src
