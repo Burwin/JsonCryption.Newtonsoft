@@ -16,6 +16,6 @@ jobs:
         tag-var-name: 'tag_var_name'
         mvn-var-name: 'mvn_var_name'
     - run: |
-        echo var_name
-        echo tag_var_name
-        echo mvn_var_name
+        echo $var_name
+        echo $tag_var_name
+        echo $mvn_var_name
