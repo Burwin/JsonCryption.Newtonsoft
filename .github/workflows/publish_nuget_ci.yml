@@ -41,11 +41,11 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '3.1.100'
+      - name: Get Current Version
+        uses: Deep-Symmetry/github-version-action@v1
       - name: Create Nuget Package
         shell: bash
-        run: |
-          version_prefix=`cat ./version.txt`
-          dotnet pack -c Release --nologo -o nupkgs /p:Version=$version_prefix-ci-$GITHUB_RUN_NUMBER
+        run: dotnet pack -c Release --nologo -o nupkgs /p:Version=$git_version-ci-$GITHUB_RUN_NUMBER
         working-directory: ./src
       - name: Save Artifacts
         uses: actions/upload-artifact@v1
