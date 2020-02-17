@@ -3,7 +3,9 @@ name: Publish Nuget CI
 on:
   push:
     branches: [master]
-    tags: [release]
+    tags: 
+    - 'v[0-9]+.[0-9]+.[0-9]+'
+    - '!v*-*'
 
 jobs:
   build:
@@ -41,11 +43,11 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '3.1.100'
+      - name: Get Current Version
+        uses: Deep-Symmetry/github-version-action@v1
       - name: Create Nuget Package
         shell: bash
-        run: |
-          version_prefix=`cat ./version.txt`
-          dotnet pack -c Release --nologo -o nupkgs /p:Version=$version_prefix
+        run: dotnet pack -c Release --nologo -o nupkgs /p:Version=$git_version
         working-directory: ./src
       - name: Save Artifacts
         uses: actions/upload-artifact@v1
