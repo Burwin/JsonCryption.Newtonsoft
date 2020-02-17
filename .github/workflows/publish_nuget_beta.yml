@@ -3,7 +3,11 @@ name: Publish Nuget Beta
 on:
   push:
     branches: [master]
-    tags: [v*-beta,v*-preview,v*-rc,v*-snapshot]
+    tags:
+    - 'v*-beta'
+    - 'v*-preview'
+    - 'v*-rc'
+    - 'v*-snapshot'
 
 jobs:
   build:
