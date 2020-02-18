@@ -3,7 +3,18 @@
 JsonCryption offers .NET developers the ability to encrypt/decrypt individual properties/fields during serialization using `Microsoft.AspNetCore.DataProtection` (encryption/decryption, key management, algorithm management, etc.)
 
 ### Installation
-Coming soon...
+Install the NuGet package for your JSON serializer:
+- [JsonCryption.Newtonsoft](https://www.nuget.org/packages/JsonCryption.Newtonsoft/)
+- [JsonCryption.System.Text.Json](https://www.nuget.org/packages/JsonCryption.System.Text.Json/)
+```
+// Package Manager
+Install-Package JsonCryption.Newtonsoft
+Install-Package JsonCryption.System.Text.Json
+
+// .NET CLI
+dotnet add package JsonCryption.Newtonsoft
+dotnet add package JsonCryption.System.Text.Json
+```
 
 ### Motivation
 Integrating encryption/decryption of specified fields/properties of C# objects at the moment of JSON serialization/deserialization should be:
