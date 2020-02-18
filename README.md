@@ -7,13 +7,13 @@ Install the NuGet package for your JSON serializer:
 - [JsonCryption.Newtonsoft](https://www.nuget.org/packages/JsonCryption.Newtonsoft/)
 - [JsonCryption.System.Text.Json](https://www.nuget.org/packages/JsonCryption.System.Text.Json/)
 
-####Package Manager
+#### Package Manager
 ```
 Install-Package JsonCryption.Newtonsoft
 Install-Package JsonCryption.System.Text.Json
 ```
 
-####.NET CLI
+#### .NET CLI
 ```
 dotnet add package JsonCryption.Newtonsoft
 dotnet add package JsonCryption.System.Text.Json
