@@ -11,7 +11,6 @@
     <RepositoryUrl>https://github.com/Burwin/JsonCryption</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>json,encryption,.net,.net core</PackageTags>
-    <VersionPrefix>1.0.1</VersionPrefix>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
