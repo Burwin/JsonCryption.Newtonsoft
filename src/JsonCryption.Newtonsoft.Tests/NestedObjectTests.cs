@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using Shouldly;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -91,6 +92,63 @@ namespace JsonCryption.Newtonsoft.Tests
             decrypted.EncryptedString.ShouldBe(instance.EncryptedString);
             decrypted.FullChild.MyInt.ShouldBe(instance.FullChild.MyInt);
             decrypted.FullChild.MyString.ShouldBe(instance.FullChild.MyString);
+        }
+
+        [Fact]
+        public void HashSet_with_nested_object()
+        {
+            var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(nameof(NestedObjectTests));
+            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
+            var serializer = new JsonSerializer() { ContractResolver = contractResolver };
+
+            var instance = new HashSetParent();
+            var guid = Guid.NewGuid();
+            instance.AddId(new ConcreteComplexId(guid));
+
+            var builder = new StringBuilder();
+            using (var textWriter = new StringWriter(builder))
+                serializer.Serialize(textWriter, instance);
+
+            var json = builder.ToString();
+
+            using var textReader = new StringReader(json);
+            using var reader = new JsonTextReader(textReader);
+            var decrypted = serializer.Deserialize<HashSetParent>(reader);
+
+            var id = decrypted.GetIds().First();
+            id.Id.ShouldBe(guid);
+        }
+
+        class HashSetParent
+        {
+            [JsonProperty("_ids")]
+            [Encrypt]
+            protected readonly HashSet<ConcreteComplexId> _ids = new HashSet<ConcreteComplexId>();
+
+            public IEnumerable<ConcreteComplexId> GetIds() => _ids;
+
+            public void AddId(ConcreteComplexId id) => _ids.Add(id);
+        }
+
+        sealed class ConcreteComplexId : AbstractComplexId
+        {
+            internal ConcreteComplexId(Guid id) : base(id) { }
+            public ConcreteComplexId() : base() { }
+        }
+
+        abstract class AbstractComplexId
+        {
+            private Guid _id;
+            public Guid Id
+            {
+                get => _id;
+                set => SetFrom(value);
+            }
+
+            void SetFrom(Guid guid) => _id = guid;
+
+            protected AbstractComplexId() => _id = Guid.Empty;
+            protected AbstractComplexId(Guid id) => _id = id;
         }
     }
 }
