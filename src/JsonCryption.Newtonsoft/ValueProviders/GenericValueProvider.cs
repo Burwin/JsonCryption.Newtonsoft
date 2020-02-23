@@ -14,8 +14,8 @@ namespace JsonCryption.Newtonsoft.ValueProviders
 
         public override void SetValue(object target, object value)
         {
-            var jObject = _encryptedConverter.FromCipherText((string)value, _serializer) as JObject;
-            var convertedObject = jObject.ToObject<T>();
+            var jContainer = _encryptedConverter.FromCipherText((string)value, _serializer) as JContainer;
+            var convertedObject = jContainer.ToObject<T>();
             _innerProvider.SetValue(target, convertedObject);
         }
     }
