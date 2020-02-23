@@ -2,8 +2,7 @@ name: Package Nuget CI
 
 on:
   push:
-    tags-ignore:
-    - 'v*'
+    branches: [master]
 
 jobs:
   build:
