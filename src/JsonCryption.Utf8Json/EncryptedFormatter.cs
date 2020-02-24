@@ -53,7 +53,7 @@ namespace JsonCryption.Utf8Json
                 var propName = reader.ReadPropertyName();
 
                 var memberInfo = _memberInfos[propName];
-                var memberValue = memberInfo.ShouldEncrypt ? ReadEncrypted(ref reader, memberInfo, _dataProtector, _fallbackResolver) : ReadNormal(ref reader, memberInfo);
+                var memberValue = memberInfo.ShouldEncrypt ? ReadEncrypted(ref reader, memberInfo, _dataProtector, _fallbackResolver) : ReadNormal(ref reader, _fallbackResolver);
                 values[memberInfo] = memberValue;
 
                 if (!reader.ReadIsEndObject())
@@ -167,7 +167,8 @@ namespace JsonCryption.Utf8Json
             return deserialized;
         }
 
-        private static dynamic ReadNormal(ref JsonReader reader, ExtendedMemberInfo memberInfo) => throw new NotImplementedException();
+        private static dynamic ReadNormal(ref JsonReader reader, IJsonFormatterResolver fallbackResolver)
+            => JsonSerializer.Deserialize<dynamic>(ref reader, fallbackResolver);
 
         private static void WriteDataMember(ref JsonWriter writer, T value, ExtendedMemberInfo memberInfo, IJsonFormatterResolver fallbackResolver, IDataProtector dataProtector)
         {
