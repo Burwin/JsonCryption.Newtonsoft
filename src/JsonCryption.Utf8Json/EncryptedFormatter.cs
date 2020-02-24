@@ -172,7 +172,7 @@ namespace JsonCryption.Utf8Json
         private static void WriteDataMember(ref JsonWriter writer, T value, ExtendedMemberInfo memberInfo, IJsonFormatterResolver fallbackResolver, IDataProtector dataProtector)
         {
             writer.WritePropertyName(memberInfo.Name);
-            dynamic memberValue = memberInfo.Getter(value);
+            object memberValue = memberInfo.Getter(value);
             var valueToSerialize = memberInfo.ShouldEncrypt
                 ? BuildEncryptedValue(memberValue, fallbackResolver, dataProtector)
                 : memberValue;
