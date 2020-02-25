@@ -53,7 +53,9 @@ namespace JsonCryption.Utf8Json
                 var propName = reader.ReadPropertyName();
 
                 var memberInfo = _memberInfos[propName];
-                var memberValue = memberInfo.ShouldEncrypt ? ReadEncrypted(ref reader, memberInfo, _dataProtector, _fallbackResolver) : ReadNormal(ref reader, _fallbackResolver);
+                var memberValue = memberInfo.ShouldEncrypt
+                    ? ReadEncrypted(ref reader, memberInfo, _dataProtector, _fallbackResolver)
+                    : ReadNormal(ref reader, _fallbackResolver);
                 values[memberInfo] = memberValue;
 
                 if (!reader.ReadIsEndObject())
@@ -163,7 +165,7 @@ namespace JsonCryption.Utf8Json
             var ciphertext = reader.ReadString();
             var plaintext = dataProtector.Unprotect(ciphertext);
 
-            dynamic deserialized = JsonSerializer.Deserialize<dynamic>(plaintext, fallbackResolver);
+            dynamic deserialized = memberInfo.Deserializer(plaintext, fallbackResolver);
             return deserialized;
         }
 

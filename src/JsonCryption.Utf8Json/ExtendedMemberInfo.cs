@@ -17,6 +17,7 @@ namespace JsonCryption.Utf8Json
         public bool ShouldEncrypt { get; }
         public Func<object, object> Getter { get; }
         public Action<object, object> Setter { get; }
+        public Func<string, IJsonFormatterResolver, object> Deserializer { get; }
 
         private static readonly Type ObjectType = typeof(object);
 
@@ -28,15 +29,30 @@ namespace JsonCryption.Utf8Json
             ShouldEncrypt = memberInfo.GetCustomAttribute<EncryptAttribute>() != null;
             Getter = BuildGetter(MemberInfo, parentType);
             Setter = BuildSetter(MemberInfo, parentType, Type);
+            Deserializer = BuildDeserializer(Type);
         }
 
-        public static IEnumerable<ExtendedMemberInfo> GetFrom(Type cachedType, IJsonFormatterResolver fallbackResolver)
+        private Func<string, IJsonFormatterResolver, object> BuildDeserializer(Type type)
+        {
+            var method = typeof(JsonSerializer).GetMethod(nameof(JsonSerializer.Deserialize), new[] { typeof(string), typeof(IJsonFormatterResolver) });
+            var generic = method.MakeGenericMethod(type);
+
+            var jsonParamExpr = Expression.Parameter(typeof(string), "json");
+            var resolverExpr = Expression.Parameter(typeof(IJsonFormatterResolver), "resolver");
+
+            var body = Expression.Call(generic, jsonParamExpr, resolverExpr);
+            var objectifiedBody = Expression.Convert(body, ObjectType);
+            var lambda = Expression.Lambda<Func<string, IJsonFormatterResolver, object>>(objectifiedBody, jsonParamExpr, resolverExpr);
+            return lambda.Compile();
+        }
+
+        public static IEnumerable<ExtendedMemberInfo> GetFrom(Type type, IJsonFormatterResolver fallbackResolver)
         {
             var bindingFlags = BindingFlags.Instance | BindingFlags.Public;
             if (fallbackResolver.AllowsPrivate()) bindingFlags |= BindingFlags.NonPublic;
 
             // properties
-            var properties = cachedType
+            var properties = type
                 .GetProperties(bindingFlags)
                 .Where(m => m.GetCustomAttribute<IgnoreDataMemberAttribute>() == null)
                 .ToArray();
@@ -44,7 +60,7 @@ namespace JsonCryption.Utf8Json
             var propInfoNames = new HashSet<string>(properties.Select(p => p.Name));
 
             // fields
-            var fields = cachedType
+            var fields = type
                 .GetFields(bindingFlags)
                 .Where(m => m.GetCustomAttribute<IgnoreDataMemberAttribute>() == null)
                 .Where(f => !IsBackingField(f) || !IsBackingFieldAlreadyIncluded(f, propInfoNames));
@@ -52,7 +68,7 @@ namespace JsonCryption.Utf8Json
             return properties
                 .Cast<MemberInfo>()
                 .Concat(fields)
-                .Select(m => new ExtendedMemberInfo(m, cachedType));
+                .Select(m => new ExtendedMemberInfo(m, type));
         }
 
         private static bool IsBackingFieldAlreadyIncluded(FieldInfo f, HashSet<string> propInfoNames)
