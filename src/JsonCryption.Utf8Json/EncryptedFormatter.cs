@@ -105,7 +105,7 @@ namespace JsonCryption.Utf8Json
             var arguments = constructor
                 .GetParameters()
                 .Select(p => p.Name.ToLowerInvariant())
-                .Select(n => valuesByName[n])
+                .Select(n => valuesByName.ContainsKey(n) ? valuesByName[n] : default)
                 .ToArray();
 
             return (T)constructor.Invoke(arguments.Select(a => a.Value).ToArray());

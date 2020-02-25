@@ -11,6 +11,7 @@ namespace JsonCryption.Utf8Json
     {
         private readonly IJsonFormatterResolver _fallbackResolver;
         private readonly IDataProtector _dataProtector;
+        private readonly FormatterCache _formatterCache = new FormatterCache();
 
         private static readonly List<object> _dummyList = new List<object>();
 
@@ -22,10 +23,10 @@ namespace JsonCryption.Utf8Json
         
         public IJsonFormatter<T> GetFormatter<T>()
         {
-            if (!FormatterCache.TryGetFormatter<T>(out var formatter))
+            if (!_formatterCache.TryGetFormatter<T>(out var formatter))
             {
                 formatter = CreateFormatter<T>();
-                FormatterCache.Add(formatter);
+                _formatterCache.Add(formatter);
             }
 
             return formatter;
@@ -33,11 +34,11 @@ namespace JsonCryption.Utf8Json
 
         private IJsonFormatter<T> CreateFormatter<T>() => new EncryptedFormatter<T>(_dataProtector, _fallbackResolver, ExtendedMemberInfo.GetFrom(typeof(T), _fallbackResolver).ToArray());
 
-        static class FormatterCache
+        class FormatterCache
         {
-            private static readonly ConcurrentDictionary<Type, IJsonFormatter> _formatters = new ConcurrentDictionary<Type, IJsonFormatter>();
+            private readonly ConcurrentDictionary<Type, IJsonFormatter> _formatters = new ConcurrentDictionary<Type, IJsonFormatter>();
 
-            public static bool TryGetFormatter<T>(out IJsonFormatter<T> formatter)
+            public bool TryGetFormatter<T>(out IJsonFormatter<T> formatter)
             {
                 if (!_formatters.TryGetValue(typeof(T), out var rawFormatter))
                 {
@@ -49,7 +50,7 @@ namespace JsonCryption.Utf8Json
                 return true;
             }
 
-            public static void Add<T>(IJsonFormatter<T> formatter)
+            public void Add<T>(IJsonFormatter<T> formatter)
             {
                 _formatters[typeof(T)] = formatter;
             }
