@@ -7,7 +7,14 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
+      uses: Secbyte/dotnet-sonarscanner@v1.2
+      with:
+        buildCommand: dotnet build ./src
+        testCommand: dotnet test ./src
+        projectKey: Burwin_JsonCryption
+        projectName: JsonCryption
+        sonarOrganisation: burwin
+        beginArguments: /d:sonar.verbose="true" /d:sonar.coverage.exclusions="**/*.cs"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_V1 }}
