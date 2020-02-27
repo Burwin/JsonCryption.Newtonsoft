@@ -14,7 +14,7 @@ jobs:
         projectKey: Burwin_JsonCryption
         projectName: JsonCryption
         sonarOrganisation: burwin
-        beginArguments: /d:sonar.verbose="true" /d:sonar.cs.opencover.reportsPaths="TestResults/coverage.info" /d:sonar.coverage.exclusions="**/*.cs"
+        beginArguments: /d:sonar.verbose="true" /d:sonar.cs.opencover.reportsPaths="TestResults/coverage.xml" /d:sonar.coverage.exclusions="**/*.cs"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_V1 }}
