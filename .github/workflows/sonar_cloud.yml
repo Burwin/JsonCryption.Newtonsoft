@@ -10,7 +10,7 @@ jobs:
       uses: Secbyte/dotnet-sonarscanner@v1.2
       with:
         buildCommand: dotnet build ./src
-        testCommand: dotnet test ./src --collect:"XPlat Code Coverage" --format:opencover
+        testCommand: dotnet test ./src --collect:"XPlat Code Coverage" --format opencover
         projectKey: Burwin_JsonCryption
         projectName: JsonCryption
         sonarOrganisation: burwin
