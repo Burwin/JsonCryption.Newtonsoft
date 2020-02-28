@@ -13,7 +13,7 @@ jobs:
     - name: install sonarscanner
       run: dotnet tool install -g dotnet-sonarscanner --version 4.8.0
     - name: sonar begin
-      run: dotnet sonarscanner begin -k:"Burwin_JsonCryption" -n:"JsonCryption" -o:"burwin" -d:sonar.cs.opencover.reportsPaths="./SonarQube.xml" -d:sonar.host.url="https://sonarcloud.io" -d:sonar.login=${{ secrets.SONAR_TOKEN_V1 }} -d:sonar-verbose=true
+      run: dotnet sonarscanner begin -k:"Burwin_JsonCryption" -n:"JsonCryption" -o:"burwin" -d:sonar.coverageReportPaths="./SonarQube.xml" -d:sonar.host.url="https://sonarcloud.io" -d:sonar.login=${{ secrets.SONAR_TOKEN_V1 }} -d:sonar-verbose=true
     - name: build solution
       run: dotnet build ./src
     - name: test solution
