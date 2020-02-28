@@ -6,8 +6,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: sonarscanner begin
-      run: dotnet sonarscanner begin -k:"Burwin_JsonCryption" -d:sonar.cs.opencover.reportsPaths="./CoverageReports/coverage.opencover.xml" -d:sonar.login=${{ secrets.SONAR_TOKEN_V1 }} -d:sonar-verbose=true
     - name: build solution
       run: dotnet build ./src
     - name: test solution
