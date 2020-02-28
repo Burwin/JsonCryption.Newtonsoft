@@ -10,3 +10,8 @@ jobs:
       run: dotnet build ./src
     - name: test solution
       run: dotnet test ./src /p:CollectCoverage=true  /p:CoverletOutput=../CoverageResults/ /p:MergeWith="../CoverageResults/coverage.json" /p:CoverletOutputFormat=\"opencover,json\" -m:1
+    - name: save artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: debug
+        path: ./src
