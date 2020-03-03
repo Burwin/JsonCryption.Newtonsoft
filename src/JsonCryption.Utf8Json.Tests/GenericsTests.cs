@@ -270,7 +270,73 @@ namespace JsonCryption.Utf8Json.Tests
         [Fact]
         public void Complex_types_without_inner_encryption()
         {
-            throw new NotImplementedException();
+            var instance = new FooNoInnerEncryption
+            {
+                MyBarDictionary = GetComplexNoInnerEncryptionDictionary(),
+                MyConcurrentBarDictionary = new ConcurrentDictionary<string, Bar>(GetComplexNoInnerEncryptionDictionary()),
+                MyBars = GetComplexNoInnerEncryptionArray(),
+                MyListOfBars = new List<Bar>(GetComplexNoInnerEncryptionArray()),
+                MyLazyBar = new Lazy<Bar>(new Bar { MyInt = 75, MyString = "something public" })
+            };
+
+            JsonSerializer.SetDefaultResolver(
+                new EncryptedResolver(StandardResolver.AllowPrivate,
+                DataProtectionProvider.Create(nameof(SmokeTests)).CreateProtector("test")));
+
+            var bytes = JsonSerializer.Serialize(instance);
+            var json = Encoding.UTF8.GetString(bytes);
+
+            json.ShouldNotContain(SerializedValueOf(instance.MyBarDictionary, StandardResolver.AllowPrivate, nameof(instance.MyBarDictionary)));
+            json.ShouldNotContain(SerializedValueOf(instance.MyConcurrentBarDictionary, StandardResolver.AllowPrivate, nameof(instance.MyConcurrentBarDictionary)));
+            json.ShouldNotContain(SerializedValueOf(instance.MyBars, StandardResolver.AllowPrivate, nameof(instance.MyBars)));
+            json.ShouldNotContain(SerializedValueOf(instance.MyListOfBars, StandardResolver.AllowPrivate, nameof(instance.MyListOfBars)));
+            json.ShouldNotContain(SerializedValueOf(instance.MyLazyBar, StandardResolver.AllowPrivate, nameof(instance.MyLazyBar)));
+
+            var deserialized = JsonSerializer.Deserialize<FooNoInnerEncryption>(json);
+
+            deserialized.MyBarDictionary.ShouldBe(instance.MyBarDictionary);
+            deserialized.MyConcurrentBarDictionary.ShouldBe(instance.MyConcurrentBarDictionary);
+            deserialized.MyBars.ShouldBe(instance.MyBars);
+            deserialized.MyListOfBars.ShouldBe(instance.MyListOfBars);
+
+            // lazy is special
+            deserialized.MyLazyBar.Value.ShouldBe(instance.MyLazyBar.Value);
+        }
+
+        private Bar[] GetComplexNoInnerEncryptionArray()
+            => new Bar[]
+            {
+                new Bar{ MyInt = 75, MyString = "something public" },
+                new Bar{ MyInt = 17, MyString = "blah blah" }
+            };
+
+        private Dictionary<string, Bar> GetComplexNoInnerEncryptionDictionary()
+            => new Dictionary<string, Bar>
+                {
+                    { "first", new Bar{ MyInt = 75, MyString = "something public" } },
+                    { "second", new Bar{ MyInt = 17, MyString = "blah blah" } }
+                };
+
+        class FooNoInnerEncryption
+        {
+            [Encrypt]
+            public Dictionary<string, Bar> MyBarDictionary { get; set; }
+            [Encrypt]
+            public ConcurrentDictionary<string, Bar> MyConcurrentBarDictionary { get; set; }
+            [Encrypt]
+            public Bar[] MyBars { get; set; }
+            [Encrypt]
+            public List<Bar> MyListOfBars { get; set; }
+            [Encrypt]
+            public Lazy<Bar> MyLazyBar { get; set; }
+        }
+
+        class Bar
+        {
+            public int MyInt { get; set; }
+            public string MyString { get; set; }
+
+            public override bool Equals(object obj) => obj is Bar other && MyInt.Equals(other.MyInt) && MyString.Equals(other.MyString);
         }
 
         [Fact]
