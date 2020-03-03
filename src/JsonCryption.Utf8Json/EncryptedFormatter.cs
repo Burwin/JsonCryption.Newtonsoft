@@ -14,7 +14,6 @@ namespace JsonCryption.Utf8Json
         private readonly IDataProtector _dataProtector;
         private readonly IJsonFormatterResolver _fallbackResolver;
         private readonly Dictionary<string, ExtendedMemberInfo> _memberInfos;
-        private readonly ExtendedMemberInfo[] _constructorInitializedMembers;
         private readonly ExtendedMemberInfo[] _constructorNonInitializedMembers;
         private readonly ConstructorInfo _constructor;
 
@@ -33,8 +32,8 @@ namespace JsonCryption.Utf8Json
             _constructor = constructorResolver.GetConstructor(extendedMemberInfos, CachedType);
 
             var argumentNames = new HashSet<string>(_constructor.GetParameters().Select(p => p.Name.ToLowerInvariant()));
-            _constructorInitializedMembers = extendedMemberInfos.Where(m => argumentNames.Contains(m.Name.ToLowerInvariant())).ToArray();
-            _constructorNonInitializedMembers = extendedMemberInfos.Except(_constructorInitializedMembers).ToArray();
+            var constructorInitializedMembers = extendedMemberInfos.Where(m => argumentNames.Contains(m.Name.ToLowerInvariant())).ToArray();
+            _constructorNonInitializedMembers = extendedMemberInfos.Except(constructorInitializedMembers).ToArray();
         }
 
         public T Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)

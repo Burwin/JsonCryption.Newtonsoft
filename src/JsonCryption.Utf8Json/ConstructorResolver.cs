@@ -25,7 +25,7 @@ namespace JsonCryption.Utf8Json
             //  3 - look for default constructor
             constructor = GetDefaultConstructor(allConstructors);
             if (constructor is null)
-                throw new Exception($"No suitable constructor found for type {type.Name}");
+                throw new ConstructorResolutionException(type);
 
             return constructor;
         }
@@ -49,7 +49,7 @@ namespace JsonCryption.Utf8Json
                     break;
 
                 var paramSet = new HashSet<string>(orderedConstructor.Parameters.Select(p => p.Name.ToLowerInvariant()));
-                var matchCount = serializedNames.Where(n => paramSet.Contains(n)).Count();
+                var matchCount = serializedNames.Count(n => paramSet.Contains(n));
 
                 // check for ambiguous match
                 if (matchCount == mostMatching.MatchingParameters)

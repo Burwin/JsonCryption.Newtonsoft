@@ -57,27 +57,5 @@ namespace JsonCryption.Utf8Json
         }
 
         private IJsonFormatter<T> CreateFormatter<T>() => new EncryptedFormatter<T>(_dataProtector, _fallbackResolver, ExtendedMemberInfo.GetFrom(typeof(T), _fallbackResolver).ToArray());
-
-        class FormatterCache
-        {
-            private readonly ConcurrentDictionary<Type, IJsonFormatter> _formatters = new ConcurrentDictionary<Type, IJsonFormatter>();
-
-            public bool TryGetFormatter<T>(out IJsonFormatter<T> formatter)
-            {
-                if (!_formatters.TryGetValue(typeof(T), out var rawFormatter))
-                {
-                    formatter = null;
-                    return false;
-                }
-
-                formatter = rawFormatter as IJsonFormatter<T>;
-                return true;
-            }
-
-            public void Add<T>(IJsonFormatter<T> formatter)
-            {
-                _formatters[typeof(T)] = formatter;
-            }
-        }
     }
 }
