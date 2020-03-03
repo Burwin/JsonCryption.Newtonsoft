@@ -1,4 +1,7 @@
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+    types: [opened,edited,reopened,synchronize,ready_for_review,review_requested]
 name: SonarCloud with Coverage
 jobs:
   sonarCloudTrigger:
