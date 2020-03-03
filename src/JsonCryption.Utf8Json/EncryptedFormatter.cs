@@ -29,12 +29,14 @@ namespace JsonCryption.Utf8Json
                 .Select(m => (m.Name, Value: m))
                 .ToDictionary(x => x.Name, x => x.Value);
 
-            _constructor = GetConstructor(extendedMemberInfos);
+            var constructorResolver = new ConstructorResolver();
+            _constructor = constructorResolver.GetConstructor(extendedMemberInfos, CachedType);
 
             var argumentNames = new HashSet<string>(_constructor.GetParameters().Select(p => p.Name.ToLowerInvariant()));
             _constructorInitializedMembers = extendedMemberInfos.Where(m => argumentNames.Contains(m.Name.ToLowerInvariant())).ToArray();
             _constructorNonInitializedMembers = extendedMemberInfos.Except(_constructorInitializedMembers).ToArray();
         }
+
         public T Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
         {
             if (reader.ReadIsNull())
@@ -110,55 +112,6 @@ namespace JsonCryption.Utf8Json
                 .ToArray();
 
             return (T)constructor.Invoke(arguments.Select(a => a.Value).ToArray());
-        }
-
-        private ConstructorInfo GetConstructor(IEnumerable<ExtendedMemberInfo> memberInfos)
-        {
-            var allConstructors = CachedType
-                .GetConstructors()
-                .Concat(CachedType.GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic))
-                .ToArray();
-
-            //  1 - look for constructor decorated by SerializationConstructorAttribute
-            var constructor = allConstructors.FirstOrDefault(c => c.GetCustomAttribute<SerializationConstructorAttribute>() != null);
-            if (constructor != null)
-                return constructor;
-
-            //  2 - look for constructor with most matched arguments by name (ignore case)
-            (ConstructorInfo ConstructorInfo, int MatchingParameters) mostMatching = ((ConstructorInfo)null, -1);
-            var orderedConstructors = allConstructors
-                .Select(c => (ConstructorInfo: c, Parameters: c.GetParameters(), ParameterCount: c.GetParameters().Length))
-                .OrderByDescending(x => x.ParameterCount);
-
-            var serializedNames = memberInfos
-                .Select(k => k.Name.ToLowerInvariant())
-                .ToArray();
-
-            foreach (var orderedConstructor in orderedConstructors)
-            {
-                if (orderedConstructor.ParameterCount < mostMatching.MatchingParameters)
-                    break;
-
-                var paramSet = new HashSet<string>(orderedConstructor.Parameters.Select(p => p.Name.ToLowerInvariant()));
-                var matchCount = serializedNames.Where(n => paramSet.Contains(n)).Count();
-
-                // check for ambiguous match
-                if (matchCount == mostMatching.MatchingParameters)
-                    return null;
-
-                if (matchCount > mostMatching.MatchingParameters)
-                    mostMatching = (orderedConstructor.ConstructorInfo, matchCount);
-            }
-            
-            if (mostMatching.ConstructorInfo != null)
-                return mostMatching.ConstructorInfo;
-
-            //  3 - look for default constructor
-            constructor = allConstructors.FirstOrDefault(c => c.IsPublic && !c.GetParameters().Any());
-            if (constructor is null)
-                throw new Exception($"No suitable constructor found for type {CachedType.Name}");
-
-            return constructor;
         }
 
         private static object ReadEncrypted(ref JsonReader reader, ExtendedMemberInfo memberInfo, IDataProtector dataProtector, IJsonFormatterResolver fallbackResolver)
