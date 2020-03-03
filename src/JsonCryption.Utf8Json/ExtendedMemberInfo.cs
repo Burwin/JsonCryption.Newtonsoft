@@ -15,25 +15,89 @@ namespace JsonCryption.Utf8Json
         public string Name { get; }
         public Type Type { get; }
         public bool ShouldEncrypt { get; }
+        public bool HasNestedEncryptedMembers { get; }
         public Func<object, object> Getter { get; }
         public Action<object, object> Setter { get; }
-        public Func<string, IJsonFormatterResolver, object> Deserializer { get; }
+        public Func<string, IJsonFormatterResolver, object> EncryptedDeserializer { get; }
+        public TypedDeserializer TypedDeserializer { get; }
         public FallbackSerializer FallbackSerializer { get; }
         public Func<object, dynamic> Converter { get; }
 
         private static readonly Type ObjectType = typeof(object);
 
-        public ExtendedMemberInfo(MemberInfo memberInfo, Type parentType)
+        public ExtendedMemberInfo(MemberInfo memberInfo, Type parentType, IJsonFormatterResolver fallbackResolver)
         {
             MemberInfo = memberInfo;
             Type = MemberInfo is FieldInfo fieldInfo ? fieldInfo.FieldType : ((PropertyInfo)memberInfo).PropertyType;
             Name = GetNameForSerializing(MemberInfo);
-            ShouldEncrypt = memberInfo.GetCustomAttribute<EncryptAttribute>() != null;
+            ShouldEncrypt = memberInfo.ShouldEncrypt();
+            HasNestedEncryptedMembers = GetHasNestedEncryptedMembers(Type, fallbackResolver);
             Getter = BuildGetter(MemberInfo, parentType);
             Setter = BuildSetter(MemberInfo, parentType, Type);
-            Deserializer = BuildDeserializer(Type);
+            EncryptedDeserializer = BuildDeserializer(Type);
+            TypedDeserializer = BuildTypedDeserializer(Type);
             FallbackSerializer = BuildFallbackSerializer(Type);
             Converter = BuildConverter(Type);
+        }
+
+        private TypedDeserializer BuildTypedDeserializer(Type type)
+        {
+            var method = typeof(JsonSerializer)
+                .GetMethods()
+                .Where(m => m.Name == "Deserialize")
+                .Select(m => (MethodInfo: m, Params: m.GetParameters(), Args: m.GetGenericArguments()))
+                .Where(x => x.Params.Length == 2)
+                .Where(x => x.Params[0].ParameterType == typeof(JsonReader).MakeByRefType())
+                .Where(x => x.Params[1].ParameterType == typeof(IJsonFormatterResolver))
+                .Single().MethodInfo;
+
+            var generic = method.MakeGenericMethod(type);
+
+            var readerExpr = Expression.Parameter(typeof(JsonReader).MakeByRefType(), "reader");
+            var resolverExpr = Expression.Parameter(typeof(IJsonFormatterResolver), "resolver");
+
+            var body = Expression.Call(generic, readerExpr, resolverExpr);
+            var convertBodyExpr = Expression.Convert(body, ObjectType);
+            var lambda = Expression.Lambda<TypedDeserializer>(convertBodyExpr, readerExpr, resolverExpr);
+            return lambda.Compile();
+        }
+
+        private bool GetHasNestedEncryptedMembers(Type type, IJsonFormatterResolver fallbackResolver)
+        {
+            if (!type.IsClass)
+                return false;
+            
+            // loop through all nested levels until no more properties/fields are found
+            var toProcess = new Stack<Type>();
+            var processed = new HashSet<Type>();
+
+            toProcess.Push(type);
+            
+            while (toProcess.Count > 0)
+            {
+                var nextType = toProcess.Pop();
+                if (processed.Contains(nextType))
+                    continue;
+
+                processed.Add(nextType);
+
+                // get all properties and fields
+                var memberInfos = GetSerializableMemberInfos(nextType, fallbackResolver).ToArray();
+                if (memberInfos.Any(m => m.ShouldEncrypt()))
+                    return true;
+
+                var memberInfoTypes = memberInfos
+                    .Select(m => m.GetUnderlyingType())
+                    .Where(m => !processed.Contains(m))
+                    .ToArray();
+
+                foreach (var memberType in memberInfoTypes.Where(m => m.IsClass))
+                {
+                    toProcess.Push(memberType);
+                }
+            }
+
+            return false;
         }
 
         private Func<object, dynamic> BuildConverter(Type type)
@@ -94,6 +158,12 @@ namespace JsonCryption.Utf8Json
 
         public static IEnumerable<ExtendedMemberInfo> GetFrom(Type type, IJsonFormatterResolver fallbackResolver)
         {
+            return GetSerializableMemberInfos(type, fallbackResolver)
+                .Select(m => new ExtendedMemberInfo(m, type, fallbackResolver));
+        }
+
+        private static IEnumerable<MemberInfo> GetSerializableMemberInfos(Type type, IJsonFormatterResolver fallbackResolver)
+        {
             var bindingFlags = BindingFlags.Instance | BindingFlags.Public;
             if (fallbackResolver.AllowsPrivate()) bindingFlags |= BindingFlags.NonPublic;
 
@@ -120,8 +190,7 @@ namespace JsonCryption.Utf8Json
 
             return properties
                 .Cast<MemberInfo>()
-                .Concat(fields)
-                .Select(m => new ExtendedMemberInfo(m, type));
+                .Concat(fields);
         }
 
         private static bool IsBackingFieldAlreadyIncluded(FieldInfo f, HashSet<string> propInfoNames)
@@ -165,4 +234,5 @@ namespace JsonCryption.Utf8Json
     }
 
     internal delegate void FallbackSerializer(ref JsonWriter writer, object value, IJsonFormatterResolver fallbackResolver);
+    internal delegate object TypedDeserializer(ref JsonReader reader, IJsonFormatterResolver resolver);
 }
