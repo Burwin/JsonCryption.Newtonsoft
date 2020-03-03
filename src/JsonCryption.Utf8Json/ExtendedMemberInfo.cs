@@ -98,14 +98,21 @@ namespace JsonCryption.Utf8Json
             if (fallbackResolver.AllowsPrivate()) bindingFlags |= BindingFlags.NonPublic;
 
             // properties
-            var properties = type
+            var allProperties = type
                 .GetProperties(bindingFlags)
+                .ToArray();
+
+            var properties = allProperties
                 .Where(m => m.GetCustomAttribute<IgnoreDataMemberAttribute>() == null)
                 .ToArray();
 
-            var propInfoNames = new HashSet<string>(properties.Select(p => p.Name));
-
             // fields
+            var explicitlyIgnoredProperties = allProperties
+                .Where(m => m.GetCustomAttribute<IgnoreDataMemberAttribute>() != null)
+                .Select(p => p.Name);
+
+            var propInfoNames = new HashSet<string>(properties.Select(p => p.Name).Concat(explicitlyIgnoredProperties));
+
             var fields = type
                 .GetFields(bindingFlags)
                 .Where(m => m.GetCustomAttribute<IgnoreDataMemberAttribute>() == null)

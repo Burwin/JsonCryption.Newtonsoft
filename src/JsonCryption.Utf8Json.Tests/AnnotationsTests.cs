@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.DataProtection;
+using Shouldly;
+using System.Runtime.Serialization;
+using System.Text;
+using Utf8Json;
+using Utf8Json.Resolvers;
 using Xunit;
 
 namespace JsonCryption.Utf8Json.Tests
@@ -8,19 +13,78 @@ namespace JsonCryption.Utf8Json.Tests
         [Fact]
         public void Use_property_and_field_names_when_not_annotated()
         {
-            throw new NotImplementedException();
+            var instance = new Foo { MyInt = 75, MyString = "secret" };
+
+            JsonSerializer.SetDefaultResolver(
+                new EncryptedResolver(StandardResolver.AllowPrivate,
+                DataProtectionProvider.Create(nameof(SmokeTests)).CreateProtector("test")));
+
+            var bytes = JsonSerializer.Serialize(instance);
+            var json = Encoding.UTF8.GetString(bytes);
+
+            json.ShouldContain(nameof(Foo.MyInt));
+            json.ShouldContain(nameof(Foo.MyString));
+        }
+
+        class Foo
+        {
+            [Encrypt]
+            public int MyInt { get; set; }
+
+            [Encrypt]
+            public string MyString { get; set; }
         }
 
         [Fact]
         public void Use_DataMember_names_when_annotated()
         {
-            throw new NotImplementedException();
+            var instance = new FooAnnotated { MyInt = 75, MyString = "secret" };
+
+            JsonSerializer.SetDefaultResolver(
+                new EncryptedResolver(StandardResolver.AllowPrivate,
+                DataProtectionProvider.Create(nameof(SmokeTests)).CreateProtector("test")));
+
+            var bytes = JsonSerializer.Serialize(instance);
+            var json = Encoding.UTF8.GetString(bytes);
+
+            json.ShouldContain("MyCustomInt");
+            json.ShouldContain("MyCustomString");
+        }
+
+        class FooAnnotated
+        {
+            [Encrypt]
+            [DataMember(Name = "MyCustomInt")]
+            public int MyInt { get; set; }
+
+            [Encrypt]
+            [DataMember(Name = "MyCustomString")]
+            public string MyString { get; set; }
         }
 
         [Fact]
         public void Ignore_members_when_ignored()
         {
-            throw new NotImplementedException();
+            var instance = new FooIgnored { MyInt = 75, MyString = "secret" };
+
+            JsonSerializer.SetDefaultResolver(
+                new EncryptedResolver(StandardResolver.AllowPrivate,
+                DataProtectionProvider.Create(nameof(SmokeTests)).CreateProtector("test")));
+
+            var bytes = JsonSerializer.Serialize(instance);
+            var json = Encoding.UTF8.GetString(bytes);
+
+            json.ShouldNotContain(nameof(FooIgnored.MyInt));
+            json.ShouldContain(nameof(FooIgnored.MyString));
+        }
+
+        class FooIgnored
+        {
+            [IgnoreDataMember]
+            public int MyInt { get; set; }
+            
+            [Encrypt]
+            public string MyString { get; set; }
         }
     }
 }
