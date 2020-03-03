@@ -141,5 +141,6 @@ class NonPublicFoo
 ```
 
 ### Future Plans
-JsonCryption is a baby and very open to PRs and more regular contributors. Feel free to reach out if you're interested in helping. There are a few things left to do in order to feel ready to release v1.0 (particularly a lot more testing), at which point we obviously need nuget packages. More to follow...
+JsonCryption is open to PRs and more regular contributors. Feel free to reach out if you're interested in helping.
 
+Currently, I'm working mostly on implementing support for the very fast/efficient Utf8Json serializer.
