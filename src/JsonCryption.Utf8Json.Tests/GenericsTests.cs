@@ -268,14 +268,14 @@ namespace JsonCryption.Utf8Json.Tests
         }
 
         [Fact]
-        public void Complex_types_without_inner_encryption()
+        public void Complex_types()
         {
-            var instance = new FooNoInnerEncryption
+            var instance = new FooComplex<Bar>
             {
-                MyBarDictionary = GetComplexNoInnerEncryptionDictionary(),
-                MyConcurrentBarDictionary = new ConcurrentDictionary<string, Bar>(GetComplexNoInnerEncryptionDictionary()),
-                MyBars = GetComplexNoInnerEncryptionArray(),
-                MyListOfBars = new List<Bar>(GetComplexNoInnerEncryptionArray()),
+                MyBarDictionary = GetComplexDictionary(),
+                MyConcurrentBarDictionary = new ConcurrentDictionary<string, Bar>(GetComplexDictionary()),
+                MyBars = GetComplexArray(),
+                MyListOfBars = new List<Bar>(GetComplexArray()),
                 MyLazyBar = new Lazy<Bar>(new Bar { MyInt = 75, MyString = "something public" })
             };
 
@@ -292,7 +292,7 @@ namespace JsonCryption.Utf8Json.Tests
             json.ShouldNotContain(SerializedValueOf(instance.MyListOfBars, StandardResolver.AllowPrivate, nameof(instance.MyListOfBars)));
             json.ShouldNotContain(SerializedValueOf(instance.MyLazyBar, StandardResolver.AllowPrivate, nameof(instance.MyLazyBar)));
 
-            var deserialized = JsonSerializer.Deserialize<FooNoInnerEncryption>(json);
+            var deserialized = JsonSerializer.Deserialize<FooComplex<Bar>>(json);
 
             deserialized.MyBarDictionary.ShouldBe(instance.MyBarDictionary);
             deserialized.MyConcurrentBarDictionary.ShouldBe(instance.MyConcurrentBarDictionary);
@@ -303,32 +303,32 @@ namespace JsonCryption.Utf8Json.Tests
             deserialized.MyLazyBar.Value.ShouldBe(instance.MyLazyBar.Value);
         }
 
-        private Bar[] GetComplexNoInnerEncryptionArray()
+        private Bar[] GetComplexArray()
             => new Bar[]
             {
                 new Bar{ MyInt = 75, MyString = "something public" },
                 new Bar{ MyInt = 17, MyString = "blah blah" }
             };
 
-        private Dictionary<string, Bar> GetComplexNoInnerEncryptionDictionary()
+        private Dictionary<string, Bar> GetComplexDictionary()
             => new Dictionary<string, Bar>
                 {
                     { "first", new Bar{ MyInt = 75, MyString = "something public" } },
                     { "second", new Bar{ MyInt = 17, MyString = "blah blah" } }
                 };
 
-        class FooNoInnerEncryption
+        class FooComplex<T>
         {
             [Encrypt]
-            public Dictionary<string, Bar> MyBarDictionary { get; set; }
+            public Dictionary<string, T> MyBarDictionary { get; set; }
             [Encrypt]
-            public ConcurrentDictionary<string, Bar> MyConcurrentBarDictionary { get; set; }
+            public ConcurrentDictionary<string, T> MyConcurrentBarDictionary { get; set; }
             [Encrypt]
-            public Bar[] MyBars { get; set; }
+            public T[] MyBars { get; set; }
             [Encrypt]
-            public List<Bar> MyListOfBars { get; set; }
+            public List<T> MyListOfBars { get; set; }
             [Encrypt]
-            public Lazy<Bar> MyLazyBar { get; set; }
+            public Lazy<T> MyLazyBar { get; set; }
         }
 
         class Bar
@@ -337,12 +337,6 @@ namespace JsonCryption.Utf8Json.Tests
             public string MyString { get; set; }
 
             public override bool Equals(object obj) => obj is Bar other && MyInt.Equals(other.MyInt) && MyString.Equals(other.MyString);
-        }
-
-        [Fact]
-        public void Complex_types_with_inner_encryption()
-        {
-            throw new NotImplementedException();
         }
     }
 }
