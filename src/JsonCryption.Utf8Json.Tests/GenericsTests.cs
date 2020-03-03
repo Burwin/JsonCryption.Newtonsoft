@@ -331,6 +331,7 @@ namespace JsonCryption.Utf8Json.Tests
             public string MyString { get; set; }
 
             public override bool Equals(object obj) => obj is Bar other && MyInt.Equals(other.MyInt) && MyString.Equals(other.MyString);
+            public override int GetHashCode() => MyInt.GetHashCode() ^ MyString.GetHashCode();
         }
     }
 }
