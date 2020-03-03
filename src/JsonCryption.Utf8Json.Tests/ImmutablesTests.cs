@@ -12,13 +12,7 @@ namespace JsonCryption.Utf8Json.Tests
         }
 
         [Fact]
-        public void Complex_types_without_inner_encryption()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void Complex_types_with_inner_encryption()
+        public void Complex_types()
         {
             throw new NotImplementedException();
         }
