@@ -91,7 +91,7 @@ namespace JsonCryption.Utf8Json
             foreach (var member in _constructorNonInitializedMembers)
             {
                 var val = values[member];
-                var converted = Convert.ChangeType(val, member.Type);
+                var converted = member.Converter(val);
                 member.Setter(tValue, converted);
             }
 
@@ -177,15 +177,15 @@ namespace JsonCryption.Utf8Json
             writer.WritePropertyName(memberInfo.Name);
             object memberValue = memberInfo.Getter(value);
             var valueToSerialize = memberInfo.ShouldEncrypt
-                ? BuildEncryptedValue(memberValue, fallbackResolver, dataProtector)
+                ? BuildEncryptedValue(memberValue, memberInfo, fallbackResolver, dataProtector)
                 : memberValue;
             JsonSerializer.Serialize(ref writer, valueToSerialize, fallbackResolver);
         }
 
-        private static string BuildEncryptedValue(dynamic memberValue, IJsonFormatterResolver fallbackResolver, IDataProtector dataProtector)
+        private static string BuildEncryptedValue(dynamic memberValue, ExtendedMemberInfo memberInfo, IJsonFormatterResolver fallbackResolver, IDataProtector dataProtector)
         {
             var localWriter = new JsonWriter();
-            JsonSerializer.Serialize(ref localWriter, memberValue, fallbackResolver);
+            memberInfo.FallbackSerializer(ref localWriter, memberValue, fallbackResolver);
             return dataProtector.Protect(localWriter.ToString());
         }
     }
