@@ -32,7 +32,7 @@ namespace JsonCryption.Utf8Json
 
         private static ConstructorInfo GetDefaultConstructor(ConstructorInfo[] allConstructors) => allConstructors.FirstOrDefault(c => c.IsPublic && !c.GetParameters().Any());
 
-        private ConstructorInfo GetMostMatchingConstructor(IEnumerable<ConstructorInfo> allConstructors, IEnumerable<ExtendedMemberInfo> memberInfos)
+        private static ConstructorInfo GetMostMatchingConstructor(IEnumerable<ConstructorInfo> allConstructors, IEnumerable<ExtendedMemberInfo> memberInfos)
         {
             (ConstructorInfo ConstructorInfo, int MatchingParameters) mostMatching = ((ConstructorInfo)null, -1);
             var orderedConstructors = allConstructors

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 using Shouldly;
+using System.Runtime.Serialization;
 using System.Text;
 using Utf8Json;
 using Utf8Json.Resolvers;
@@ -15,14 +16,14 @@ namespace JsonCryption.Utf8Json.Tests
             var instance = new FooDefault(1.2) { MyInt = 75, MyString = "secret" };
 
             JsonSerializer.SetDefaultResolver(
-                new EncryptedResolver(StandardResolver.Default,
+                new EncryptedResolver(StandardResolver.AllowPrivate,
                 DataProtectionProvider.Create(nameof(SmokeTests)).CreateProtector("test")));
 
             var bytes = JsonSerializer.Serialize(instance);
             var json = Encoding.UTF8.GetString(bytes);
 
-            json.ShouldNotContain(Helpers.SerializedValueOf(instance.MyInt, StandardResolver.Default, nameof(instance.MyInt)));
-            json.ShouldNotContain(Helpers.SerializedValueOf(instance.MyString, StandardResolver.Default, nameof(instance.MyString)));
+            json.ShouldNotContain(Helpers.SerializedValueOf(instance.MyInt, StandardResolver.AllowPrivate, nameof(instance.MyInt)));
+            json.ShouldNotContain(Helpers.SerializedValueOf(instance.MyString, StandardResolver.AllowPrivate, nameof(instance.MyString)));
 
             var deserialized = JsonSerializer.Deserialize<FooDefault>(json);
 
@@ -39,6 +40,7 @@ namespace JsonCryption.Utf8Json.Tests
             [Encrypt]
             public string MyString { get; set; }
 
+            [IgnoreDataMember]
             private double _randomDouble;
             public double RandomDouble() => _randomDouble;
 
@@ -55,14 +57,14 @@ namespace JsonCryption.Utf8Json.Tests
             var instance = new FooClosest { MyInt = 75, MyString = "secret" };
 
             JsonSerializer.SetDefaultResolver(
-                new EncryptedResolver(StandardResolver.Default,
+                new EncryptedResolver(StandardResolver.AllowPrivate,
                 DataProtectionProvider.Create(nameof(SmokeTests)).CreateProtector("test")));
 
             var bytes = JsonSerializer.Serialize(instance);
             var json = Encoding.UTF8.GetString(bytes);
 
-            json.ShouldNotContain(Helpers.SerializedValueOf(instance.MyInt, StandardResolver.Default, nameof(instance.MyInt)));
-            json.ShouldNotContain(Helpers.SerializedValueOf(instance.MyString, StandardResolver.Default, nameof(instance.MyString)));
+            json.ShouldNotContain(Helpers.SerializedValueOf(instance.MyInt, StandardResolver.AllowPrivate, nameof(instance.MyInt)));
+            json.ShouldNotContain(Helpers.SerializedValueOf(instance.MyString, StandardResolver.AllowPrivate, nameof(instance.MyString)));
 
             var deserialized = JsonSerializer.Deserialize<FooClosest>(json);
 
@@ -79,6 +81,7 @@ namespace JsonCryption.Utf8Json.Tests
             [Encrypt]
             public string MyString { get; set; }
 
+            [IgnoreDataMember]
             private string _token;
             public string Token() => _token;
 
