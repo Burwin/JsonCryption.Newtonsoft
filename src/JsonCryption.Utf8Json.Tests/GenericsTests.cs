@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.DataProtection;
-using Shouldly;
+﻿using Shouldly;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -75,9 +74,7 @@ namespace JsonCryption.Utf8Json.Tests
                 MyTripleTuple = new Tuple<string, int, decimal>("key", 75, decimal.MaxValue)
             };
 
-            JsonSerializer.SetDefaultResolver(
-                new EncryptedResolver(StandardResolver.AllowPrivate,
-                DataProtectionProvider.Create(nameof(SmokeTests)).CreateProtector("test")));
+            Helpers.SetJsonSerializerResolver();
 
             var bytes = JsonSerializer.Serialize(instance);
             var json = Encoding.UTF8.GetString(bytes);
@@ -273,9 +270,7 @@ namespace JsonCryption.Utf8Json.Tests
                 MyLazyBar = new Lazy<Bar>(new Bar { MyInt = 75, MyString = "something public" })
             };
 
-            JsonSerializer.SetDefaultResolver(
-                new EncryptedResolver(StandardResolver.AllowPrivate,
-                DataProtectionProvider.Create(nameof(SmokeTests)).CreateProtector("test")));
+            Helpers.SetJsonSerializerResolver();
 
             var bytes = JsonSerializer.Serialize(instance);
             var json = Encoding.UTF8.GetString(bytes);

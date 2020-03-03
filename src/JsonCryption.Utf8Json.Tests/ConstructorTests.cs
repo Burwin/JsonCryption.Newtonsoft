@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.DataProtection;
-using Shouldly;
+﻿using Shouldly;
 using System.Runtime.Serialization;
 using System.Text;
 using Utf8Json;
@@ -15,9 +14,7 @@ namespace JsonCryption.Utf8Json.Tests
         {
             var instance = new FooDefault(1.2) { MyInt = 75, MyString = "secret" };
 
-            JsonSerializer.SetDefaultResolver(
-                new EncryptedResolver(StandardResolver.AllowPrivate,
-                DataProtectionProvider.Create(nameof(SmokeTests)).CreateProtector("test")));
+            Helpers.SetJsonSerializerResolver();
 
             var bytes = JsonSerializer.Serialize(instance);
             var json = Encoding.UTF8.GetString(bytes);
@@ -56,9 +53,7 @@ namespace JsonCryption.Utf8Json.Tests
         {
             var instance = new FooClosest { MyInt = 75, MyString = "secret" };
 
-            JsonSerializer.SetDefaultResolver(
-                new EncryptedResolver(StandardResolver.AllowPrivate,
-                DataProtectionProvider.Create(nameof(SmokeTests)).CreateProtector("test")));
+            Helpers.SetJsonSerializerResolver();
 
             var bytes = JsonSerializer.Serialize(instance);
             var json = Encoding.UTF8.GetString(bytes);
@@ -109,9 +104,7 @@ namespace JsonCryption.Utf8Json.Tests
         {
             var instance = new FooAnnotated("something secret", 75);
             
-            JsonSerializer.SetDefaultResolver(
-                new EncryptedResolver(StandardResolver.AllowPrivate,
-                DataProtectionProvider.Create(nameof(SmokeTests)).CreateProtector("test")));
+            Helpers.SetJsonSerializerResolver();
 
             var bytes = JsonSerializer.Serialize(instance);
             var json = Encoding.UTF8.GetString(bytes);

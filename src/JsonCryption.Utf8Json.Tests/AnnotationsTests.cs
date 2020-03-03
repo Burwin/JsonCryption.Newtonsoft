@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.DataProtection;
-using Shouldly;
+﻿using Shouldly;
 using System.Runtime.Serialization;
 using System.Text;
 using Utf8Json;
-using Utf8Json.Resolvers;
 using Xunit;
 
 namespace JsonCryption.Utf8Json.Tests
@@ -15,10 +13,8 @@ namespace JsonCryption.Utf8Json.Tests
         {
             var instance = new Foo { MyInt = 75, MyString = "secret" };
 
-            JsonSerializer.SetDefaultResolver(
-                new EncryptedResolver(StandardResolver.AllowPrivate,
-                DataProtectionProvider.Create(nameof(SmokeTests)).CreateProtector("test")));
-
+            Helpers.SetJsonSerializerResolver();
+            
             var bytes = JsonSerializer.Serialize(instance);
             var json = Encoding.UTF8.GetString(bytes);
 
@@ -40,9 +36,7 @@ namespace JsonCryption.Utf8Json.Tests
         {
             var instance = new FooAnnotated { MyInt = 75, MyString = "secret" };
 
-            JsonSerializer.SetDefaultResolver(
-                new EncryptedResolver(StandardResolver.AllowPrivate,
-                DataProtectionProvider.Create(nameof(SmokeTests)).CreateProtector("test")));
+            Helpers.SetJsonSerializerResolver();
 
             var bytes = JsonSerializer.Serialize(instance);
             var json = Encoding.UTF8.GetString(bytes);
@@ -67,9 +61,7 @@ namespace JsonCryption.Utf8Json.Tests
         {
             var instance = new FooIgnored { MyInt = 75, MyString = "secret" };
 
-            JsonSerializer.SetDefaultResolver(
-                new EncryptedResolver(StandardResolver.AllowPrivate,
-                DataProtectionProvider.Create(nameof(SmokeTests)).CreateProtector("test")));
+            Helpers.SetJsonSerializerResolver();
 
             var bytes = JsonSerializer.Serialize(instance);
             var json = Encoding.UTF8.GetString(bytes);
