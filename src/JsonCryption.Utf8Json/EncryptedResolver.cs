@@ -13,8 +13,6 @@ namespace JsonCryption.Utf8Json
         private readonly IDataProtector _dataProtector;
         private readonly FormatterCache _formatterCache = new FormatterCache();
 
-        private static readonly List<object> _dummyList = new List<object>();
-
         public EncryptedResolver(IJsonFormatterResolver fallbackResolver, IDataProtector dataProtector)
         {
             _fallbackResolver = fallbackResolver;
