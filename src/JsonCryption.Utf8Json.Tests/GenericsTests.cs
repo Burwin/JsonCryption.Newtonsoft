@@ -90,9 +90,9 @@ namespace JsonCryption.Utf8Json.Tests
             {
                 dynamic value = kvp.Value.GetValue(instance);
 
-                var method = GetType()
-                    .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
-                    .First(m => m.Name == nameof(SerializedValueOf))
+                var method = typeof(Helpers)
+                    .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                    .First(m => m.Name == nameof(Helpers.SerializedValueOf))
                     .MakeGenericMethod(kvp.Value.PropertyType);
 
                 var serialized = (string)method.Invoke(this, new object[] { value, resolver, kvp.Key });
@@ -124,12 +124,6 @@ namespace JsonCryption.Utf8Json.Tests
             deserialized.MyDoubleConcurrentBag.All(d => instanceBagDoubles.Contains(d));
             var instanceBagStrings = instance.MyStringConcurrentBag.ToHashSet();
             deserialized.MyStringConcurrentBag.All(s => instanceBagStrings.Contains(s));
-        }
-
-        private string SerializedValueOf<T>(T value, IJsonFormatterResolver resolver, string name)
-        {
-            var serialized = JsonSerializer.ToJsonString<T>(value, resolver);
-            return $"\"{name}\":{serialized}";
         }
 
         private Dictionary<string, PropertyInfo> GetAllPropertyValues<T>(T foo, IJsonFormatterResolver resolver)
@@ -286,11 +280,11 @@ namespace JsonCryption.Utf8Json.Tests
             var bytes = JsonSerializer.Serialize(instance);
             var json = Encoding.UTF8.GetString(bytes);
 
-            json.ShouldNotContain(SerializedValueOf(instance.MyBarDictionary, StandardResolver.AllowPrivate, nameof(instance.MyBarDictionary)));
-            json.ShouldNotContain(SerializedValueOf(instance.MyConcurrentBarDictionary, StandardResolver.AllowPrivate, nameof(instance.MyConcurrentBarDictionary)));
-            json.ShouldNotContain(SerializedValueOf(instance.MyBars, StandardResolver.AllowPrivate, nameof(instance.MyBars)));
-            json.ShouldNotContain(SerializedValueOf(instance.MyListOfBars, StandardResolver.AllowPrivate, nameof(instance.MyListOfBars)));
-            json.ShouldNotContain(SerializedValueOf(instance.MyLazyBar, StandardResolver.AllowPrivate, nameof(instance.MyLazyBar)));
+            json.ShouldNotContain(Helpers.SerializedValueOf(instance.MyBarDictionary, StandardResolver.AllowPrivate, nameof(instance.MyBarDictionary)));
+            json.ShouldNotContain(Helpers.SerializedValueOf(instance.MyConcurrentBarDictionary, StandardResolver.AllowPrivate, nameof(instance.MyConcurrentBarDictionary)));
+            json.ShouldNotContain(Helpers.SerializedValueOf(instance.MyBars, StandardResolver.AllowPrivate, nameof(instance.MyBars)));
+            json.ShouldNotContain(Helpers.SerializedValueOf(instance.MyListOfBars, StandardResolver.AllowPrivate, nameof(instance.MyListOfBars)));
+            json.ShouldNotContain(Helpers.SerializedValueOf(instance.MyLazyBar, StandardResolver.AllowPrivate, nameof(instance.MyLazyBar)));
 
             var deserialized = JsonSerializer.Deserialize<FooComplex<Bar>>(json);
 
