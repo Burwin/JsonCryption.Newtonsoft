@@ -5,13 +5,13 @@ namespace JsonCryption.Utf8Json.Tests
 {
     public class ImmutablesTests
     {
-        [Fact]
+        [Fact(Skip = "To be implemented later")]
         public void Primitives()
         {
             throw new NotImplementedException();
         }
 
-        [Fact]
+        [Fact(Skip = "To be implemented later")]
         public void Complex_types()
         {
             throw new NotImplementedException();
