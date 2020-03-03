@@ -3,7 +3,7 @@ using Utf8Json.Resolvers;
 
 namespace JsonCryption.Utf8Json
 {
-    public static class JsonFormatterResolverExtensions
+    internal static class JsonFormatterResolverExtensions
     {
         public static bool AllowsPrivate(this IJsonFormatterResolver formatterResolver)
         {

@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 
 namespace JsonCryption.Utf8Json
 {
-    public static class MemberInfoExtensions
+    internal static class MemberInfoExtensions
     {
         public static bool ShouldEncrypt(this MemberInfo memberInfo) => memberInfo.GetCustomAttribute<EncryptAttribute>() != null;
 

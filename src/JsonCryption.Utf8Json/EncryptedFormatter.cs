@@ -9,7 +9,7 @@ using Utf8Json;
 
 namespace JsonCryption.Utf8Json
 {
-    public sealed class EncryptedFormatter<T> : IJsonFormatter<T>
+    internal sealed class EncryptedFormatter<T> : IJsonFormatter<T>
     {
         private readonly IDataProtector _dataProtector;
         private readonly IJsonFormatterResolver _fallbackResolver;
