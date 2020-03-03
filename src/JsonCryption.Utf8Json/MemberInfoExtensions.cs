@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace JsonCryption.Utf8Json
 {
@@ -27,6 +28,14 @@ namespace JsonCryption.Utf8Json
                 default:
                     throw new ArgumentException("MemberInfo must be of type EventInfo, FieldInfo, MethodInfo, or PropertyInfo");
             }
+        }
+
+        public static string SerializedName(this MemberInfo memberInfo)
+        {
+            var dataMemberAttribute = memberInfo.GetCustomAttribute<DataMemberAttribute>();
+            return dataMemberAttribute is null || !dataMemberAttribute.IsNameSetExplicitly
+                ? memberInfo.Name
+                : dataMemberAttribute.Name;
         }
     }
 }

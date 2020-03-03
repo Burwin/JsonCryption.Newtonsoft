@@ -29,7 +29,7 @@ namespace JsonCryption.Utf8Json
         {
             MemberInfo = memberInfo;
             Type = MemberInfo is FieldInfo fieldInfo ? fieldInfo.FieldType : ((PropertyInfo)memberInfo).PropertyType;
-            Name = GetNameForSerializing(MemberInfo);
+            Name = MemberInfo.SerializedName();
             ShouldEncrypt = memberInfo.ShouldEncrypt();
             HasNestedEncryptedMembers = GetHasNestedEncryptedMembers(Type, fallbackResolver);
             Getter = BuildGetter(MemberInfo, parentType);
@@ -212,14 +212,6 @@ namespace JsonCryption.Utf8Json
             var assignExp = Expression.Assign(memberExp, typedValueExp);
 
             return Expression.Lambda<Action<object, object>>(assignExp, targetExp, valueExp).Compile();
-        }
-
-        private string GetNameForSerializing(MemberInfo memberInfo)
-        {
-            var dataMemberAttribute = memberInfo.GetCustomAttribute<DataMemberAttribute>();
-            return dataMemberAttribute is null || !dataMemberAttribute.IsNameSetExplicitly
-                ? memberInfo.Name
-                : dataMemberAttribute.Name;
         }
 
         private Func<object, object> BuildGetter(MemberInfo memberInfo, Type parentType)
