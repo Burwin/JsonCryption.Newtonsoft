@@ -102,6 +102,7 @@ namespace JsonCryption.Utf8Json.Tests
             // check after deserialization
             var normalProperties = allProperties
                 .Where(p => !p.Value.PropertyType.Name.Contains("Lazy"))
+                .Where(p => !p.Value.PropertyType.Name.Contains("ConcurrentDictionary"))
                 .Where(p => !p.Value.PropertyType.Name.Contains("ConcurrentBag"));
 
             foreach (var kvp in normalProperties)
@@ -109,18 +110,21 @@ namespace JsonCryption.Utf8Json.Tests
                 var instanceValue = kvp.Value.GetValue(instance);
                 var deserializedValue = kvp.Value.GetValue(deserialized);
 
-                deserializedValue.ShouldBe(instanceValue);
+                deserializedValue.ShouldBe(instanceValue, kvp.Value.Name);
             }
 
             // special check for lazy
             deserialized.MyLazyDouble.Value.ShouldBe(instance.MyLazyDouble.Value);
             deserialized.MyLazyString.Value.ShouldBe(instance.MyLazyString.Value);
 
-            // ConcurrentBag should be used in unordered manner
+            // ConcurrentBag, ConcurrentDictionary should be used in unordered manner
             var instanceBagDoubles = instance.MyDoubleConcurrentBag.ToHashSet();
             deserialized.MyDoubleConcurrentBag.All(d => instanceBagDoubles.Contains(d));
             var instanceBagStrings = instance.MyStringConcurrentBag.ToHashSet();
             deserialized.MyStringConcurrentBag.All(s => instanceBagStrings.Contains(s));
+
+            var instanceDictionaryValues = instance.MyConcurrentDictionary.ToHashSet();
+            deserialized.MyConcurrentDictionary.All(kvp => instanceDictionaryValues.Contains(kvp));
         }
 
         private Dictionary<string, PropertyInfo> GetAllPropertyValues<T>(T foo, IJsonFormatterResolver resolver)
@@ -290,6 +294,11 @@ namespace JsonCryption.Utf8Json.Tests
 
             // lazy is special
             deserialized.MyLazyBar.Value.ShouldBe(instance.MyLazyBar.Value);
+
+            // ConcurrentDictionary should be unordered
+            var instanceConcurrentDictionaryStrings = instance.MyConcurrentBarDictionary.Keys.ToHashSet();
+            deserialized.MyConcurrentBarDictionary.Keys.All(key => instanceConcurrentDictionaryStrings.Contains(key));
+            deserialized.MyConcurrentBarDictionary.Keys.All(key => deserialized.MyConcurrentBarDictionary[key] == instance.MyConcurrentBarDictionary[key]);
         }
 
         private Bar[] GetComplexArray()
