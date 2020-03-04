@@ -288,7 +288,6 @@ namespace JsonCryption.Utf8Json.Tests
             var deserialized = JsonSerializer.Deserialize<FooComplex<Bar>>(json);
 
             deserialized.MyBarDictionary.ShouldBe(instance.MyBarDictionary);
-            deserialized.MyConcurrentBarDictionary.ShouldBe(instance.MyConcurrentBarDictionary);
             deserialized.MyBars.ShouldBe(instance.MyBars);
             deserialized.MyListOfBars.ShouldBe(instance.MyListOfBars);
 
