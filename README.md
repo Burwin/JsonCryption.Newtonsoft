@@ -5,14 +5,9 @@ JsonCryption offers field-level encryption when serializing from .NET objects to
 ### Installation
 Install the NuGet package for your JSON serializer:
 
-https://www.nuget.org/packages/JsonCryption.Utf8Json/
-```
-// Package Manager
-Install-Package JsonCryption.Utf8Json
-
-// .NET CLI
-dotnet add package JsonCryption.Utf8Json
-```
+~~https://www.nuget.org/packages/JsonCryption.Utf8Json/~~
+Use the dedicated Utf8Json.FLE package instead:
+https://github.com/Burwin/Uft8Json.FLE
 
 https://www.nuget.org/packages/JsonCryption.Newtonsoft/
 ```
@@ -48,7 +43,6 @@ class Foo
 
 ### Supported Serialization Libraries
 JsonCryption supports the following libraries:
-- Utf8Json (preferred)
 - Newtonsoft.Json
 - System.Text.Json
 
@@ -62,15 +56,7 @@ JsonCryption depends on the `Microsoft.AspNetCore.DataProtection` library. There
 
 Next, configuration depends on the JSON serializer used...
 
-##### Step 2a: Configure Utf8Json
-To configure Utf8Json, you'll need to set your default `IJsonFormatterResolver` to be an instance of `EncryptedResolver`, which should have a Singleton lfietime in your app.
-```
-// pseudo code
-var encryptedResolver = container.Resolve<EncryptedResolver>();
-JsonSerializer.SetDefaultResolver(encryptedResolver);
-```
-
-##### Step 2b: Configure Newtonsoft.Json
+##### Step 2a: Configure Newtonsoft.Json
 The implementation for `Newtonsoft.Json` relies on Dependency Injection. To configure JsonCryption, you'll need to register your default JsonSerializer:
 ```
 // pseudo code
@@ -80,7 +66,7 @@ container.Register<JsonSerializer>(() => new JsonSerializer()
 });
 ```
 
-##### Step 2c: Configure System.Text.Json
+##### Step 2b: Configure System.Text.Json
 `System.Text.Json` uses the static `JsonSerializer` to perform serialization operations. At the moment, that significantly changes the steps required for initial configuration. Nonetheless, I'm still trying to keep it simple.
 
 The first thing to go is Dependency Injection, which is weird considering how modern the `System.Text.Json` package is. So instead, I'm using a Singleton `Coordinator` to manage configuration... and I feel dirty doing it. I have some ideas for cleaning this up, but if anybody wants to take a crack at cleaning this to use DI, feel free to contact me and/or submit a PR.
@@ -108,10 +94,6 @@ class Foo
     public string UnencryptedString { get; }
 }
 
-// Utf8Json
-var bytes = JsonSerializer.Serialize(myFoo);
-var json = Encoding.Utf8.GetString(bytes);
-
 // Newtonsoft.Json
 var serializer = ...
 
@@ -123,10 +105,10 @@ JsonSerializer.Serialize(myFoo);
 ```
 
 ### Special Stuff
-The feature set is significantly different between the different JSON serializers due to differences in their customizable APIs. As of this writing, `Utf8Json` and `Newtonsoft.Json` generally offer a much wider array of features than `System.Text.Json`. `Utf8Json` is also blazing fast, which is why it's preferred.
+The feature set is significantly different between the different JSON serializers due to differences in their customizable APIs. As of this writing, `Newtonsoft.Json` generally offers a much wider array of features than `System.Text.Json`.
 
 #### Fields
-Currently, only `Utf8Json` and `Newtonsoft.Json` support serializing and encrypting fields:
+Currently, only `Newtonsoft.Json` supports serializing and encrypting fields:
 ```
 class FieldFoo
 {
@@ -136,9 +118,9 @@ class FieldFoo
 ```
 
 #### Non-public Properties and Fields
-Again, only `Utf8Json` and `Newtonsoft.Json` support this currently.
+Again, only `Newtonsoft.Json` supports this currently.
 
-For `Newtonsoft.Json`, the easiest way to do this is to decorate the field/property with an additional `JsonPropertyAttribute`:
+The easiest way to do this is to decorate the field/property with an additional `JsonPropertyAttribute`:
 ```
 class NonPublicFoo
 {
@@ -155,8 +137,6 @@ class NonPublicFoo
     private Guid PrivateProperty { get; set; }
 }
 ```
-
-For `Utf8Json`, set the `fallbackResolver` of the `EncryptedResolver` to any `IJsonFormatterResolver` with `AllowPrivate` set to true.
 
 ### Future Plans
 JsonCryption is open to PRs and more regular contributors. Feel free to reach out if you're interested in helping.
