@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>JsonCryption.Newtonsoft</name>
+        <name>Newtonsoft.Json.FLE</name>
     </assembly>
     <members>
         <member name="T:JsonCryption.EncryptAttribute">
