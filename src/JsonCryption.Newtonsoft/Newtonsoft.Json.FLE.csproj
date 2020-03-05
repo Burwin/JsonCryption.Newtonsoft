@@ -4,10 +4,10 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>8.0</LangVersion>
     <Authors>Michael Harris</Authors>
-    <Description>Field-level encrypted json serialization for Newtonsoft.Json v12, using Microsoft.AspNetCore.DataProtection for encryption-related duties</Description>
+    <Description>Field level encryption plugin during serialization/deserialization for Newtonsoft.Json</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/Burwin/JsonCryption</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Burwin/JsonCryption</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Burwin/Newtonsoft.Json.FLE</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Burwin/Newtonsoft.Json.FLE</RepositoryUrl>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
