@@ -1,23 +1,21 @@
-﻿using JsonCryption.Extensions;
-using JsonCryption.Newtonsoft.Extensions;
-using JsonCryption.Newtonsoft.JsonConverters;
-using JsonCryption.Newtonsoft.ValueProviders;
+﻿using Newtonsoft.Json.FLE.Extensions;
+using Newtonsoft.Json.FLE.JsonConverters;
+using Newtonsoft.Json.FLE.ValueProviders;
 using Microsoft.AspNetCore.DataProtection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace JsonCryption
+namespace Newtonsoft.Json.FLE
 {
     /// <summary>
     /// When set as the <see cref="IContractResolver"/> for a <see cref="JsonSerializer"/>, and
     /// properly configured, it enables the automatic encryption/decryption of fields and properties
     /// decorated with <see cref="EncryptAttribute"/> during serialization/deserialization
     /// </summary>
-    public sealed class JsonCryptionContractResolver : DefaultContractResolver
+    public sealed class EncryptedContractResolver : DefaultContractResolver
     {
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly Dictionary<Type, IEncryptedConverter> _converters;
@@ -72,10 +70,10 @@ namespace JsonCryption
             };
 
         /// <summary>
-        /// Creates a new <see cref="JsonCryptionContractResolver"/> with the root <see cref="IDataProtectionProvider"/>
+        /// Creates a new <see cref="EncryptedContractResolver"/> with the root <see cref="IDataProtectionProvider"/>
         /// </summary>
         /// <param name="dataProtectionProvider"></param>
-        public JsonCryptionContractResolver(IDataProtectionProvider dataProtectionProvider)
+        public EncryptedContractResolver(IDataProtectionProvider dataProtectionProvider)
         {
             _dataProtectionProvider = dataProtectionProvider;
             _converters = new Dictionary<Type, IEncryptedConverter>();

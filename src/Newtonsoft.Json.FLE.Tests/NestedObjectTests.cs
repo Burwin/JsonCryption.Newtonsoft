@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Xunit;
-namespace JsonCryption.Newtonsoft.Tests
+
+namespace Newtonsoft.Json.FLE.Tests
 {
     public class NestedObjectTests
     {
@@ -40,7 +40,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Single_level_nested_objects()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(nameof(NestedObjectTests));
-            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
+            var contractResolver = new EncryptedContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var instance = new Parent
@@ -98,7 +98,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void HashSet_with_nested_object()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(nameof(NestedObjectTests));
-            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
+            var contractResolver = new EncryptedContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var instance = new HashSetParent();

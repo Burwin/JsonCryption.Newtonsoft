@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace JsonCryption.Extensions
+namespace Newtonsoft.Json.FLE.Extensions
 {
     internal static class TypeExtensions
     {

@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="JsonCryption.Newtonsoft.v3.ncrunchproject" />
+    <None Remove="Newtonsoft.Json.FLE.v3.ncrunchproject" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
-using Newtonsoft.Json;
 using System;
 
-namespace JsonCryption.Newtonsoft.JsonConverters
+namespace Newtonsoft.Json.FLE.JsonConverters
 {
     internal interface IEncryptedConverter
     {

@@ -1,8 +1,8 @@
-﻿using JsonCryption.Newtonsoft.JsonConverters;
+﻿using Newtonsoft.Json.FLE.JsonConverters;
 using Newtonsoft.Json.Serialization;
 using System;
 
-namespace JsonCryption.Newtonsoft.ValueProviders
+namespace Newtonsoft.Json.FLE.ValueProviders
 {
     internal sealed class EnumValueProvider<T> : EncryptedValueProvider<T>
         where T : struct, Enum

@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
-using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Text;
 
-namespace JsonCryption.Newtonsoft.JsonConverters
+namespace Newtonsoft.Json.FLE.JsonConverters
 {
     internal sealed class EncryptedArrayConverter<T> : JsonConverter, IEncryptedConverter<T[]>
     {

@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace JsonCryption.ByteConverters
+namespace Newtonsoft.Json.FLE.ByteConverters
 {
     internal sealed class StringByteConverter : IByteConverter<string>
     {

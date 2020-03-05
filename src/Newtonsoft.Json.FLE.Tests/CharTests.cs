@@ -1,10 +1,9 @@
-﻿using Newtonsoft.Json;
-using Shouldly;
+﻿using Shouldly;
 using System.IO;
 using System.Text;
 using Xunit;
 
-namespace JsonCryption.Newtonsoft.Tests
+namespace Newtonsoft.Json.FLE.Tests
 {
     public class CharTests
     {
@@ -14,7 +13,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Public_properties_are_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
+            var contractResolver = new EncryptedContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var instance = new FooCharPublic { MyChar = (char)5 };
@@ -44,7 +43,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Private_fields_are_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
+            var contractResolver = new EncryptedContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var instance = new FooCharPrivate((char)5);

@@ -1,11 +1,10 @@
-﻿using Newtonsoft.Json;
-using Shouldly;
+﻿using Shouldly;
 using System;
 using System.IO;
 using System.Text;
 using Xunit;
 
-namespace JsonCryption.Newtonsoft.Tests
+namespace Newtonsoft.Json.FLE.Tests
 {
     public class DateTimeTests
     {
@@ -15,7 +14,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Public_property_is_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
+            var contractResolver = new EncryptedContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var myDate = DateTime.Parse("2020-01-27");
@@ -46,7 +45,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Private_field_is_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
+            var contractResolver = new EncryptedContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var myDate = DateTime.Parse("2020-01-27");

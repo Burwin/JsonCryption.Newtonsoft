@@ -1,4 +1,4 @@
-﻿namespace JsonCryption.ByteConverters
+﻿namespace Newtonsoft.Json.FLE.ByteConverters
 {
     internal sealed class ByteByteConverter : IByteConverter<byte>
     {

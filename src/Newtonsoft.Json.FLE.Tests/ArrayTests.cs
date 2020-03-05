@@ -1,10 +1,9 @@
-﻿using Newtonsoft.Json;
-using Shouldly;
+﻿using Shouldly;
 using System.IO;
 using System.Text;
 using Xunit;
 
-namespace JsonCryption.Newtonsoft.Tests
+namespace Newtonsoft.Json.FLE.Tests
 {
     public class ArrayTests
     {
@@ -14,7 +13,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Public_property_is_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
+            var contractResolver = new EncryptedContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var myDoubles = new[] { 1.1, 2.2, 3.3 };
@@ -45,7 +44,7 @@ namespace JsonCryption.Newtonsoft.Tests
         public void Private_field_is_encrypted_and_decrypted()
         {
             var dataProtectionProvider = Helpers.GetTestDataProtectionProvider(ApplicationName);
-            var contractResolver = new JsonCryptionContractResolver(dataProtectionProvider);
+            var contractResolver = new EncryptedContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
             var myDoubles = new[] { 1.1, 2.2, 3.3 };

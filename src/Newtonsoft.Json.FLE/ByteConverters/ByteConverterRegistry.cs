@@ -1,9 +1,9 @@
-﻿using JsonCryption.ByteConverters;
+﻿using Newtonsoft.Json.FLE.ByteConverters;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace JsonCryption
+namespace Newtonsoft.Json.FLE
 {
     internal sealed class ByteConverterRegistry
     {

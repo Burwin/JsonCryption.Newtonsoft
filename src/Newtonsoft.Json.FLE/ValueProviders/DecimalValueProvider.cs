@@ -1,7 +1,7 @@
-﻿using JsonCryption.Newtonsoft.JsonConverters;
+﻿using Newtonsoft.Json.FLE.JsonConverters;
 using Newtonsoft.Json.Serialization;
 
-namespace JsonCryption.Newtonsoft.ValueProviders
+namespace Newtonsoft.Json.FLE.ValueProviders
 {
     internal sealed class DecimalValueProvider : EncryptedValueProvider<decimal>
     {
