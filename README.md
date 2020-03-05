@@ -1,91 +1,75 @@
-# JsonCryption
-## Field-level Encryption during JSON Serialization
-JsonCryption offers field-level encryption when serializing from .NET objects to JSON, using `Microsoft.AspNetCore.DataProtection` for encryption, key/algo management, etc.
+# Newtonsoft.Json.FLE
+## Field Level Encryption (FLE) plugin for Newtonsoft.Json
+Newtonsoft.Json.FLE offers Field Level Encryption (FLE) when serializing/deserializing between .NET objects and JSON.
 
 ### Installation
-Install the NuGet package for your JSON serializer:
-
-~~https://www.nuget.org/packages/JsonCryption.Utf8Json/~~
-Use the dedicated Utf8Json.FLE package instead:
-https://github.com/Burwin/Uft8Json.FLE
-
-https://www.nuget.org/packages/JsonCryption.Newtonsoft/
+Package Manager:
 ```
-// Package Manager
-Install-Package JsonCryption.Newtonsoft
-
-// .NET CLI
-dotnet add package JsonCryption.Newtonsoft
+Install-Package Newtonsoft.Json.FLE
 ```
 
-https://www.nuget.org/packages/JsonCryption.System.Text.Json/
+.NET CLI:
 ```
-// Package Manager
-Install-Package JsonCryption.System.Text.Json
-
-// .NET CLI
-dotnet add package JsonCryption.System.Text.Json
+dotnet add package Newtonsoft.Json.FLE
 ```
 
 ### Motivation
-Integrating encryption/decryption of specified fields/properties of C# objects at the moment of JSON serialization/deserialization should be:
+Field Level Encryption of C# objects during JSON serialization/deserialization should be:
 - Relatively easy to use
 - Powered by industry-standard cryptography best-practices
 
-JsonCryption seeks to keep initial configuration to a minimum, and only requires decorating fields and properties to be protected with a simple attribute (in most cases):
+#### Relatively Easy to Use
+With default configuration, encrypting a field/property just requires decorating it with `EncryptAttribute`, and serializing the object as usual:
 ```
+// decorate properties to be encrypted
 class Foo
 {
     [Encrypt]
     public string MySecret { get; set; }
 }
+
+// serialize as normal
+Foo foo = new Foo() { ... };
+
+JsonSerializer serializer = ...
+using TextWriter textWriter = ...
+serializer.Serialize(textWriter, foo);
 ```
 
-### Supported Serialization Libraries
-JsonCryption supports the following libraries:
-- Newtonsoft.Json
-- System.Text.Json
+More details on usage scenarios can be found below.
+
+#### Industry-standard Cryptography
+Currently, Newtonsoft.Json.FLE is built on top of the `Microsoft.AspNetCore.DataProtection` library for handling encryption-related responsibilities:
+- Encryption/decryption
+- Key management
+- Algorithm management
+- etc.
+
+Internally, we only depend on the two interfaces `IDataProtector` and `IDataProtectionProvider`. If you don't want to use Microsoft's implementations, you could just depend on `Microsoft.AspNetCore.DataProtection.Abstractions` and provide alternative implementations of `IDataProtector` and `IDataProtectionProvider`. One use case for this functionality might be creating a segregated `IDataProtector` per user, potentially making it easy to support GDPR's "right to forget" user data.
 
 ### Supported Types
-JsonCryption should support any type serializable by the JSON serializer library used. If you spot a missing type, please let me know (or better yet, create a PR!).
+Newtonsoft.Json.FLE should support any type serializable by Newtonsoft.Json. If you spot a missing type, please let me know (or better yet, create a PR!).
 
 ### Getting Started
 #### Configuration
 ##### Step 1: Configure Microsoft.AspNetCore.DataProtection
-JsonCryption depends on the `Microsoft.AspNetCore.DataProtection` library. Therefore, you should first ensure that your DataProtection layer is [configured properly](https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/).
+Newtonsoft.Json.FLE depends on the `Microsoft.AspNetCore.DataProtection` library. Therefore, you should first ensure that your DataProtection layer is [configured properly](https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/).
 
 Next, configuration depends on the JSON serializer used...
 
-##### Step 2a: Configure Newtonsoft.Json
-The implementation for `Newtonsoft.Json` relies on Dependency Injection. To configure JsonCryption, you'll need to register your default JsonSerializer:
+##### Step 2: Configure Newtonsoft.Json
+To configure Newtonsoft.Json.FLE with dependency injection, you'll need to register your default JsonSerializer with our `EncryptedContractResolver`:
 ```
 // pseudo code
 container.Register<JsonSerializer>(() => new JsonSerializer()
 {
-    ContractResolver = new JsonCryptionContractResolver(container.Resolve<IDataProtectionProvider>())
-});
-```
-
-##### Step 2b: Configure System.Text.Json
-`System.Text.Json` uses the static `JsonSerializer` to perform serialization operations. At the moment, that significantly changes the steps required for initial configuration. Nonetheless, I'm still trying to keep it simple.
-
-The first thing to go is Dependency Injection, which is weird considering how modern the `System.Text.Json` package is. So instead, I'm using a Singleton `Coordinator` to manage configuration... and I feel dirty doing it. I have some ideas for cleaning this up, but if anybody wants to take a crack at cleaning this to use DI, feel free to contact me and/or submit a PR.
-
-```
-// somewhere in your startup
-// pseudo code
-Coordinator.Configure(options =>
-{
-    options.DataProtectionProvider = container.Resolve<IDataProtectionProvider>();
-    options.JsonSerializerOptions = ...
+    ContractResolver = new EncryptedContractResolver(container.Resolve<IDataProtectionProvider>())
 });
 ```
 
 #### Usage
-Once configured, using JsonCryption is just a matter of decorating the properties/fields you wish to encrypt and the `EncryptAttribute` and serializing your C# objects as you normally would:
+Once configured, using Newtonsoft.Json.FLE is just a matter of decorating the properties/fields you wish to encrypt and the `EncryptAttribute` and serializing your C# objects as you normally would:
 ```
-var myFoo = new Foo("some important value", "something very public");
-
 class Foo
 {
     [Encrypt]
@@ -94,32 +78,25 @@ class Foo
     public string UnencryptedString { get; }
 }
 
-// Newtonsoft.Json
+var myFoo = new Foo("some important value", "something very public");
+
+// serializing
 var serializer = ...
-
-using var textWriter = ...
+var builder = new StringBuilder();
+using var textWriter = new StringWriter(builder);
 serializer.Serialize(textWriter, myFoo);
+var json = builder.ToString();
 
-// System.Text.Json
-JsonSerializer.Serialize(myFoo);
+// deserializing
+using var textReader = new StringReader(json);
+using var reader = new JsonTextReader(textReader);
+var deserialized = serializer.Deserialize<Foo>(json);
 ```
 
 ### Special Stuff
-The feature set is significantly different between the different JSON serializers due to differences in their customizable APIs. As of this writing, `Newtonsoft.Json` generally offers a much wider array of features than `System.Text.Json`.
-
-#### Fields
-Currently, only `Newtonsoft.Json` supports serializing and encrypting fields:
-```
-class FieldFoo
-{
-    [Encrypt]
-    public string MyPublicValue;
-}
-```
+We're trying to maintain feature parity when it comes to annotations, but I'm likely missing finer details in places. Let me know if you spot something. When in doubt, verify what's possible via the tests
 
 #### Non-public Properties and Fields
-Again, only `Newtonsoft.Json` supports this currently.
-
 The easiest way to do this is to decorate the field/property with an additional `JsonPropertyAttribute`:
 ```
 class NonPublicFoo
@@ -139,7 +116,7 @@ class NonPublicFoo
 ```
 
 ### Future Plans
-JsonCryption is open to PRs and more regular contributors. Feel free to reach out if you're interested in helping.
+Newtonsoft.Json.FLE is open to PRs and more regular contributors. Feel free to reach out if you're interested in helping.
 
 Next, I'm hoping to do some benchmarking...
 
