@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonCryption.Newtonsoft", "JsonCryption.Newtonsoft\JsonCryption.Newtonsoft.csproj", "{7352248E-F822-4780-A064-55FA77669A77}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonCryption.Newtonsoft.Tests", "JsonCryption.Newtonsoft.Tests\JsonCryption.Newtonsoft.Tests.csproj", "{1687D1CE-D83B-43BE-9749-B90F5AAC9D13}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Newtonsoft.Json.FLE.Tests", "JsonCryption.Newtonsoft.Tests\Newtonsoft.Json.FLE.Tests.csproj", "{1687D1CE-D83B-43BE-9749-B90F5AAC9D13}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
