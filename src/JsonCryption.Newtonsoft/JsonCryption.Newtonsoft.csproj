@@ -12,11 +12,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>D:\src\Newtonsoft.Json.FLE\src\Newtonsoft.Json.FLE\Newtonsoft.Json.FLE.xml</DocumentationFile>
+    <DocumentationFile>D:\src\JsonCryption.Newtonsoft\src\JsonCryption.Newtonsoft\JsonCryption.Newtonsoft.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>D:\src\Newtonsoft.Json.FLE\src\Newtonsoft.Json.FLE\Newtonsoft.Json.FLE.xml</DocumentationFile>
+    <DocumentationFile>D:\src\JsonCryption.Newtonsoft\src\JsonCryption.Newtonsoft\JsonCryption.Newtonsoft.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

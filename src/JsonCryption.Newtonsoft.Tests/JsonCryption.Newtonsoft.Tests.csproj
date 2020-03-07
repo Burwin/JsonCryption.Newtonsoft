@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Newtonsoft.Json.FLE\Newtonsoft.Json.FLE.csproj" />
+    <ProjectReference Include="..\JsonCryption.Newtonsoft\JsonCryption.Newtonsoft.csproj" />
   </ItemGroup>
 
 </Project>

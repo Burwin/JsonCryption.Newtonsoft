@@ -1,3 +1,3 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Newtonsoft.Json.FLE.Tests")]
+[assembly: InternalsVisibleTo("JsonCryption.Newtonsoft.Tests")]
