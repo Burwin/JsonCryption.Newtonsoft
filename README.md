@@ -1,16 +1,16 @@
-# Newtonsoft.Json.FLE
+# JsonCryption.Newtonsoft
 ## Field Level Encryption (FLE) plugin for Newtonsoft.Json
-Newtonsoft.Json.FLE offers Field Level Encryption (FLE) when serializing/deserializing between .NET objects and JSON.
+JsonCryption.Newtonsoft offers Field Level Encryption (FLE) when serializing/deserializing between .NET objects and JSON.
 
 ### Installation
 Package Manager:
 ```
-Install-Package Newtonsoft.Json.FLE
+Install-Package JsonCryption.Newtonsoft
 ```
 
 .NET CLI:
 ```
-dotnet add package Newtonsoft.Json.FLE
+dotnet add package JsonCryption.Newtonsoft
 ```
 
 ### Motivation
@@ -39,7 +39,7 @@ serializer.Serialize(textWriter, foo);
 More details on usage scenarios can be found below.
 
 #### Industry-standard Cryptography
-Currently, Newtonsoft.Json.FLE is built on top of the `Microsoft.AspNetCore.DataProtection` library for handling encryption-related responsibilities:
+Currently, JsonCryption.Newtonsoft is built on top of the `Microsoft.AspNetCore.DataProtection` library for handling encryption-related responsibilities:
 - Encryption/decryption
 - Key management
 - Algorithm management
@@ -48,17 +48,17 @@ Currently, Newtonsoft.Json.FLE is built on top of the `Microsoft.AspNetCore.Data
 Internally, we only depend on the two interfaces `IDataProtector` and `IDataProtectionProvider`. If you don't want to use Microsoft's implementations, you could just depend on `Microsoft.AspNetCore.DataProtection.Abstractions` and provide alternative implementations of `IDataProtector` and `IDataProtectionProvider`. One use case for this functionality might be creating a segregated `IDataProtector` per user, potentially making it easy to support GDPR's "right to forget" user data.
 
 ### Supported Types
-Newtonsoft.Json.FLE should support any type serializable by Newtonsoft.Json. If you spot a missing type, please let me know (or better yet, create a PR!).
+JsonCryption.Newtonsoft should support any type serializable by Newtonsoft.Json. If you spot a missing type, please let me know (or better yet, create a PR!).
 
 ### Getting Started
 #### Configuration
 ##### Step 1: Configure Microsoft.AspNetCore.DataProtection
-Newtonsoft.Json.FLE depends on the `Microsoft.AspNetCore.DataProtection` library. Therefore, you should first ensure that your DataProtection layer is [configured properly](https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/).
+JsonCryption.Newtonsoft depends on the `Microsoft.AspNetCore.DataProtection` library. Therefore, you should first ensure that your DataProtection layer is [configured properly](https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/).
 
 Next, configuration depends on the JSON serializer used...
 
 ##### Step 2: Configure Newtonsoft.Json
-To configure Newtonsoft.Json.FLE with dependency injection, you'll need to register your default JsonSerializer with our `EncryptedContractResolver`:
+To configure JsonCryption.Newtonsoft with dependency injection, you'll need to register your default JsonSerializer with our `EncryptedContractResolver`:
 ```
 // pseudo code
 container.Register<JsonSerializer>(() => new JsonSerializer()
@@ -68,7 +68,7 @@ container.Register<JsonSerializer>(() => new JsonSerializer()
 ```
 
 #### Usage
-Once configured, using Newtonsoft.Json.FLE is just a matter of decorating the properties/fields you wish to encrypt and the `EncryptAttribute` and serializing your C# objects as you normally would:
+Once configured, using JsonCryption.Newtonsoft is just a matter of decorating the properties/fields you wish to encrypt and the `EncryptAttribute` and serializing your C# objects as you normally would:
 ```
 class Foo
 {
@@ -116,7 +116,7 @@ class NonPublicFoo
 ```
 
 ### Future Plans
-Newtonsoft.Json.FLE is open to PRs and more regular contributors. Feel free to reach out if you're interested in helping.
+JsonCryption.Newtonsoft is open to PRs and more regular contributors. Feel free to reach out if you're interested in helping.
 
 Next, I'm hoping to do some benchmarking...
 
