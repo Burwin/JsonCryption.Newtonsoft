@@ -3,6 +3,7 @@
 JsonCryption.Newtonsoft offers Field Level Encryption (FLE) when serializing/deserializing between .NET objects and JSON.
 
 ![Build and Test](https://github.com/Burwin/JsonCryption.Newtonsoft/workflows/Build%20and%20Test/badge.svg)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Burwin_JsonCryption.Newtonsoft&metric=alert_status)](https://sonarcloud.io/dashboard?id=Burwin_JsonCryption.Newtonsoft)
 
 ### Installation
 #### Package Manager:
