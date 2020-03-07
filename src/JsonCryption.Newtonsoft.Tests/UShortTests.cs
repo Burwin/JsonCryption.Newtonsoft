@@ -17,7 +17,7 @@ namespace JsonCryption.Newtonsoft.Tests
             var contractResolver = new EncryptedContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
-            var myUShort = (ushort)69;
+            var myUShort = (ushort)75;
             var instance = new FooUShortPublic { MyUShort = myUShort };
 
             var builder = new StringBuilder();
@@ -48,7 +48,7 @@ namespace JsonCryption.Newtonsoft.Tests
             var contractResolver = new EncryptedContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
-            var myUShort = (ushort)69;
+            var myUShort = (ushort)75;
             var instance = new FooUShortPrivate(myUShort);
 
             var builder = new StringBuilder();

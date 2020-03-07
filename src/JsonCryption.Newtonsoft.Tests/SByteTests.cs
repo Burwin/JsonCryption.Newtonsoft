@@ -17,7 +17,7 @@ namespace JsonCryption.Newtonsoft.Tests
             var contractResolver = new EncryptedContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
-            var mySByte = (sbyte)69;
+            var mySByte = (sbyte)75;
             var instance = new FooSBytePublic { MySByte = mySByte };
 
             var builder = new StringBuilder();
@@ -48,7 +48,7 @@ namespace JsonCryption.Newtonsoft.Tests
             var contractResolver = new EncryptedContractResolver(dataProtectionProvider);
             var serializer = new JsonSerializer() { ContractResolver = contractResolver };
 
-            var mySByte = (sbyte)69;
+            var mySByte = (sbyte)75;
             var instance = new FooSBytePrivate(mySByte);
 
             var builder = new StringBuilder();
