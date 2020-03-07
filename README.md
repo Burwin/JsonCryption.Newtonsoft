@@ -57,7 +57,7 @@ JsonCryption.Newtonsoft should support any type serializable by Newtonsoft.Json.
 ##### Step 1: Configure Microsoft.AspNetCore.DataProtection
 JsonCryption.Newtonsoft depends on the `Microsoft.AspNetCore.DataProtection` library. Therefore, you should first ensure that your DataProtection layer is [configured properly](https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/).
 
-Next, configuration depends on the JSON serializer used...
+NOTE: Technically, since we only rely on the interfaces `IDataProtector` and `IDataProtectionProvider`, you don't need to configure this layer according to Microsoft's docs linked to above... You could just create any custom object to implement these two interfaces. Just be aware of the risks. It would probably be better to create a broader adapter layer that could include a number of managed encryption providers more directly.
 
 ##### Step 2: Configure Newtonsoft.Json
 To configure JsonCryption.Newtonsoft with dependency injection, you'll need to register your default JsonSerializer with our `EncryptedContractResolver`:
