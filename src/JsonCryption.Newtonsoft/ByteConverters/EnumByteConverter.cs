@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Newtonsoft.Json.FLE.ByteConverters
+namespace JsonCryption.Newtonsoft.ByteConverters
 {
     internal sealed class EnumByteConverter<T> : IByteConverter<T>
         where T : struct, Enum

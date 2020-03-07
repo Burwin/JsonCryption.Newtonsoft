@@ -1,9 +1,10 @@
-﻿using Shouldly;
+﻿using Newtonsoft.Json;
+using Shouldly;
 using System.IO;
 using System.Text;
 using Xunit;
 
-namespace Newtonsoft.Json.FLE.Tests
+namespace JsonCryption.Newtonsoft.Tests
 {
     public class SByteTests
     {

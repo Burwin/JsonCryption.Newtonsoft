@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 using System.Security.Cryptography;
 
-namespace Newtonsoft.Json.FLE.Tests
+namespace JsonCryption.Newtonsoft.Tests
 {
     class Helpers
     {

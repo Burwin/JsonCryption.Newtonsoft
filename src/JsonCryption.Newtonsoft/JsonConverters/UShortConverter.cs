@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 
-namespace Newtonsoft.Json.FLE.JsonConverters
+namespace JsonCryption.Newtonsoft.JsonConverters
 {
     internal sealed class UShortConverter : EncryptedConverter<ushort>
     {

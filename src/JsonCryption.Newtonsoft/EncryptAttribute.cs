@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Newtonsoft.Json.FLE
+namespace JsonCryption.Newtonsoft
 {
     /// <summary>
     /// Decorate fields and properties to encrypt/decrypt when serializing/deserializing

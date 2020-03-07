@@ -1,4 +1,4 @@
-﻿namespace Newtonsoft.Json.FLE
+﻿namespace JsonCryption.Newtonsoft
 {
     internal interface IByteConverter<T>
     {

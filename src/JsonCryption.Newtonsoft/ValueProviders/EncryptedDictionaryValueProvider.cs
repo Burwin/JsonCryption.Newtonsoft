@@ -1,8 +1,9 @@
-﻿using Newtonsoft.Json.FLE.JsonConverters;
+﻿using JsonCryption.Newtonsoft.JsonConverters;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 
-namespace Newtonsoft.Json.FLE.ValueProviders
+namespace JsonCryption.Newtonsoft.ValueProviders
 {
     internal sealed class EncryptedDictionaryValueProvider<TKey, TValue> : EncryptedValueProvider<Dictionary<TKey, TValue>>
     {

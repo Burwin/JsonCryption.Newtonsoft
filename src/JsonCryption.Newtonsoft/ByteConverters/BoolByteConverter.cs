@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Newtonsoft.Json.FLE.ByteConverters
+namespace JsonCryption.Newtonsoft.ByteConverters
 {
     internal sealed class BoolByteConverter : IByteConverter<bool>
     {

@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Newtonsoft.Json.FLE.JsonConverters
+namespace JsonCryption.Newtonsoft.JsonConverters
 {
     internal sealed class EncryptedDictionaryConverter<TKey, TValue> : JsonConverter, IEncryptedConverter<Dictionary<TKey, TValue>>
     {

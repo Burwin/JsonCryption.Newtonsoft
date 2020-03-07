@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json.FLE.JsonConverters;
+﻿using JsonCryption.Newtonsoft.JsonConverters;
 using Newtonsoft.Json.Serialization;
 
-namespace Newtonsoft.Json.FLE.ValueProviders
+namespace JsonCryption.Newtonsoft.ValueProviders
 {
     internal sealed class ByteValueProvider : EncryptedValueProvider<byte>
     {

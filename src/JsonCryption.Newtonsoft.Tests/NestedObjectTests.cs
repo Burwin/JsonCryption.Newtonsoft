@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Linq;
 using System.Text;
 using Xunit;
 
-namespace Newtonsoft.Json.FLE.Tests
+namespace JsonCryption.Newtonsoft.Tests
 {
     public class NestedObjectTests
     {

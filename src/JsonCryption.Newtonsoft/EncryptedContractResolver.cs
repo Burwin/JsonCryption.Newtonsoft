@@ -1,14 +1,15 @@
-﻿using Newtonsoft.Json.FLE.Extensions;
-using Newtonsoft.Json.FLE.JsonConverters;
-using Newtonsoft.Json.FLE.ValueProviders;
+﻿using JsonCryption.Newtonsoft.Extensions;
+using JsonCryption.Newtonsoft.JsonConverters;
+using JsonCryption.Newtonsoft.ValueProviders;
 using Microsoft.AspNetCore.DataProtection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Newtonsoft.Json.FLE
+namespace JsonCryption.Newtonsoft
 {
     /// <summary>
     /// When set as the <see cref="IContractResolver"/> for a <see cref="JsonSerializer"/>, and

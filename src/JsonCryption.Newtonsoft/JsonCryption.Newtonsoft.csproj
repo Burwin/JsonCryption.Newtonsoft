@@ -6,8 +6,8 @@
     <Authors>Michael Harris</Authors>
     <Description>Field level encryption plugin during serialization/deserialization for Newtonsoft.Json</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/Burwin/Newtonsoft.Json.FLE</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Burwin/Newtonsoft.Json.FLE</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Burwin/JsonCryption.Newtonsoft</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Burwin/JsonCryption.Newtonsoft</RepositoryUrl>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Newtonsoft.Json.FLE.v3.ncrunchproject" />
+    <None Remove="JsonCryption.Newtonsoft.v3.ncrunchproject" />
   </ItemGroup>
 
   <ItemGroup>

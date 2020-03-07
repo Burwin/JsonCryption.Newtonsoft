@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 using System;
 
-namespace Newtonsoft.Json.FLE.JsonConverters
+namespace JsonCryption.Newtonsoft.JsonConverters
 {
     internal sealed class DateTimeConverter : EncryptedConverter<DateTime>
     {
