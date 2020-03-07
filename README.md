@@ -2,13 +2,15 @@
 ## Field Level Encryption (FLE) plugin for Newtonsoft.Json
 JsonCryption.Newtonsoft offers Field Level Encryption (FLE) when serializing/deserializing between .NET objects and JSON.
 
+![Build and Test](https://github.com/Burwin/JsonCryption.Newtonsoft/workflows/Build%20and%20Test/badge.svg)
+
 ### Installation
-Package Manager:
+#### Package Manager:
 ```
 Install-Package JsonCryption.Newtonsoft
 ```
 
-.NET CLI:
+#### .NET CLI:
 ```
 dotnet add package JsonCryption.Newtonsoft
 ```
